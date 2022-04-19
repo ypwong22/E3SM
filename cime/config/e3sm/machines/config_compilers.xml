@@ -990,6 +990,54 @@ for mct, etc.
   </SLIBS>
 </compiler>
 
+<compiler COMPILER="gnu" MACH="ubuntu">
+      <CPPDEFS>
+         <append> -DFORTRANUNDERSCORE -DNO_R16</append>
+      </CPPDEFS>
+      <CFLAGS>
+        <append compile_threaded="TRUE"> -fopenmp </append>
+      </CFLAGS>
+      <FFLAGS>
+        <append compile_threaded="TRUE"> -fopenmp </append>
+      </FFLAGS>
+      <LDFLAGS>
+        <append compile_threaded="TRUE"> -fopenmp </append>
+      </LDFLAGS>
+      <CMAKE_OPTS>
+              <append MODEL="cism"> -D CISM_GNU=ON </append>
+      </CMAKE_OPTS>
+      <FIXEDFLAGS>
+         <base> -ffixed-form </base>
+      </FIXEDFLAGS>
+      <FREEFLAGS>
+         <base>-ffree-form </base>
+      </FREEFLAGS>
+      <FFLAGS>
+        <base>-O -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none -fno-range-check</base>
+        <append DEBUG="TRUE"> -g -Wall </append>
+      </FFLAGS>
+      <!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
+                                 so that these are passed to cmake builds (cmake builds don't use FIXEDFLAGS and FREEFLAGS). -->
+      <FFLAGS_NOOPT>
+         <base>-O0 </base>
+      </FFLAGS_NOOPT>
+      <FC_AUTO_R8>
+         <base> -fdefault-real-8 </base>
+      </FC_AUTO_R8>
+      <SFC>gfortran</SFC>
+      <SCC>gcc</SCC>
+      <SCXX>g++</SCXX>
+      <MPIFC>mpif90</MPIFC>
+      <MPICC>mpicc</MPICC>
+      <MPICXX>mpic++</MPICXX>
+      <CXX_LINKER>FORTRAN</CXX_LINKER>
+      <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+      <NETCDF_PATH>/usr/</NETCDF_PATH>
+      <SLIBS>
+        <append> -L/usr/lib/x86_64-linux-gnu -lblas -llapack -lnetcdf -lnetcdff</append>
+      </SLIBS>
+</compiler>
+
 <compiler MACH="cades" COMPILER="gnu">
   <CFLAGS>
     <append compile_threaded="TRUE"> -fopenmp </append>
@@ -1036,6 +1084,13 @@ for mct, etc.
   <SCXX>gcpp</SCXX>
   <SFC>gfortran</SFC>
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+</compiler>
+
+<compiler MACH="utk" COMPILER="intel">
+  <NETCDF_PATH>/sw/cs400_centos7.3_acfsoftware/netcdf/4.4.1.1/centos7.3_intel17.2.174/</NETCDF_PATH>
+  <SLIBS>
+    <append>-L/sw/cs400_centos7.3_acfsoftware/lapack/3.7.0/centos7.3_gnu6.3.0/lib -llapack -lblas -L/sw/cs400_centos7.3_acfsoftware/netcdf/4.4.1.1/centos7.3_intel17.2.174/lib -lnetcdff -lnetcdf -lgfortran</append>
+  </SLIBS>
 </compiler>
 
 <compiler MACH="cascade" COMPILER="intel">

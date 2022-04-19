@@ -10,5 +10,4 @@
     <protocol>svn</protocol>
     <address>https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata</address>
   </server>
-
 </inputdata>

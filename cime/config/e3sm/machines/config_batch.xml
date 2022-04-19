@@ -483,6 +483,16 @@
          </queues>
    </batch_system>
 
+   <batch_system MACH="utk" type="pbs" >
+     <directives>
+       <directive>-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}</directive>
+       <directive>-l partition=beacon</directive> <!--for memory-->
+     </directives>
+     <queues>
+       <queue walltimemax="24:00" default="true">batch</queue>
+     </queues>
+   </batch_system>
+
    <batch_system MACH="itasca" type="pbs">
      <queues>
        <queue walltimemax="24:00" default="true">batch</queue>

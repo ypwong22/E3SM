@@ -179,6 +179,8 @@ contains
    do g = bounds%begg,bounds%endg
       ig = ig+1
       atm2lnd_vars%forc_pdep_grc(g) = sdat%avs(1)%rAttr(1,ig) / (secspday * dayspyr)
+      !! use SPRUCE site measured P deposition rate 0.03 gP/m2/yr 
+      atm2lnd_vars%forc_pdep_grc(g) = 0.03 / (secspday * dayspyr)
    end do
    
  end subroutine pdep_interp

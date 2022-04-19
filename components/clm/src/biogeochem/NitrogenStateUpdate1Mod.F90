@@ -5,10 +5,10 @@ module NitrogenStateUpdate1Mod
   !
   ! !USES:
   use shr_kind_mod           , only: r8 => shr_kind_r8
-  use clm_time_manager       , only : get_step_size
+  use clm_time_manager       , only : get_step_size, get_curr_date
   use clm_varpar             , only : nlevdecomp, ndecomp_pools, ndecomp_cascade_transitions
   use clm_varpar             , only : crop_prog, i_met_lit, i_cel_lit, i_lig_lit, i_cwd
-  use clm_varctl             , only : iulog, use_nitrif_denitrif
+  use clm_varctl             , only : iulog, use_nitrif_denitrif, spinup_state
   use clm_varcon             , only : nitrif_n2o_loss_frac
   use pftvarcon              , only : npcropmin, nc3crop
   use VegetationPropertiesType         , only : veg_vp
@@ -30,7 +30,7 @@ module NitrogenStateUpdate1Mod
   use clm_varctl             , only : nu_com
   use clm_varctl             , only : NFIX_PTASE_plant
   use decompMod              , only : bounds_type
-  use clm_varcon             , only : dzsoi_decomp
+  use clm_varcon             , only : dzsoi_decomp, zsoi
   use clm_varctl             , only : use_fates
   !
   implicit none
@@ -124,11 +124,12 @@ contains
     type(nitrogenstate_type) , intent(inout) :: nitrogenstate_vars
     !
     ! !LOCAL VARIABLES:
-    integer :: c,p,j,l,k ! indices
+    integer :: c,p,i,j,l,k ! indices
     integer :: fp,fc     ! lake filter indices
     real(r8):: dt        ! radiation time step (seconds)
     real(r8), parameter :: frootc_nfix_thc = 10._r8  !threshold fine root carbon for nitrogen fixation gC/m2
-
+    real(r8) :: burial_rate, spinup_term
+    integer:: year, mon, day, sec
     integer:: kyr                     ! current year 
     integer:: kmo                     ! month of year  (1, ..., 12)
     integer:: kda                     ! day of month   (1, ..., 31) 
@@ -142,10 +143,10 @@ contains
 
          cascade_donor_pool    => decomp_cascade_con%cascade_donor_pool    , & ! Input:  [integer  (:)     ]  which pool is C taken from for a given decomposition step
          cascade_receiver_pool => decomp_cascade_con%cascade_receiver_pool , & ! Input:  [integer  (:)     ]  which pool is C added to for a given decomposition step
-
+         spinup_factor         =>    decomp_cascade_con%spinup_factor           , & ! Input:  [real(r8) (:)   ]  spinup accelerated decomposition factor, used to accelerate transport as well
+         is_cwd                =>    decomp_cascade_con%is_cwd                  , & ! Input:  [logical  (:)     ]  TRUE => pool is a cwd pool 
          ndep_prof             => cnstate_vars%ndep_prof_col               , & ! Input:  [real(r8) (:,:)   ]  profile over which N deposition is distributed through column (1/m)
          nfixation_prof        => cnstate_vars%nfixation_prof_col          , & ! Input:  [real(r8) (:,:)   ]  profile over which N fixation is distributed through column (1/m)
-         
          nf                    => nitrogenflux_vars                        , &
          ns                    => nitrogenstate_vars &
          )
@@ -211,6 +212,35 @@ contains
             end do
          end if
          
+         !Peat accumulation model
+         call get_curr_date(year, mon, day, sec)
+         do j = 1,nlevdecomp-1
+           do fc = 1,num_soilc
+             c = filter_soilc(fc)
+             do i = 1, ndecomp_pools
+               if ( spinup_state .eq. 1 ) then
+                 spinup_term = spinup_factor(i)
+               else
+                 spinup_term = 1.
+               endif
+               if (spinup_term > 1 .and. year >= 40 .and. spinup_state .eq. 1) then
+                 burial_rate = 0.000_r8 * spinup_term / cnstate_vars%scalaravg_col(c,j) 
+               else
+                 burial_rate = 0.000_r8 * spinup_term
+               end if
+
+               !if (.not. is_cwd(i)) then
+                 col_nf%decomp_npools_sourcesink(c,j,i) = col_nf%decomp_npools_sourcesink(c,j,i) &
+                         - col_ns%decomp_npools_vr(c,j,i) * &
+                         (burial_rate* exp(-(zsoi(j)/0.1_r8)) + 0.0000_r8) / (365.0_r8 * 86400_r8) / dzsoi_decomp(j) * dt
+                 col_nf%decomp_npools_sourcesink(c,j+1,i) = col_nf%decomp_npools_sourcesink(c,j+1,i) &
+                         + col_ns%decomp_npools_vr(c,j,i) * &
+                         (burial_rate* exp(-(zsoi(j)/0.1_r8)) + 0.0000_r8) / (365.0_r8 * 86400_r8) / dzsoi_decomp(j+1) * dt
+               !end if
+             end do
+           end do
+         end do
+
          ! decomposition fluxes
          do k = 1, ndecomp_cascade_transitions
             do j = 1, nlevdecomp

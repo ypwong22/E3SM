@@ -145,7 +145,7 @@ module clm_driver
   use ColumnDataType         , only : col_ps, col_pf  
   use VegetationType         , only : veg_pp
   use VegetationDataType     , only : veg_es, veg_ws, veg_wf
-  use VegetationDataType     , only : veg_cs, c13_veg_cs, c14_veg_cs 
+  use VegetationDataType     , only : veg_cs, c13_veg_cs, c14_veg_cs, veg_cf
   use VegetationDataType     , only : veg_ns, veg_nf  
   use VegetationDataType     , only : veg_ps, veg_pf  
 
@@ -274,143 +274,143 @@ contains
     !
     ! These routines (alt_calc & decomp_vertprofiles) need to be called before
     ! pftdyn_cnbal, and it appears that they need to be called before pftdyn_interp and
-    ! the associated filter updates, too (otherwise we get a carbon balance error)
+    ! THE ASSOCIATED FILTER UPDATES, TOO (OTHERWISE WE GET A CARBON BALANCE ERROR)
     ! ==================================================================================
 
-    !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
-    do nc = 1,nclumps
-       call get_clump_bounds(nc, bounds_clump)
+    !$OMP PARALLEL DO PRIVATE (NC,BOUNDS_CLUMP)
+    DO NC = 1,NCLUMPS
+       CALL GET_CLUMP_BOUNDS(NC, BOUNDS_CLUMP)
 
-       call t_startf("decomp_vert")
-       call alt_calc(filter(nc)%num_soilc, filter(nc)%soilc, &
-            temperature_vars, canopystate_vars) 
+       CALL T_STARTF("DECOMP_VERT")
+       CALL ALT_CALC(FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC, &
+            TEMPERATURE_VARS, CANOPYSTATE_VARS) 
 
-       if (use_cn) then
-          !  Note (WJS, 6-12-13): Because of this routine's placement in the driver sequence
-          !  (it is called very early in each timestep, before weights are adjusted and
-          !  filters are updated), it may be necessary for this routine to compute values over
-          !  inactive as well as active points (since some inactive points may soon become
-          !  active) - so that's what is done now. Currently, it seems to be okay to do this,
-          !  because the variables computed here seem to only depend on quantities that are
-          !  valid over inactive as well as active points.
+       IF (USE_CN) THEN
+          !  NOTE (WJS, 6-12-13): BECAUSE OF THIS ROUTINE'S PLACEMENT IN THE DRIVER SEQUENCE
+          !  (IT IS CALLED VERY EARLY IN EACH TIMESTEP, BEFORE WEIGHTS ARE ADJUSTED AND
+          !  FILTERS ARE UPDATED), IT MAY BE NECESSARY FOR THIS ROUTINE TO COMPUTE VALUES OVER
+          !  INACTIVE AS WELL AS ACTIVE POINTS (SINCE SOME INACTIVE POINTS MAY SOON BECOME
+          !  ACTIVE) - SO THAT'S WHAT IS DONE NOW. CURRENTLY, IT SEEMS TO BE OKAY TO DO THIS,
+          !  BECAUSE THE VARIABLES COMPUTED HERE SEEM TO ONLY DEPEND ON QUANTITIES THAT ARE
+          !  VALID OVER INACTIVE AS WELL AS ACTIVE POINTS.
 
-          call decomp_vertprofiles(bounds_clump, &
-               filter_inactive_and_active(nc)%num_soilc, &
-               filter_inactive_and_active(nc)%soilc, &
-               filter_inactive_and_active(nc)%num_soilp, &
-               filter_inactive_and_active(nc)%soilp, &
-               soilstate_vars, canopystate_vars, cnstate_vars)
-       end if
+          CALL DECOMP_VERTPROFILES(BOUNDS_CLUMP, &
+               FILTER_INACTIVE_AND_ACTIVE(NC)%NUM_SOILC, &
+               FILTER_INACTIVE_AND_ACTIVE(NC)%SOILC, &
+               FILTER_INACTIVE_AND_ACTIVE(NC)%NUM_SOILP, &
+               FILTER_INACTIVE_AND_ACTIVE(NC)%SOILP, &
+               SOILSTATE_VARS, CANOPYSTATE_VARS, CNSTATE_VARS)
+       END IF
 
-       call t_stopf("decomp_vert")
-    end do
+       CALL T_STOPF("DECOMP_VERT")
+    END DO
     !$OMP END PARALLEL DO
 
     ! ============================================================================
-    ! Zero fluxes for transient land cover
+    ! ZERO FLUXES FOR TRANSIENT LAND COVER
     ! ============================================================================
 
-    !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
-    do nc = 1,nclumps
-       call get_clump_bounds(nc, bounds_clump)
+    !$OMP PARALLEL DO PRIVATE (NC,BOUNDS_CLUMP)
+    DO NC = 1,NCLUMPS
+       CALL GET_CLUMP_BOUNDS(NC, BOUNDS_CLUMP)
 
-       call t_startf('beggridwbal')
-       call BeginGridWaterBalance(bounds_clump,               &
-            filter(nc)%num_nolakec, filter(nc)%nolakec,       &
-            filter(nc)%num_lakec, filter(nc)%lakec,           &
-            filter(nc)%num_hydrologyc, filter(nc)%hydrologyc, &
-            soilhydrology_vars, waterstate_vars)
-       call t_stopf('beggridwbal')
+       CALL T_STARTF('BEGGRIDWBAL')
+       CALL BEGINGRIDWATERBALANCE(BOUNDS_CLUMP,               &
+            FILTER(NC)%NUM_NOLAKEC, FILTER(NC)%NOLAKEC,       &
+            FILTER(NC)%NUM_LAKEC, FILTER(NC)%LAKEC,           &
+            FILTER(NC)%NUM_HYDROLOGYC, FILTER(NC)%HYDROLOGYC, &
+            SOILHYDROLOGY_VARS, WATERSTATE_VARS)
+       CALL T_STOPF('BEGGRIDWBAL')
 
-       if (use_betr) then
-         dtime=get_step_size(); nstep=get_nstep()
-         call ep_betr%SetClock(dtime= dtime, nelapstep=nstep)
-         call ep_betr%BeginMassBalanceCheck(bounds_clump)
-       endif
+       IF (USE_BETR) THEN
+         DTIME=GET_STEP_SIZE(); NSTEP=GET_NSTEP()
+         CALL EP_BETR%SETCLOCK(DTIME= DTIME, NELAPSTEP=NSTEP)
+         CALL EP_BETR%BEGINMASSBALANCECHECK(BOUNDS_CLUMP)
+       ENDIF
        
-       if (use_cn) then
-          call t_startf('cnpinit')
+       IF (USE_CN) THEN
+          CALL T_STARTF('CNPINIT')
 
-          call veg_cs%ZeroDwt(bounds_clump)
+          CALL VEG_CS%ZERODWT(BOUNDS_CLUMP)
 
-          call grc_cf%ZeroDWT(bounds_clump)
-          call col_cf%ZeroDWT(bounds_clump)
-          if (use_c13) then
-             call c13_grc_cf%ZeroDWT(bounds_clump)
-             call c13_col_cf%ZeroDWT(bounds_clump)
-          end if
-          if (use_c14) then
-             call c14_grc_cf%ZeroDWT(bounds_clump)
-             call c14_col_cf%ZeroDWT(bounds_clump)
-          end if
+          CALL GRC_CF%ZERODWT(BOUNDS_CLUMP)
+          CALL COL_CF%ZERODWT(BOUNDS_CLUMP)
+          IF (USE_C13) THEN
+             CALL C13_GRC_CF%ZERODWT(BOUNDS_CLUMP)
+             CALL C13_COL_CF%ZERODWT(BOUNDS_CLUMP)
+          END IF
+          IF (USE_C14) THEN
+             CALL C14_GRC_CF%ZERODWT(BOUNDS_CLUMP)
+             CALL C14_COL_CF%ZERODWT(BOUNDS_CLUMP)
+          END IF
 
-          call veg_ns%ZeroDWT(bounds_clump)
+          CALL VEG_NS%ZERODWT(BOUNDS_CLUMP)
 
-          call grc_nf%ZeroDWT(bounds_clump)
-          call col_nf%ZeroDWT(bounds_clump)
+          CALL GRC_NF%ZERODWT(BOUNDS_CLUMP)
+          CALL COL_NF%ZERODWT(BOUNDS_CLUMP)
 
-          call veg_ps%ZeroDWT(bounds_clump)
+          CALL VEG_PS%ZERODWT(BOUNDS_CLUMP)
 
-          call grc_pf%ZeroDWT(bounds_clump)
-          call col_pf%ZeroDWT(bounds_clump)
+          CALL GRC_PF%ZERODWT(BOUNDS_CLUMP)
+          CALL COL_PF%ZERODWT(BOUNDS_CLUMP)
 
-          call veg_cs%Summary(bounds_clump, &
-               filter(nc)%num_soilc, filter(nc)%soilc, &
-               filter(nc)%num_soilp, filter(nc)%soilp, col_cs)
-          call col_cs%Summary(bounds_clump, &
-               filter(nc)%num_soilc, filter(nc)%soilc)
+          CALL VEG_CS%SUMMARY(BOUNDS_CLUMP, &
+               FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC, &
+               FILTER(NC)%NUM_SOILP, FILTER(NC)%SOILP, COL_CS)
+          CALL COL_CS%SUMMARY(BOUNDS_CLUMP, &
+               FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC)
 
-          call veg_ns%Summary(bounds_clump, &
-               filter(nc)%num_soilc, filter(nc)%soilc, &
-               filter(nc)%num_soilp, filter(nc)%soilp, col_ns)
-          call col_ns%Summary(bounds_clump, &
-               filter(nc)%num_soilc, filter(nc)%soilc)
+          CALL VEG_NS%SUMMARY(BOUNDS_CLUMP, &
+               FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC, &
+               FILTER(NC)%NUM_SOILP, FILTER(NC)%SOILP, COL_NS)
+          CALL COL_NS%SUMMARY(BOUNDS_CLUMP, &
+               FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC)
           
-          call veg_ps%Summary(bounds_clump, &
-               filter(nc)%num_soilc, filter(nc)%soilc, &
-               filter(nc)%num_soilp, filter(nc)%soilp, col_ps)
-          call col_ps%Summary(bounds_clump, &
-               filter(nc)%num_soilc, filter(nc)%soilc)
+          CALL VEG_PS%SUMMARY(BOUNDS_CLUMP, &
+               FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC, &
+               FILTER(NC)%NUM_SOILP, FILTER(NC)%SOILP, COL_PS)
+          CALL COL_PS%SUMMARY(BOUNDS_CLUMP, &
+               FILTER(NC)%NUM_SOILC, FILTER(NC)%SOILC)
           
-          call BeginGridCBalanceBeforeDynSubgridDriver(bounds_clump, col_cs, grc_cs)
-          call BeginGridNBalanceBeforeDynSubgridDriver(bounds_clump, nitrogenstate_vars)
-          call BeginGridPBalanceBeforeDynSubgridDriver(bounds_clump, phosphorusstate_vars)
+          CALL BEGINGRIDCBALANCEBEFOREDYNSUBGRIDDRIVER(BOUNDS_CLUMP, COL_CS, GRC_CS)
+          CALL BEGINGRIDNBALANCEBEFOREDYNSUBGRIDDRIVER(BOUNDS_CLUMP, NITROGENSTATE_VARS)
+          CALL BEGINGRIDPBALANCEBEFOREDYNSUBGRIDDRIVER(BOUNDS_CLUMP, PHOSPHORUSSTATE_VARS)
 
-          call t_stopf('cnpinit')
-       end if
+          CALL T_STOPF('CNPINIT')
+       END IF
 
-    end do
+    END DO
     !$OMP END PARALLEL DO
 
     ! ============================================================================
-    ! Update subgrid weights with dynamic landcover (prescribed transient patches,
-    ! and or dynamic landunits), and do related adjustments. Note that this
-    ! call needs to happen outside loops over nclumps.
+    ! UPDATE SUBGRID WEIGHTS WITH DYNAMIC LANDCOVER (PRESCRIBED TRANSIENT PATCHES,
+    ! AND OR DYNAMIC LANDUNITS), AND DO RELATED ADJUSTMENTS. NOTE THAT THIS
+    ! CALL NEEDS TO HAPPEN OUTSIDE LOOPS OVER NCLUMPS.
     ! ============================================================================
 
-    call t_startf('dyn_subgrid')
-    call dynSubgrid_driver(bounds_proc,                                      &
-       urbanparams_vars, soilstate_vars, soilhydrology_vars, lakestate_vars, &
-       waterstate_vars, waterflux_vars, temperature_vars, energyflux_vars,   &
-       canopystate_vars, photosyns_vars, cnstate_vars,                       &
-       veg_cs, c13_veg_cs, c14_veg_cs,         &
-       col_cs, c13_col_cs, c14_col_cs, col_cf,  &
-       grc_cs, grc_cf ,&
-       carbonflux_vars, c13_carbonflux_vars, c14_carbonflux_vars,            &
-       nitrogenstate_vars, nitrogenflux_vars, glc2lnd_vars,                  &
-       phosphorusstate_vars,phosphorusflux_vars, crop_vars)
-    call t_stopf('dyn_subgrid')
+    CALL T_STARTF('DYN_SUBGRID')
+    CALL DYNSUBGRID_DRIVER(BOUNDS_PROC,                                      &
+       URBANPARAMS_VARS, SOILSTATE_VARS, SOILHYDROLOGY_VARS, LAKESTATE_VARS, &
+       WATERSTATE_VARS, WATERFLUX_VARS, TEMPERATURE_VARS, ENERGYFLUX_VARS,   &
+       CANOPYSTATE_VARS, PHOTOSYNS_VARS, CNSTATE_VARS,                       &
+       VEG_CS, C13_VEG_CS, C14_VEG_CS,         &
+       COL_CS, C13_COL_CS, C14_COL_CS, COL_CF,  &
+       GRC_CS, GRC_CF ,&
+       CARBONFLUX_VARS, C13_CARBONFLUX_VARS, C14_CARBONFLUX_VARS,            &
+       NITROGENSTATE_VARS, NITROGENFLUX_VARS, GLC2LND_VARS,                  &
+       PHOSPHORUSSTATE_VARS,PHOSPHORUSFLUX_VARS, CROP_VARS)
+    CALL T_STOPF('DYN_SUBGRID')
 
-    if (.not. use_fates)then
-       if (use_cn) then
-          nstep = get_nstep()
+    IF (.NOT. USE_FATES)THEN
+       IF (USE_CN) THEN
+          NSTEP = GET_NSTEP()
 
-          if (nstep < 2 )then
-             if (masterproc) then
-                write(iulog,*) '--WARNING-- skipping CN balance check for first timestep'
-             end if
-          else
-             call t_startf('cnbalchk_at_grid')
+          IF (NSTEP < 2 )THEN
+             IF (MASTERPROC) THEN
+                WRITE(IULOG,*) '--WARNING-- SKIPPING CN BALANCE CHECK FOR FIRST TIMESTEP'
+             END IF
+          ELSE
+             CALL T_STARTF('CNBALCHK_AT_GRID')
 
              !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
              do nc = 1,nclumps
@@ -596,7 +596,7 @@ contains
             filter(nc)%num_nolakec, filter(nc)%nolakec, &
             filter(nc)%num_nolakep, filter(nc)%nolakep, &
             atm2lnd_vars, canopystate_vars, temperature_vars, &
-            aerosol_vars, waterstate_vars, waterflux_vars)
+            aerosol_vars, waterstate_vars, waterflux_vars, soilhydrology_vars)
        call t_stopf('canhydro')
 
        ! ============================================================================

@@ -463,8 +463,10 @@ contains
     integer               :: nstep        ! model time step
     real(r8)              :: calday       ! calendar day for nstep
     real(r8)              :: caldaym1     ! calendar day for nstep-1
+    real(r8)              :: caldaym2     ! calendar day for nstep-2
     real(r8)              :: declin       ! solar declination angle in radians for nstep
     real(r8)              :: declinm1     ! solar declination angle in radians for nstep-1
+    real(r8)              :: declinm2     ! solar declination angle in radians for nstep-2
     real(r8)              :: eccf         ! earth orbit eccentricity factor
     type(bounds_type)     :: bounds_proc  ! processor bounds
     type(bounds_type)     :: bounds_clump ! clump bounds
@@ -513,7 +515,8 @@ contains
     end if
 
     ! ------------------------------------------------------------------------
-    ! Initialize daylength from the previous time step (needed so prev_dayl can be set correctly)
+    ! Initialize daylength from the previous two time steps
+    ! (needed so prev_dayl and prev_ws_flag can be set correctly)
     ! ------------------------------------------------------------------------
 
     call t_startf('init_orbd')
@@ -525,9 +528,12 @@ contains
     caldaym1 = get_curr_calday(offset=-int(dtime))
     call shr_orb_decl( caldaym1, eccen, mvelpp, lambm0, obliqr, declinm1, eccf )
 
+    caldaym2 = get_curr_calday(offset=-2*int(dtime))
+    call shr_orb_decl( caldaym2, eccen, mvelpp, lambm0, obliqr, declinm2, eccf )
+
     call t_stopf('init_orbd')
     
-    call InitDaylength(bounds_proc, declin=declin, declinm1=declinm1)
+    call InitDaylength(bounds_proc, declin=declin, declinm1=declinm1, declinm2=declinm2)
              
     ! Initialize maximum daylength, based on latitude and maximum declination
     ! maximum declination hardwired for present-day orbital parameters, 
@@ -548,6 +554,10 @@ contains
 
        call hist_addfld1d (fname='PREV_DAYL', units='s', &
             avgflag='A', long_name='daylength from previous timestep', &
+            ptr_gcell=grc_pp%prev_dayl, default='inactive')
+
+       call hist_addfld1d (fname='PREV_WS_FLAG', units='none', &
+            avgflag='A', long_name='winter solstice flag from previous time step (winter->summer = 1, summer->winter = 0)', &
             ptr_gcell=grc_pp%prev_dayl, default='inactive')
     end if
 

@@ -193,7 +193,7 @@ contains
     if ( use_c14_bombspike ) then
 
        ! get current date
-       call get_curr_date(yr, mon, day, tod, offset)
+       call get_curr_date(yr, mon, day, tod)
        days_per_year = get_days_per_year()
        dateyear = real(yr) + real(mon)/12._r8 + real(day)/days_per_year + real(tod)/(secspday*days_per_year)
 

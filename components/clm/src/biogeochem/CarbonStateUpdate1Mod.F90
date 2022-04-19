@@ -7,11 +7,11 @@ module CarbonStateUpdate1Mod
   use shr_kind_mod            , only : r8 => shr_kind_r8
   use shr_log_mod             , only : errMsg => shr_log_errMsg
   use abortutils              , only : endrun
-  use clm_time_manager        , only : get_step_size
+  use clm_time_manager        , only : get_step_size, get_curr_date
   use decompMod               , only : bounds_type
   use clm_varpar              , only : ndecomp_cascade_transitions, nlevdecomp
   use clm_varpar              , only : i_met_lit, i_cel_lit, i_lig_lit, i_cwd
-  use clm_varcon              , only : dzsoi_decomp
+  use clm_varcon              , only : dzsoi_decomp, zsoi
   use clm_varctl              , only : nu_com
   use clm_varctl              , only : use_pflotran, pf_cmode, use_fates
   use pftvarcon               , only : npcropmin, nc3crop
@@ -129,7 +129,7 @@ contains
   subroutine CarbonStateUpdate1(bounds, &
        num_soilc, filter_soilc, &
        num_soilp, filter_soilp, &
-       crop_vars, col_cs, veg_cs, col_cf, veg_cf)
+       crop_vars, col_cs, veg_cs, col_cf, veg_cf, cnstate_vars)
     !
     ! !DESCRIPTION:
     ! On the radiation time step, update all the prognostic carbon state
@@ -137,7 +137,10 @@ contains
     !
     use tracer_varcon       , only : is_active_betr_bgc
     use subgridAveMod       , only : p2c
-    use decompMod           , only : bounds_type    
+    use decompMod           , only : bounds_type  
+    use clm_varctl          , only : spinup_state 
+    use clm_varpar          , only : ndecomp_pools
+
     ! !ARGUMENTS:
     type(bounds_type)            , intent(in)    :: bounds  
     integer                      , intent(in)    :: num_soilc       ! number of soil columns filter
@@ -149,11 +152,14 @@ contains
     type(vegetation_carbon_state), intent(inout) :: veg_cs
     type(column_carbon_flux)     , intent(inout) :: col_cf
     type(vegetation_carbon_flux) , intent(inout) :: veg_cf
+    type(cnstate_type)           , intent(inout) :: cnstate_vars
     !
     ! !LOCAL VARIABLES:
-    integer  :: c,p,j,k,l ! indices
+    integer  :: c,p,i,j,k,l ! indices
     integer  :: fp,fc     ! lake filter indices
+    integer  :: year, mon, day, sec
     real(r8) :: dt        ! radiation time step (seconds)
+    real(r8) :: spinup_term, burial_rate
     !-----------------------------------------------------------------------
 
     associate(                                                                                 & 
@@ -161,7 +167,9 @@ contains
          woody                 =>    veg_vp%woody                               , & ! Input:  [real(r8) (:)     ]  binary flag for woody lifeform (1=woody, 0=not woody)
          cascade_donor_pool    =>    decomp_cascade_con%cascade_donor_pool      , & ! Input:  [integer  (:)     ]  which pool is C taken from for a given decomposition step
          cascade_receiver_pool =>    decomp_cascade_con%cascade_receiver_pool   , & ! Input:  [integer  (:)     ]  which pool is C added to for a given decomposition step
-         harvdate              =>    crop_vars%harvdate_patch                     & ! Input:  [integer  (:)     ]  harvest date                                       
+         harvdate              =>    crop_vars%harvdate_patch                   , & ! Input:  [integer  (:)     ]  harvest date
+         spinup_factor         =>    decomp_cascade_con%spinup_factor           , & ! Input:  [real(r8) (:)   ]  spinup accelerated decomposition factor, used to accelerate transport as well
+         is_cwd                =>    decomp_cascade_con%is_cwd                    & ! Input:  [logical  (:)     ]  TRUE => pool is a cwd pool 
          )
 
       ! set time steps
@@ -192,6 +200,36 @@ contains
                col_cf%decomp_cpools_sourcesink(c,j,i_lig_lit) = &
                     col_cf%phenology_c_to_litr_lig_c(c,j) * dt
             end do
+         end do
+
+         !Peat accumulation model
+         call get_curr_date(year, mon, day, sec)
+         do j = 1,nlevdecomp-1
+           do fc = 1,num_soilc
+             c = filter_soilc(fc)
+             do i = 1, ndecomp_pools
+               if ( spinup_state .eq. 1 ) then
+                 spinup_term = spinup_factor(i)
+               else
+                 spinup_term = 1.
+               endif
+               if (spinup_term > 1 .and. year >= 40 .and. spinup_state .eq. 1) then
+                 burial_rate = 0.000_r8 * spinup_term / cnstate_vars%scalaravg_col(c,j)
+               else
+                 burial_rate = 0.000_r8 * spinup_term
+               end if                       
+               
+               !if (.not. is_cwd(i)) then
+               if (col_cs%decomp_cpools_vr(c,j,i) > col_cs%decomp_cpools_vr(c,j+1,i)) then 
+                 col_cf%decomp_cpools_sourcesink(c,j,i) = col_cf%decomp_cpools_sourcesink(c,j,i) &
+                         - col_cs%decomp_cpools_vr(c,j,i) * &
+                         (burial_rate * exp(-(zsoi(j)/0.1_r8)) + 0.0000_r8) / (365.0_r8 * 86400_r8) /dzsoi_decomp(j) * dt
+                 col_cf%decomp_cpools_sourcesink(c,j+1,i) = col_cf%decomp_cpools_sourcesink(c,j+1,i) &
+                         + col_cs%decomp_cpools_vr(c,j,i) * &
+                         (burial_rate * exp(-(zsoi(j)/0.1_r8)) + 0.0000_r8) / (365.0_r8 * 86400_r8) /dzsoi_decomp(j+1) * dt
+               end if
+             end do
+           end do
          end do
 
          ! litter and SOM HR fluxes
@@ -264,15 +302,15 @@ contains
          veg_cs%leafc_xfer(p)      = veg_cs%leafc_xfer(p)  - veg_cf%leafc_xfer_to_leafc(p)*dt
          veg_cs%frootc(p)          = veg_cs%frootc(p)      + veg_cf%frootc_xfer_to_frootc(p)*dt
          veg_cs%frootc_xfer(p)     = veg_cs%frootc_xfer(p) - veg_cf%frootc_xfer_to_frootc(p)*dt
-             if (woody(ivt(p)) == 1._r8) then
-                veg_cs%livestemc(p)       = veg_cs%livestemc(p)       + veg_cf%livestemc_xfer_to_livestemc(p)*dt
-                veg_cs%livestemc_xfer(p)  = veg_cs%livestemc_xfer(p)  - veg_cf%livestemc_xfer_to_livestemc(p)*dt
-                veg_cs%deadstemc(p)       = veg_cs%deadstemc(p)       + veg_cf%deadstemc_xfer_to_deadstemc(p)*dt
-                veg_cs%deadstemc_xfer(p)  = veg_cs%deadstemc_xfer(p)  - veg_cf%deadstemc_xfer_to_deadstemc(p)*dt
-                veg_cs%livecrootc(p)      = veg_cs%livecrootc(p)      + veg_cf%livecrootc_xfer_to_livecrootc(p)*dt
-                veg_cs%livecrootc_xfer(p) = veg_cs%livecrootc_xfer(p) - veg_cf%livecrootc_xfer_to_livecrootc(p)*dt
-                veg_cs%deadcrootc(p)      = veg_cs%deadcrootc(p)      + veg_cf%deadcrootc_xfer_to_deadcrootc(p)*dt
-                veg_cs%deadcrootc_xfer(p) = veg_cs%deadcrootc_xfer(p) - veg_cf%deadcrootc_xfer_to_deadcrootc(p)*dt
+         if (woody(ivt(p)) == 1._r8) then
+            veg_cs%livestemc(p)       = veg_cs%livestemc(p)       + veg_cf%livestemc_xfer_to_livestemc(p)*dt
+            veg_cs%livestemc_xfer(p)  = veg_cs%livestemc_xfer(p)  - veg_cf%livestemc_xfer_to_livestemc(p)*dt
+            veg_cs%deadstemc(p)       = veg_cs%deadstemc(p)       + veg_cf%deadstemc_xfer_to_deadstemc(p)*dt
+            veg_cs%deadstemc_xfer(p)  = veg_cs%deadstemc_xfer(p)  - veg_cf%deadstemc_xfer_to_deadstemc(p)*dt
+            veg_cs%livecrootc(p)      = veg_cs%livecrootc(p)      + veg_cf%livecrootc_xfer_to_livecrootc(p)*dt
+            veg_cs%livecrootc_xfer(p) = veg_cs%livecrootc_xfer(p) - veg_cf%livecrootc_xfer_to_livecrootc(p)*dt
+            veg_cs%deadcrootc(p)      = veg_cs%deadcrootc(p)      + veg_cf%deadcrootc_xfer_to_deadcrootc(p)*dt
+            veg_cs%deadcrootc_xfer(p) = veg_cs%deadcrootc_xfer(p) - veg_cf%deadcrootc_xfer_to_deadcrootc(p)*dt
          end if
          if (ivt(p) >= npcropmin) then ! skip 2 generic crops
             ! lines here for consistency; the transfer terms are zero
@@ -444,7 +482,6 @@ contains
             veg_cs%grainc_storage(p)     = veg_cs%grainc_storage(p)    - veg_cf%grainc_storage_to_xfer(p)*dt
             veg_cs%grainc_xfer(p)        = veg_cs%grainc_xfer(p)       + veg_cf%grainc_storage_to_xfer(p)*dt
          end if
-
       end do ! end of patch loop
 
    end if

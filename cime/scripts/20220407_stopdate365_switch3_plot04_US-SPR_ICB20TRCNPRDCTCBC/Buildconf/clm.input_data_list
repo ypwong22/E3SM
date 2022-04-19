@@ -1,0 +1,12 @@
+flanduse_timeseries = /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/surfdata.pftdyn.nc
+stream_fldfilename_ndep = /lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/ndepdata/fndep_clm_rcp4.5_simyr1849-2106_1.9x2.5_c100428.nc
+stream_fldfilename_pdep = /lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/pdepdata/fpdep_clm_hist_simyr2000_1.9x2.5_c150929.nc
+stream_fldfilename_popdens = /lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/firedata/clmforc.Li_2012_hdm_0.5x0.5_AVHRR_simyr1850-2010_c130401.nc
+stream_fldfilename_lightng = /lustre/haven/user/ywang254/E3SM/inputdata/atm/datm7/NASA_LIS/clmforc.Li_2012_climo1995-2011.T62.lnfm_Total_c140423.nc
+paramfile = /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/clm_params.nc
+fsurdat = /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/surfdata.nc
+fsnowaging = /lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/snicardata/snicar_drdt_bst_fit_60_c070416.nc
+fsnowoptics = /lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/snicardata/snicar_optics_5bnd_mam_c160322.nc
+finidat = /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch3_US-SPR_ICB20TRCNPRDCTCBC/run/20220407_stopdate365_switch3_US-SPR_ICB20TRCNPRDCTCBC.clm2.r.2015-01-01-00000.nc
+fsoilordercon = /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/CNP_parameters.nc
+fatmlndfrc = /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/domain.nc

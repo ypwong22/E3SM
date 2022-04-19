@@ -24,6 +24,7 @@ module CanopyHydrologyMod
   use TemperatureType   , only : temperature_type
   use WaterfluxType     , only : waterflux_type
   use WaterstateType    , only : waterstate_type
+  use SoilhydrologyType , only : soilhydrology_type
   use TopounitDataType  , only : top_as, top_af ! Atmospheric state and flux variables
   use ColumnType        , only : col_pp 
   use ColumnDataType    , only : col_es, col_ws, col_wf  
@@ -100,7 +101,7 @@ contains
    subroutine CanopyHydrology(bounds, &
         num_nolakec, filter_nolakec, num_nolakep, filter_nolakep, &
         atm2lnd_vars, canopystate_vars, temperature_vars, &
-        aerosol_vars, waterstate_vars, waterflux_vars)
+        aerosol_vars, waterstate_vars, waterflux_vars, soilhydrology_vars)
      !
      ! !DESCRIPTION:
      ! Calculation of
@@ -135,6 +136,7 @@ contains
      type(aerosol_type)     , intent(inout) :: aerosol_vars
      type(waterstate_type)  , intent(inout) :: waterstate_vars
      type(waterflux_type)   , intent(inout) :: waterflux_vars
+     type(soilhydrology_type) , intent(inout) :: soilhydrology_vars
      !
      ! !LOCAL VARIABLES:
      integer  :: f                                            ! filter index
@@ -755,7 +757,7 @@ contains
 
        ! update surface water fraction (this may modify frac_sno)
        call FracH2oSfc(bounds, num_nolakec, filter_nolakec, &
-            waterstate_vars, col_wf%qflx_h2osfc2topsoi)
+            waterstate_vars, col_wf%qflx_h2osfc2topsoi, soilhydrology_vars)
 
      end associate 
 
@@ -819,7 +821,7 @@ contains
 
    !-----------------------------------------------------------------------
    subroutine FracH2OSfc(bounds, num_h2osfc, filter_h2osfc, &
-        waterstate_vars, qflx_h2osfc2topsoi, no_update)
+        waterstate_vars, qflx_h2osfc2topsoi, soilhydrology_vars, no_update)
      !
      ! !DESCRIPTION:
      ! Determine fraction of land surfaces which are submerged  
@@ -829,13 +831,15 @@ contains
      use shr_const_mod   , only : shr_const_pi
      use shr_spfn_mod    , only : erf => shr_spfn_erf
      use landunit_varcon , only : istsoil, istcrop
-     use clm_time_manager   , only : get_step_size       
+     use clm_time_manager   , only : get_step_size      
+     use pftvarcon       , only : humhol_ht
      !
      ! !ARGUMENTS:
      type(bounds_type)     , intent(in)           :: bounds           
      integer               , intent(in)           :: num_h2osfc       ! number of column points in column filter
      integer               , intent(in)           :: filter_h2osfc(:) ! column filter 
      type(waterstate_type) , intent(inout)        :: waterstate_vars
+     type(soilhydrology_type) , intent(inout) :: soilhydrology_vars
      real(r8)              , intent(inout)        :: qflx_h2osfc2topsoi(bounds%begc:bounds%endc)     
      integer               , intent(in), optional :: no_update        ! flag to make calculation w/o updating variables
      !
@@ -856,7 +860,8 @@ contains
           h2osfc       => col_ws%h2osfc       , & ! Output: [real(r8) (:)   ] surface water (mm)                                
           frac_sno     => col_ws%frac_sno     , & ! Output: [real(r8) (:)   ] fraction of ground covered by snow (0 to 1)       
           frac_sno_eff => col_ws%frac_sno_eff , & ! Output: [real(r8) (:)   ] eff. fraction of ground covered by snow (0 to 1)  
-          frac_h2osfc  => col_ws%frac_h2osfc    & ! Output: [real(r8) (:)   ] col fractional area with surface water greater than zero 
+          frac_h2osfc  => col_ws%frac_h2osfc  , & ! Output: [real(r8) (:)   ] col fractional area with surface water greater than zero 
+          zwt              =>    soilhydrology_vars%zwt_col           & ! Input:  [real(r8) (:)   ]  water table depth (m)            
           )
 
        dtime=get_step_size()           
@@ -889,15 +894,16 @@ contains
                 enddo
                 !--  update the submerged areal fraction using the new d value
                 frac_h2osfc(c) = 0.5*(1.0_r8+erf(d/(sigma*sqrt(2.0))))
-#if (defined HUM_HOL)
-                frac_h2osfc(c) = 0.99_r8
-#endif
              else
                 frac_h2osfc(c) = 0._r8
                 h2osoi_liq(c,1) = h2osoi_liq(c,1) + h2osfc(c)
                 qflx_h2osfc2topsoi(c) = h2osfc(c)/dtime                
                 h2osfc(c)=0._r8
              endif
+#if (defined HUM_HOL)
+             !frac_h2osfc(c) = 0.99_r8
+             frac_h2osfc(c) = 1.0_r8 * exp(-3.0_r8/humhol_ht*(zwt(c)))
+#endif
 
              if (.not. present(no_update)) then
 

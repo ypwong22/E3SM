@@ -116,6 +116,20 @@ module CNStateType
      real(r8), pointer :: onset_gddflag_patch          (:)     ! patch onset flag for growing degree day sum
      real(r8), pointer :: onset_fdd_patch              (:)     ! patch onset freezing degree days counter
      real(r8), pointer :: onset_gdd_patch              (:)     ! patch onset growing degree days
+
+     real(r8), pointer :: proot_onset_flag_patch       (:)     ! patch flag to indicate the displayed fine root is growing (1) or not (0)
+     real(r8), pointer :: proot_onset_offset_patch     (:)     ! patch number of days offset from Jan 1st when the fine root starts growing (= 1 if starts on Jan 1st)
+     real(r8), pointer :: proot_onset_counter_patch    (:)     ! patch onset days counter
+     real(r8), pointer :: proot_onset_counter2_patch    (:)     ! patch onset days counter
+     real(r8), pointer :: proot_gdd1flag_patch             (:)     ! patch growing degree-days that control fine root display phenology (ddays)
+     real(r8), pointer :: proot_gdd1_patch             (:)     ! patch growing degree-days that control fine root display phenology (ddays)
+     real(r8), pointer :: proot_gdd2_patch             (:)     ! patch growing degree-days that control fine root display phenology (ddays)
+     real(r8), pointer :: proot_cwd1_patch             (:)     ! patch cumulative water deficit that control root phenology (m3/m3 days)
+     real(r8), pointer :: proot_cwd2_patch             (:)     ! patch cumulative water deficit that control root phenology (m3/m3 days)
+     real(r8), pointer :: proot_sumfrac_patch          (:)     ! cumulative displayed root as fraction of previous year storage
+
+     real(r8), pointer :: onset_chil_patch             (:)
+     real(r8), pointer :: dayl_temp                    (:)
      real(r8), pointer :: onset_swi_patch              (:)     ! patch onset soil water index
      real(r8), pointer :: offset_flag_patch            (:)     ! patch offset flag
      real(r8), pointer :: offset_counter_patch         (:)     ! patch offset days counter
@@ -303,6 +317,19 @@ contains
     allocate(this%onset_gddflag_patch         (begp:endp)) ;    this%onset_gddflag_patch         (:) = nan
     allocate(this%onset_fdd_patch             (begp:endp)) ;    this%onset_fdd_patch             (:) = nan
     allocate(this%onset_gdd_patch             (begp:endp)) ;    this%onset_gdd_patch             (:) = nan
+    allocate(this%proot_onset_flag_patch      (begp:endp)) ;    this%proot_onset_flag_patch      (:) = 0._r8
+    allocate(this%proot_onset_offset_patch    (begp:endp)) ;    this%proot_onset_offset_patch    (:) = nan
+    allocate(this%proot_onset_counter_patch   (begp:endp)) ;    this%proot_onset_counter_patch   (:) = nan
+    allocate(this%proot_onset_counter2_patch  (begp:endp)) ;    this%proot_onset_counter2_patch   (:) = nan
+    allocate(this%proot_gdd1flag_patch        (begp:endp)) ;    this%proot_gdd1flag_patch            (:) = nan
+    allocate(this%proot_gdd1_patch            (begp:endp)) ;    this%proot_gdd1_patch            (:) = nan
+    allocate(this%proot_gdd2_patch            (begp:endp)) ;    this%proot_gdd2_patch            (:) = nan
+    allocate(this%proot_cwd1_patch            (begp:endp)) ;    this%proot_cwd1_patch            (:) = nan
+    allocate(this%proot_cwd2_patch            (begp:endp)) ;    this%proot_cwd2_patch            (:) = nan
+    allocate(this%proot_sumfrac_patch         (begp:endp)) ;    this%proot_sumfrac_patch         (:) = nan
+    allocate(this%onset_chil_patch            (begp:endp)) ;    this%onset_chil_patch            (:) = nan
+    allocate(this%dayl_temp                   (begp:endp)) ;    this%dayl_temp(:) = nan
+
     allocate(this%onset_swi_patch             (begp:endp)) ;    this%onset_swi_patch             (:) = nan
     allocate(this%offset_flag_patch           (begp:endp)) ;    this%offset_flag_patch           (:) = nan
     allocate(this%offset_counter_patch        (begp:endp)) ;    this%offset_counter_patch        (:) = nan
@@ -545,6 +572,11 @@ contains
          avgflag='A', long_name='onset flag for growing degree day sum', &
          ptr_patch=this%onset_gddflag_patch, default='inactive')
 
+    this%onset_chil_patch(begp:endp) = spval
+    call hist_addfld1d (fname='ONSET_CHIL', units='none', &
+         avgflag='A', long_name='onset chilling day sum', &
+         ptr_patch=this%onset_chil_patch, default='inactive')
+
     this%onset_fdd_patch(begp:endp) = spval
     call hist_addfld1d (fname='ONSET_FDD', units='C degree-days', &
          avgflag='A', long_name='onset freezing degree days counter', &
@@ -554,6 +586,57 @@ contains
     call hist_addfld1d (fname='ONSET_GDD', units='C degree-days', &
          avgflag='A', long_name='onset growing degree days', &
          ptr_patch=this%onset_gdd_patch, default='inactive')
+
+    this%proot_onset_flag_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_ONSET_FLAG', units='none', &
+         avgflag='A', long_name='onset flag for root growth phenology (1 = root growing, 0 = not)', &
+         ptr_patch=this%proot_onset_flag_patch, default='inactive')
+
+    this%proot_onset_offset_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_ONSET_OFFSET', units='days', &
+         avgflag='A', long_name='number of days offset from Jan 1st when the fine root starts growing (= 1 if starts on Jan 1st)', &
+         ptr_patch=this%proot_onset_offset_patch, default='inactive')
+
+    this%proot_onset_counter_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_ONSET_COUNTER', units='days', &
+         avgflag='A', long_name='fine roots onset days counter', &
+         ptr_patch=this%proot_onset_counter_patch, default='inactive')
+
+     this%proot_onset_counter2_patch(begp:endp) = spval
+     call hist_addfld1d (fname='PROOT_ONSET_COUNTER2', units='days', &
+          avgflag='A', long_name='fine roots onset days counter2', &
+          ptr_patch=this%proot_onset_counter2_patch, default='inactive')
+     
+     this%proot_gdd1flag_patch(begp:endp) = spval
+     call hist_addfld1d (fname='PROOT_GDD1FLAG', units='none', &
+          avgflag='A', long_name='root phenology growing degree days accumulation flag', &
+          ptr_patch=this%proot_gdd1flag_patch, default='inactive')
+      
+      
+    this%proot_gdd1_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_GDD1', units='C degree-days', &
+         avgflag='A', long_name='root phenology growing degree days', &
+         ptr_patch=this%proot_gdd1_patch, default='inactive')
+
+    this%proot_gdd2_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_GDD2', units='C degree-days', &
+         avgflag='A', long_name='root phenology growing degree days', &
+         ptr_patch=this%proot_gdd2_patch, default='inactive')
+
+    this%proot_cwd1_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_CWD1', units='m3/m3-days', &
+         avgflag='A', long_name='root phenology cumulative water deficit', &
+         ptr_patch=this%proot_cwd1_patch, default='inactive')
+
+    this%proot_cwd2_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_CWD2', units='m3/m3-days', &
+         avgflag='A', long_name='root phenology cumulative water deficit', &
+         ptr_patch=this%proot_cwd2_patch, default='inactive')
+
+    this%proot_sumfrac_patch(begp:endp) = spval
+    call hist_addfld1d (fname='PROOT_SUMFRAC', units='m3/m3-days', &
+         avgflag='A', long_name='cumulative displayed root as fraction of previous year storage', &
+         ptr_patch=this%proot_sumfrac_patch, default='inactive')
 
     this%onset_swi_patch(begp:endp) = spval
     call hist_addfld1d (fname='ONSET_SWI', units='none', &
@@ -639,6 +722,11 @@ contains
     call hist_addfld1d (fname='DOWNREG', units='proportion', &
          avgflag='A', long_name='fractional reduction in GPP due to N limitation', &
          ptr_patch=this%downreg_patch, default='inactive')
+
+    this%rc14_atm_patch(begp:endp) = spval
+    call hist_addfld1d (fname='RC14_ATM', units='proportion', &
+         avgflag='A', long_name='C14 ratio in the atmosphere', &
+         ptr_patch=this%rc14_atm_patch, default='active')
 
 
     !! add phosphorus -X.YANG
@@ -1020,6 +1108,16 @@ contains
           this%onset_gddflag_patch(p)         = spval
           this%onset_fdd_patch(p)             = spval
           this%onset_gdd_patch(p)             = spval
+          this%proot_onset_flag_patch(p)      = ispval
+          this%proot_onset_offset_patch(p)    = spval
+          this%proot_onset_counter_patch(p)   = spval
+          this%proot_onset_counter2_patch(p)  = spval
+          this%proot_gdd1flag_patch(p)        = spval
+          this%proot_gdd1_patch(p)            = spval
+          this%proot_gdd2_patch(p)            = spval
+          this%proot_cwd1_patch(p)            = spval
+          this%proot_cwd2_patch(p)            = spval
+          this%proot_sumfrac_patch(p)         = spval
           this%onset_swi_patch(p)             = spval
           this%offset_flag_patch(p)           = spval
           this%offset_counter_patch(p)        = spval
@@ -1045,8 +1143,6 @@ contains
           this%annmax_retransp_patch(p)       = spval
 
           this%r_mort_cal_patch(p)           = spval
-
- 
        end if
     end do
        
@@ -1066,6 +1162,16 @@ contains
           this%onset_gddflag_patch(p)  = 0._r8
           this%onset_fdd_patch(p)      = 0._r8
           this%onset_gdd_patch(p)      = 0._r8
+          this%proot_onset_flag_patch(p)     = 0._r8
+          this%proot_onset_offset_patch(p)   = 0._r8
+          this%proot_onset_counter_patch(p)  = 0._r8
+          this%proot_onset_counter2_patch(p) = 0._r8
+          this%proot_gdd1flag_patch(p) = 0._r8
+          this%proot_gdd1_patch(p)     = 0._r8
+          this%proot_gdd2_patch(p)     = 0._r8
+          this%proot_cwd1_patch(p)     = 0._r8
+          this%proot_cwd2_patch(p)     = 0._r8
+          this%proot_sumfrac_patch(p)  = 0._r8
           this%onset_swi_patch(p)      = 0._r8
           this%offset_flag_patch(p)    = 0._r8
           this%offset_counter_patch(p) = 0._r8
@@ -1167,6 +1273,56 @@ contains
          dim1name='pft', &
          long_name='onset growing degree days', units='days' , &
          interpinic_flag='interp', readvar=readvar, data=this%onset_gdd_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_onset_flag', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='flag to indicate the displayed fine root is growing (1) or not (0)', units='none' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_onset_flag_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_onset_offset', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='number of days offset from Jan 1st when the fine root starts growing (= 1 if starts on Jan 1st)', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_onset_offset_patch)
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_onset_counter', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='fine roots onset days counter', units='sec' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_onset_counter_patch) 
+
+     call restartvar(ncid=ncid, flag=flag, varname='proot_onset_counter2', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='fine roots onset days counter2', units='sec' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_onset_counter2_patch) 
+
+     call restartvar(ncid=ncid, flag=flag, varname='proot_gdd1flag', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='root phenology growing degree days accumulation flag', units='none' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_gdd1flag_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_gdd1', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='root phenology growing degree days', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_gdd1_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_gdd2', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='root phenology growing degree days', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_gdd2_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_cwd1', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='root phenology cumulative water deficit', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_cwd1_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_cwd2', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='root phenology cumulative water deficit', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_cwd2_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='proot_sumfrac_patch', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='cumulative displayed root as fraction of previous year storage', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%proot_sumfrac_patch) 
 
     call restartvar(ncid=ncid, flag=flag, varname='onset_swi', xtype=ncd_double,  &
          dim1name='pft', &

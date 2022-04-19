@@ -35,7 +35,7 @@ module MaintenanceRespMod
   public :: readMaintenanceRespParams
 
   type, private :: MaintenanceRespParamsType
-     real(r8):: br_mr        !base rate for maintenance respiration(gC/gN/s)
+!     real(r8):: br_mr        !base rate for maintenance respiration(gC/gN/s)
   end type MaintenanceRespParamsType
 
   type(MaintenanceRespParamsType),private ::  MaintenanceRespParamsInst
@@ -64,10 +64,10 @@ contains
     character(len=100) :: tString ! temp. var for reading
     !-----------------------------------------------------------------------
 
-    tString='br_mr'
-    call ncd_io(varname=trim(tString),data=tempr, flag='read', ncid=ncid, readvar=readv)
-    if ( .not. readv ) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-    MaintenanceRespParamsInst%br_mr=tempr
+!    tString='br_mr'
+!    call ncd_io(varname=trim(tString),data=tempr, flag='read', ncid=ncid, readvar=readv)
+!    if ( .not. readv ) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+!    MaintenanceRespParamsInst%br_mr=tempr
 
   end subroutine readMaintenanceRespParams
 
@@ -101,8 +101,8 @@ contains
     integer :: c,p,j ! indices
     integer :: fp    ! soil filter patch index
     integer :: fc    ! soil filter column index
-    real(r8):: br_mr ! base rate (gC/gN/s)
-    real(r8):: q10   ! temperature dependence
+!    real(r8):: br_mr ! base rate (gC/gN/s)
+    real(r8):: Q10   ! temperature dependence
     real(r8):: tc    ! temperature correction, 2m air temp (unitless)
     real(r8):: tcsoi(bounds%begc:bounds%endc,nlevgrnd) ! temperature correction by soil layer (unitless)
     !-----------------------------------------------------------------------
@@ -111,6 +111,8 @@ contains
          ivt            =>    veg_pp%itype                             , & ! Input:  [integer  (:)   ]  patch vegetation type                                
          woody          =>    veg_vp%woody                      , & ! Input:  [real(r8) (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
          br_xr          =>    veg_vp%br_xr                      , & ! Input:  [real(r8) (:)   ]  base rate for excess respiration
+         br_mr          =>    veg_vp%br_mr                      , & ! Input:  [real(r8) (:)   ]  base rate for excess respiration
+         q10_mr          =>   veg_vp%q10_mr                      , & ! Input:  [real(r8) (:)   ]  base rate for excess respiration
          frac_veg_nosno =>    canopystate_vars%frac_veg_nosno_patch , & ! Input:  [integer  (:)   ]  fraction of vegetation not covered by snow (0 OR 1) [-]
          laisun         =>    canopystate_vars%laisun_patch         , & ! Input:  [real(r8) (:)   ]  sunlit projected leaf area index                  
          laisha         =>    canopystate_vars%laisha_patch         , & ! Input:  [real(r8) (:)   ]  shaded projected leaf area index                  
@@ -131,6 +133,7 @@ contains
          livecroot_mr   =>    veg_cf%livecroot_mr    , & ! Output: [real(r8) (:)   ]                                                    
          grain_mr       =>    veg_cf%grain_mr        , & ! Output: [real(r8) (:)   ]                                                    
          xr             =>    veg_cf%xr              , & ! Output: [real(r8) (:)   ]  (gC/m2) respiration of excess C
+         totvegc        =>    veg_cs%totvegc         , &
 
          frootn         =>    veg_ns%frootn       , & ! Input:  [real(r8) (:)   ]  (gN/m2) fine root N                               
          livestemn      =>    veg_ns%livestemn    , & ! Input:  [real(r8) (:)   ]  (gN/m2) live stem N                               
@@ -144,7 +147,7 @@ contains
       ! Original expression is br = 0.0106 molC/(molN h)
       ! Conversion by molecular weights of C and N gives 2.525e-6 gC/(gN s)
       ! set constants
-      br_mr = MaintenanceRespParamsInst%br_mr
+      ! br_mr = MaintenanceRespParamsInst%br_mr
 
       ! Peter Thornton: 3/13/09 
       ! Q10 was originally set to 2.0, an arbitrary choice, but reduced to 1.5 as part of the tuning
@@ -152,7 +155,8 @@ contains
       ! simulatoins
 
       ! Set Q10 from SharedParamsMod
-      Q10 = ParamsShareInst%Q10_mr
+      !Q10 = ParamsShareInst%Q10_mr
+      Q10 = 2.0  ! only used for root maintanene repiration
 
       ! column loop to calculate temperature factors in each soil layer
       do j=1,nlevgrnd
@@ -173,7 +177,7 @@ contains
          ! gC/m2/s for each of the live plant tissues.
          ! Leaf and live wood MR
 
-         tc = Q10**((t_ref2m(p)-SHR_CONST_TKFRZ - 20.0_r8)/10.0_r8)
+         tc = q10_mr(ivt(p))**((t_ref2m(p)-SHR_CONST_TKFRZ - 20.0_r8)/10.0_r8)
 
          if (frac_veg_nosno(p) == 1) then
 
@@ -187,14 +191,16 @@ contains
          end if
 
          if (woody(ivt(p)) == 1) then
-            livestem_mr(p) = livestemn(p)*br_mr*tc
-            livecroot_mr(p) = livecrootn(p)*br_mr*tc
+            livestem_mr(p) = livestemn(p)*br_mr(ivt(p))*tc
+            livecroot_mr(p) = livecrootn(p)*br_mr(ivt(p))*tc
          else if (ivt(p) >= npcropmin .and. livestemn(p) .gt. 0._r8) then
-            livestem_mr(p) = livestemn(p)*br_mr*tc
-            grain_mr(p) = grainn(p)*br_mr*tc
+            livestem_mr(p) = livestemn(p)*br_mr(ivt(p))*tc
+            grain_mr(p) = grainn(p)*br_mr(ivt(p))*tc
          end if
          if (br_xr(ivt(p)) .gt. 1e-9_r8) then
-            xr(p) = cpool(p) * br_xr(ivt(p)) * tc
+            !xr(p) = cpool(p) * br_xr(ivt(p)) * tc
+            ! this is to limit the size of cpool
+            xr(p) = cpool(p) * br_xr(ivt(p)) * exp((min(cpool(p) / totvegc(p),0.3335_r8) - 0.2_r8)/0.02_r8) * tc 
             !xr_above(p) = xr(p) * (leafn(p) + livestemn(p)) / &
             !          (leafn(p) + livestemn(p) + frootn(p))
             !xr_below(p) = xr(p) - xr_above(p)
@@ -219,7 +225,7 @@ contains
             ! to estimate the total fine root maintenance respiration as a
             ! function of temperature and N content.
 
-            froot_mr(p) = froot_mr(p) + frootn(p)*br_mr*tcsoi(c,j)*rootfr(p,j)
+            froot_mr(p) = froot_mr(p) + frootn(p)*br_mr(ivt(p))*tcsoi(c,j)*rootfr(p,j)
          end do
       end do
 

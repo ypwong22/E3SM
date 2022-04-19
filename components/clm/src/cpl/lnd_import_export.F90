@@ -1058,7 +1058,7 @@ contains
          top_af%solar(topo) = top_af%solad(topo,2) + top_af%solad(topo,1) + &
                               top_af%solai(topo,2) + top_af%solai(topo,1)
        end do
-     
+       
   !-----------------------------------------------------------------------------------------------------
 #else
 
@@ -1136,8 +1136,7 @@ contains
          top_af%solar(topo) = top_af%solad(topo,2) + top_af%solad(topo,1) + &
                               top_af%solai(topo,2) + top_af%solai(topo,1)
        end do
-         
-#endif
+        
 
        ! Determine optional receive fields
        ! CO2 (and C13O2) concentration: constant, prognostic, or diagnostic
@@ -1152,6 +1151,7 @@ contains
        end if
        ! Assign to topounits, with conversion from ppmv to partial pressure (Pa)
        ! If using C13, then get the c13ratio from clm_varcon (constant value for pre-industrial atmosphere)
+#endif
 
        do topo = grc_pp%topi(g), grc_pp%topf(g)
          top_as%pco2bot(topo) = co2_ppmv_val * 1.e-6_r8 * top_as%pbot(topo)

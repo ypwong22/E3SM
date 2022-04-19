@@ -400,7 +400,7 @@ contains
           i_0                  =>    soilhydrology_vars%i_0_col              , & ! Input:  [real(r8) (:)   ]  column average soil moisture in top VIC layers (mm)
           h2osfcflag           =>    soilhydrology_vars%h2osfcflag           , & ! Input:  logical
           icefrac              =>    soilhydrology_vars%icefrac_col          , & ! Output: [real(r8) (:,:) ]  fraction of ice
-          h2osoi_vol           =>    waterstate_vars%h2osoi_vol_col          , & ! Input: [real(r8) (:,:) ]  volumetric soil water (0<=h2osoi_vol<=watsat) [m3/m3]
+          h2osoi_vol           =>    col_ws%h2osoi_vol          , & ! Input: [real(r8) (:,:) ]  volumetric soil water (0<=h2osoi_vol<=watsat) [m3/m3]
           zi                   =>    col_pp%zi                                 & ! Input: [real(r8) (:,:) ]  interface level below a "z" level (m)           
               )
 
@@ -589,23 +589,25 @@ contains
 #if (defined HUM_HOL)
              !compute lateral flux in aquifer
              if (jwt(c) .lt. nlevsoi) then
-                do j=nlevsoi,jwt(c)+1,-1
+                do j=min(nlevsoi,jwt(c)+2),jwt(c)+1,-1
                   s_node = max(h2osoi_vol(c,j)/watsat(c,j), 0.01_r8)
                   s_node = min(1.0_r8, s_node)
                   s1 = 0.5_r8*(1.0+s_node)
                   s1 = min(1._r8, s1)
                   if (c .eq. 1) ka_hu = ka_hu+(hksat(c,j)*s1**(2._r8*bsw(c,j)+3._r8))* &
-                                dzmm(c,j)/sum(dzmm(c,jwt(c)+1:nlevsoi))
+                                dzmm(c,j)/sum(dzmm(c,jwt(c)+1:min(nlevsoi,jwt(c)+2)))
                   if (c .eq. 2) ka_ho = ka_ho+(hksat(c,j)*s1**(2._r8*bsw(c,j)+3._r8))* &
-                                dzmm(c,j)/sum(dzmm(c,jwt(c)+1:nlevsoi))
+                                dzmm(c,j)/sum(dzmm(c,jwt(c)+1:min(nlevsoi,jwt(c)+2)))
                 end do
              else
-                  s_node = max(h2osoi_vol(c,jwt(c))/watsat(c,jwt(c)), 0.01_r8)
+                  s_node = max(h2osoi_vol(c,min(jwt(c),nlevsoi))/watsat(c,min(jwt(c),nlevsoi)), 0.01_r8)
                   s_node = min(1.0_r8, s_node)
                   s1 = 0.5_r8*(1.0+s_node)
                   s1 = min(1._r8, s1)
-                  if (c .eq. 1) ka_hu = ka_hu+(hksat(c,jwt(c))*s1**(2._r8*bsw(c,jwt(c))+3._r8))
-                  if (c .eq. 2) ka_ho = ka_ho+(hksat(c,jwt(c))*s1**(2._r8*bsw(c,jwt(c))+3._r8))
+                  if (c .eq. 1) ka_hu = ka_hu+(hksat(c,min(jwt(c),nlevsoi))*s1**(2._r8*bsw(c,min(jwt(c),nlevsoi))+3._r8))
+                  if (c .eq. 2) ka_ho = ka_ho+(hksat(c,min(jwt(c),nlevsoi))*s1**(2._r8*bsw(c,min(jwt(c),nlevsoi))+3._r8))
+                  !ka_hu=1e-7_r8
+                  !ka_ho=1e-7_r8
              end if
 
              if (c.eq.1) then
@@ -615,7 +617,7 @@ contains
              if (c.eq.2) then
                zwt_ho = zwt(2)
                ka_ho = max(ka_ho, 1e-5_r8)
-               ka_hu = max(ka_hu, 1e-5_r8)
+               ka_hu = max(ka_hu, 1e-5_r8) !1e-5
                !DMR 9/21/15 - only inlcude h2osfc if water table near surfce, use
                !harmonic mean 
                if (zwt_ho < 0.03_r8) then 
@@ -628,7 +630,7 @@ contains
                  !water table
                  qflx_lat_aqu(:) = 0._r8
                else
-                 qflx_lat_aqu(1) =  2._r8/(1._r8/ka_hu+1._r8/ka_ho) * (zwt_hu-zwt_ho- &
+                 qflx_lat_aqu(1) = 2._r8/(1._r8/ka_hu+1._r8/ka_ho) * (zwt_hu-zwt_ho- &
                      humhol_ht) / humhol_dist * sqrt(hol_frac/hum_frac)
                  qflx_lat_aqu(2) = -2._r8/(1._r8/ka_hu+1._r8/ka_ho) * (zwt_hu-zwt_ho- &
                      humhol_ht) / humhol_dist * sqrt(hum_frac/hol_frac)

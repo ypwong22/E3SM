@@ -50,6 +50,7 @@ module EcosystemDynMod
   use AllocationMod     , only : nu_com_nfix, nu_com_phosphatase
   use clm_varctl          , only : nu_com, use_pheno_flux_limiter
   use PhenologyFLuxLimitMod , only : phenology_flux_limiter, InitPhenoFluxLimiter
+
   !
   ! !PUBLIC TYPES:
   implicit none
@@ -687,11 +688,12 @@ contains
            veg_nf, veg_ns, veg_pf, veg_ps)
          call t_stopf('phenology_flux_limiter')
        endif
+
        call t_startf('CNLitterToColumn')
        call CNLitterToColumn(num_soilc, filter_soilc, &
          cnstate_vars, carbonflux_vars, nitrogenflux_vars,phosphorusflux_vars)
-
        call t_stopf('CNLitterToColumn')
+
        !--------------------------------------------
        ! Update1
        !--------------------------------------------
@@ -713,15 +715,15 @@ contains
        end if
 
        call CarbonStateUpdate1(bounds, num_soilc, filter_soilc, num_soilp, filter_soilp, &
-            crop_vars, col_cs, veg_cs, col_cf, veg_cf)
+            crop_vars, col_cs, veg_cs, col_cf, veg_cf, cnstate_vars)
 
        if ( use_c13 ) then
           call CarbonStateUpdate1(bounds, num_soilc, filter_soilc, num_soilp, filter_soilp, &
-               crop_vars, c13_col_cs, c13_veg_cs, c13_col_cf, c13_veg_cf)
+               crop_vars, c13_col_cs, c13_veg_cs, c13_col_cf, c13_veg_cf, cnstate_vars)
        end if
        if ( use_c14 ) then
           call CarbonStateUpdate1(bounds, num_soilc, filter_soilc, num_soilp, filter_soilp, &
-               crop_vars, c14_col_cs, c14_veg_cs, c14_col_cf, c14_veg_cf)
+               crop_vars, c14_col_cs, c14_veg_cs, c14_col_cf, c14_veg_cf, cnstate_vars)
        end if
 
        call NitrogenStateUpdate1(num_soilc, filter_soilc, num_soilp, filter_soilp, &
@@ -771,7 +773,6 @@ contains
 
        call CarbonStateUpdate2( num_soilc, filter_soilc, num_soilp, filter_soilp, &
             carbonflux_vars, carbonstate_vars, col_cs, veg_cs, col_cf, veg_cf)
-
        if ( use_c13 ) then
           call CarbonStateUpdate2(num_soilc, filter_soilc, num_soilp, filter_soilp, &
                c13_carbonflux_vars, c13_carbonstate_vars, c13_col_cs, c13_veg_cs, c13_col_cf, c13_veg_cf)
@@ -867,7 +868,6 @@ contains
 
        call CarbonStateUpdate3( num_soilc, filter_soilc, num_soilp, filter_soilp, &
             carbonflux_vars, carbonstate_vars, col_cs, veg_cs, col_cf, veg_cf)
-
        if ( use_c13 ) then
           call CarbonStateUpdate3( num_soilc, filter_soilc, num_soilp, filter_soilp, &
                c13_carbonflux_vars, c13_carbonstate_vars, c13_col_cs, c13_veg_cs, c13_col_cf, c13_veg_cf)
@@ -876,7 +876,6 @@ contains
           call CarbonStateUpdate3( num_soilc, filter_soilc, num_soilp, filter_soilp, &
                c14_carbonflux_vars, c14_carbonstate_vars, c14_col_cs, c14_veg_cs, c14_col_cf, c14_veg_cf)
        end if
-
 
        if ( use_c14 ) then
           call C14Decay(num_soilc, filter_soilc, num_soilp, filter_soilp, &

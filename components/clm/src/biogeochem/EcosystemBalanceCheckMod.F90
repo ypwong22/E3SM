@@ -45,7 +45,6 @@ module EcosystemBalanceCheckMod
   use ColumnDataType      , only : col_ns, col_nf, col_ps, col_pf 
   use VegetationType      , only : veg_pp
   use VegetationDataType  , only : veg_cf, veg_nf, veg_pf
-  
 
   !
   implicit none
@@ -201,7 +200,6 @@ contains
     real(r8) :: dt             ! radiation time step (seconds)
     real(r8) :: col_cinputs
     real(r8) :: col_coutputs
-    !-----------------------------------------------------------------------
 
     associate(                                                                           &
          totcolc                   =>    col_cs%totcolc                  , & ! Input:  [real(r8) (:) ]  (gC/m2)   total column carbon, incl veg and cpool
@@ -217,7 +215,7 @@ contains
          hrv_deadstemc_to_prod100c =>    col_cf%hrv_deadstemc_to_prod100c , & ! Input:  [real(r8) (:) ]  (gC/m2/s) dead stem C harvest mortality to 100-year product pool
          col_begcb                 =>    col_cs%begcb                    , & ! Output: [real(r8) (:) ]  carbon mass, beginning of time step (gC/m**2)
          col_endcb                 =>    col_cs%endcb                    , & ! Output: [real(r8) (:) ]  carbon mass, end of time step (gC/m**2)
-         col_errcb                 =>    col_cs%errcb                      & ! Output: [real(r8) (:) ]  carbon balance error for the timestep (gC/m**2)
+         col_errcb                 =>    col_cs%errcb                    & ! Output: [real(r8) (:) ]  carbon balance error for the timestep (gC/m**2)
          )
 
       ! set time steps
@@ -271,7 +269,7 @@ contains
             err_index = c
          end if
       end do ! end of columns loop
-      
+
       ! Consider adapting this check to be fates compliant (rgk 04-2017)
       if (.not. use_fates) then
          if (err_found) then
@@ -287,7 +285,8 @@ contains
             write(iulog,*)'hrv_to_prod100        = ',hrv_deadstemc_to_prod100c(c)*dt
             write(iulog,*)'leach                 = ',som_c_leached(c)*dt
             write(iulog,*)'begcb                 = ',col_begcb(c)
-            write(iulog,*)'endcb                 = ',col_endcb(c),col_cs%totsomc(c)
+            !write(iulog,*)'endcb                 = ',col_endcb(c),col_cs%totsomc(c)
+            write(iulog,*)'endcb                 = ',col_endcb(c),col_cs%totpftc(c),col_cs%cwdc(c),col_cs%totlitc(c),col_cs%totsomc(c),col_cs%prod1c(c),col_cs%ctrunc(c),col_cs%cropseedc_deficit(c)
             write(iulog,*)'delta store           = ',col_endcb(c)-col_begcb(c)
 
             if (ero_ccycle) then

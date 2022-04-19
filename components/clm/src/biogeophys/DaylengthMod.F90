@@ -82,7 +82,7 @@ contains
 
 
   !-----------------------------------------------------------------------
-  subroutine InitDaylength(bounds, declin, declinm1)
+  subroutine InitDaylength(bounds, declin, declinm1, declinm2)
     !
     ! !DESCRIPTION:
     ! Initialize daylength for all grid cells, and initialize previous daylength.
@@ -94,13 +94,18 @@ contains
     type(bounds_type), intent(in) :: bounds
     real(r8), intent(in) :: declin              ! solar declination angle for the first model time step (radians)
     real(r8), intent(in) :: declinm1            ! solar declination angle for the previous time step (radians)
+    real(r8), intent(in) :: declinm2            ! solar declination angle for the previous previous time step (radians)
     !
+    ! !LOCAL VARIABLES:
+    integer :: g ! grid cell index
+    real(r8), allocatable :: prev_prev_dayl(:)
     !-----------------------------------------------------------------------
 
     associate(&
-    lat       => grc_pp%lat,       & ! Input:   [real(r8) (:)] latitude (radians)
-    dayl      => grc_pp%dayl,      & ! Output:  [real(r8) (:)] day length (s)
-    prev_dayl => grc_pp%prev_dayl, & ! Output:  [real(r8) (:)] day length from previous time step (s)
+    lat          => grc_pp%lat,       & ! Input:   [real(r8) (:)] latitude (radians)
+    dayl         => grc_pp%dayl,      & ! Output:  [real(r8) (:)] day length (s)
+    prev_dayl    => grc_pp%prev_dayl, & ! Output:  [real(r8) (:)] day length from previous time step (s)
+    prev_ws_flag => grc_pp%prev_ws_flag, & ! Output: [real(r8) (:)] indicator if previous day is winter solstice (1: winter->summer, 0: summer->winter) 
 
     begg      => bounds%begg  , & ! beginning grid cell index
     endg      => bounds%endg    & ! ending grid cell index
@@ -108,6 +113,17 @@ contains
 
     prev_dayl(begg:endg) = daylength(lat(begg:endg), declinm1)
     dayl(begg:endg) = daylength(lat(begg:endg), declin)
+
+    allocate(prev_prev_dayl (begg:endg))
+    prev_prev_dayl(begg:endg) = daylength(lat(begg:endg), declinm2)
+
+    do g = begg,endg
+       if (prev_dayl(g) >= prev_prev_dayl(g)) then
+          prev_ws_flag(g) = 1
+       else
+          prev_ws_flag(g) = 0
+       end if
+    end do
 
     first_step = .true.
 
@@ -130,12 +146,15 @@ contains
     type(bounds_type), intent(in) :: bounds
     real(r8), intent(in) :: declin            ! solar declination angle (radians)
     !
+    ! !LOCAL VARIABLES:
+    integer :: g ! grid cell index
     !-----------------------------------------------------------------------
 
     associate(&
     lat       => grc_pp%lat,       & ! Input:  [real(r8) (:)] latitude (radians)
     dayl      => grc_pp%dayl,      & ! InOut:  [real(r8) (:)] day length (s)
-    prev_dayl => grc_pp%prev_dayl, & ! Output: [real(r8) (:)] day length from previous time step (s)
+    prev_dayl => grc_pp%prev_dayl, & ! Output: [real(r8) (:)] day length from previous time step (s)    
+    prev_ws_flag => grc_pp%prev_ws_flag, & ! Output: [real(r8) (:)] indicator if previous day is winter solstice (1: winter->summer, 0: summer->winter)
 
     begg      => bounds%begg  , & ! beginning grid cell index
     endg      => bounds%endg    & ! ending grid cell index
@@ -147,7 +166,15 @@ contains
     ! time step, because of the way prev_dayl is initialized.)
     if (first_step) then
        first_step = .false.
-    else 
+    else
+       do g = begg,endg
+          if (dayl(g) >= prev_dayl(g)) then
+             prev_ws_flag(g) = 1
+          else
+             prev_ws_flag(g) = 0
+          end if
+       end do
+
        prev_dayl(begg:endg) = dayl(begg:endg)
        dayl(begg:endg) = daylength(lat(begg:endg), declin)
     end if

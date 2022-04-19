@@ -1,0 +1,138 @@
+&clm_inparm
+ add_co2 = 500
+ aero_file = '/lustre/haven/user/ywang254/E3SM/inputdata/atm/cam/chem/trop_mozart_aero/aero/aerosoldep_rcp4.5_monthly_1849-2104_1.9x2.5_c100402.nc'
+ albice = 0.60,0.40
+ co2_file = '/lustre/haven/user/ywang254/E3SM/inputdata/atm/datm7/CO2/fco2_datm_rcp4.5_1765-2500_c130312.nc'
+ co2_type = 'diagnostic'
+ create_crop_landunit = .false.
+ dtime = 3600
+ fatmlndfrc = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/run/domain.nc'
+ finidat = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_US-SPR_ICB20TRCNPRDCTCBC/run/20220407_stopdate365_switch2_US-SPR_ICB20TRCNPRDCTCBC.clm2.r.2015-01-01-00000.nc'
+ fsnowaging = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/snicardata/snicar_drdt_bst_fit_60_c070416.nc'
+ fsnowoptics = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/snicardata/snicar_optics_5bnd_mam_c160322.nc'
+ fsoilordercon = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/run/CNP_parameters.nc'
+ fsurdat = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/run/surfdata.nc'
+ glc_do_dynglacier = .false.
+ hist_dov2xy = .true.,.true.,.false.
+ hist_fincl2 = 'GPP', 'NEE', 'NEP', 'NPP', 'LEAFC_ALLOC', 'AGNPP', 'MR',
+         'CPOOL_TO_DEADSTEMC', 'LIVECROOTC_XFER_TO_LIVECROOTC', 'DEADCROOTC_XFER_TO_DEADCROOTC', 'CPOOL_TO_LIVECROOTC', 'CPOOL_TO_DEADCROOTC', 'FROOTC_ALLOC', 'AR',
+         'LEAF_MR', 'CPOOL_LEAF_GR', 'TRANSFER_LEAF_GR', 'CPOOL_LEAF_STORAGE_GR', 'LIVESTEM_MR', 'CPOOL_LIVESTEM_GR', 'TRANSFER_LIVESTEM_GR',
+         'CPOOL_LIVESTEM_STORAGE_GR', 'CPOOL_DEADSTEM_GR', 'TRANSFER_DEADSTEM_GR', 'CPOOL_DEADSTEM_STORAGE_GR', 'LIVECROOT_MR', 'CPOOL_LIVECROOT_GR', 'TRANSFER_LIVECROOT_GR',
+         'CPOOL_LIVECROOT_STORAGE_GR', 'CPOOL_DEADCROOT_GR', 'TRANSFER_DEADCROOT_GR', 'CPOOL_DEADCROOT_STORAGE_GR', 'FROOT_MR', 'CPOOL_FROOT_GR', 'TRANSFER_FROOT_GR',
+         'CPOOL_FROOT_STORAGE_GR', 'FSH', 'EFLX_LH_TOT', 'Rnet', 'FCTR', 'FGEV', 'FCEV',
+         'SOILLIQ', 'QOVER', 'QDRAI', 'TOTVEGC', 'LEAFC', 'LIVESTEMC', 'DEADSTEMC',
+         'FROOTC', 'LIVECROOTC', 'DEADCROOTC', 'TG', 'TV', 'TSA', 'TSOI',
+         'DEADSTEMC_STORAGE', 'LIVESTEMC_STORAGE', 'DEADCROOTC_STORAGE', 'LIVECROOTC_STORAGE', 'CPOOL_TO_DEADSTEMC_STORAGE', 'CPOOL_TO_LIVESTEMC_STORAGE', 'CPOOL_TO_DEADCROOTC_STORAGE',
+         'CPOOL_TO_LIVECROOTC_STORAGE', 'ER', 'HR', 'FROOTC_STORAGE', 'LEAFC_STORAGE', 'LEAFC_XFER', 'FROOTC_XFER',
+         'LIVESTEMC_XFER', 'DEADSTEMC_XFER', 'LIVECROOTC_XFER', 'DEADCROOTC_XFER', 'SR', 'HR_vr', 'FIRA',
+         'FSA', 'FSDS', 'FLDS', 'TBOT', 'RAIN', 'SNOW', 'WIND',
+         'PBOT', 'QBOT', 'QVEGT', 'QVEGE', 'QSOIL', 'QFLX_SUB_SNOW', 'QFLX_DEW_GRND',
+         'QH2OSFC', 'H2OSOI', 'CPOOL_TO_LIVESTEMC', 'TOTLITC', 'TOTSOMC', 'ZWT', 'SNOWDP',
+         'TLAI', 'RH2M', 'QRUNOFF', 'TOTLITC', 'TOTSOMC', 'CWDC', 'LITR1C_vr',
+         'LITR2C_vr', 'LITR3C_vr', 'SOIL1C_vr', 'SOIL2C_vr', 'SOIL3C_vr', 'H2OSFC', 'ZWT',
+         'SNOWDP', 'TLAI', 'CPOOL', 'NPOOL', 'PPOOL', 'FPI', 'FPI_P',
+         'FPG', 'FPG_P', 'FPI_vr', 'FPI_P_vr', 'SOIL4C_vr'
+ hist_fincl3 = 'QVEGE', 'QVEGT', 'PSNSUN', 'PSNSHA', 'LEAFC_XFER_TO_LEAFC', 'LEAFC_STORAGE_TO_XFER',
+         'PROOT_ONSET_FLAG', 'PROOT_ONSET_OFFSET', 'PROOT_GDD2', 'PROOT_CWD2', 'PROOT_SUMFRAC', 'GPP',
+         'NPP', 'LEAFC_ALLOC', 'AGNPP', 'CPOOL_TO_DEADSTEMC', 'LIVECROOTC_XFER_TO_LIVECROOTC', 'DEADCROOTC_XFER_TO_DEADCROOTC',
+         'CPOOL_TO_LIVECROOTC', 'CPOOL_TO_DEADCROOTC', 'FROOTC_ALLOC', 'AR', 'MR', 'LEAF_MR',
+         'CPOOL_LEAF_GR', 'TRANSFER_LEAF_GR', 'CPOOL_LEAF_STORAGE_GR', 'LIVESTEM_MR', 'CPOOL_LIVESTEM_GR', 'TRANSFER_LIVESTEM_GR',
+         'CPOOL_LIVESTEM_STORAGE_GR', 'CPOOL_DEADSTEM_GR', 'TRANSFER_DEADSTEM_GR', 'CPOOL_DEADSTEM_STORAGE_GR', 'LIVECROOT_MR', 'CPOOL_LIVECROOT_GR',
+         'TRANSFER_LIVECROOT_GR', 'CPOOL_LIVECROOT_STORAGE_GR', 'CPOOL_DEADCROOT_GR', 'TRANSFER_DEADCROOT_GR', 'CPOOL_DEADCROOT_STORAGE_GR', 'FROOT_MR',
+         'CPOOL_FROOT_GR', 'TRANSFER_FROOT_GR', 'CPOOL_FROOT_STORAGE_GR', 'FCTR', 'FCEV', 'TOTVEGC',
+         'LEAFC', 'LIVESTEMC', 'DEADSTEMC', 'FROOTC', 'LIVECROOTC', 'DEADCROOTC',
+         'DEADSTEMC_STORAGE', 'LIVESTEMC_STORAGE', 'DEADCROOTC_STORAGE', 'LIVECROOTC_STORAGE', 'CPOOL_TO_DEADSTEMC_STORAGE', 'CPOOL_TO_LIVESTEMC_STORAGE',
+         'CPOOL_TO_DEADCROOTC_STORAGE', 'CPOOL_TO_LIVECROOTC_STORAGE', 'FROOTC_STORAGE', 'LEAFC_STORAGE', 'LEAFC_XFER', 'FROOTC_XFER',
+         'LIVESTEMC_XFER', 'DEADSTEMC_XFER', 'LIVECROOTC_XFER', 'DEADCROOTC_XFER', 'TLAI', 'CPOOL_TO_LIVESTEMC'
+ hist_mfilt = 8760,365,365
+ hist_nhtfrq = -1,-24,-24
+ maxpatch_glcmec = 0
+ maxpatch_pft = 17
+ metdata_bypass = '/lustre/haven/user/ywang254/E3SM/inputdata/atm/datm7/CLM1PT_data/SPRUCE_data/plot11'
+ metdata_type = 'site'
+ more_vertlayers = .false.
+ nsegspc = 20
+ nu_com = 'RD'
+ nyears_ad_carbon_only = 25
+ paramfile = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/run/clm_params.nc'
+ spinup_mortality_factor = 10
+ spinup_state = 0
+ startdate_add_co2 = '20160301'
+ suplnitro = 'NONE'
+ suplphos = 'NONE'
+ urban_hac = 'ON'
+ urban_traffic = .false.
+ use_century_decomp = .false.
+ use_cn = .true.
+ use_crop = .false.
+ use_dynroot = .true.
+ use_fates = .false.
+ use_lch4 = .true.
+ use_nitrif_denitrif = .true.
+ use_nofire = .true.
+ use_vertsoilc = .true.
+/
+&ndepdyn_nml
+ model_year_align_ndep = 1850
+ ndepmapalgo = 'bilinear'
+ stream_fldfilename_ndep = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/ndepdata/fndep_clm_rcp4.5_simyr1849-2106_1.9x2.5_c100428.nc'
+ stream_year_first_ndep = 1850
+ stream_year_last_ndep = 2005
+/
+&pdepdyn_nml
+ model_year_align_pdep = 2000
+ pdepmapalgo = 'bilinear'
+ stream_fldfilename_pdep = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/pdepdata/fpdep_clm_hist_simyr2000_1.9x2.5_c150929.nc'
+ stream_year_first_pdep = 2000
+ stream_year_last_pdep = 2000
+/
+&popd_streams
+ model_year_align_popdens = 1850
+ popdensmapalgo = 'bilinear'
+ stream_fldfilename_popdens = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/firedata/clmforc.Li_2012_hdm_0.5x0.5_AVHRR_simyr1850-2010_c130401.nc'
+ stream_year_first_popdens = 1850
+ stream_year_last_popdens = 2010
+/
+&light_streams
+ lightngmapalgo = 'bilinear'
+ stream_fldfilename_lightng = '/lustre/haven/user/ywang254/E3SM/inputdata/atm/datm7/NASA_LIS/clmforc.Li_2012_climo1995-2011.T62.lnfm_Total_c140423.nc'
+ stream_year_first_lightng = 0001
+ stream_year_last_lightng = 0001
+/
+&lai_streams
+/
+&clm_canopyhydrology_inparm
+/
+&clm_soilhydrology_inparm
+/
+&dynamic_subgrid
+ do_harvest = .true.
+ do_transient_pfts = .true.
+ flanduse_timeseries = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/run/surfdata.pftdyn.nc'
+/
+&finidat_consistency_checks
+ check_finidat_fsurdat_consistency = .false.
+ check_finidat_year_consistency = .false.
+/
+&dynpft_consistency_checks
+/
+&clmu_inparm
+/
+&clm_soilstate_inparm
+/
+&clm_pflotran_inparm
+/
+&betr_inparm
+/
+&ch4par_in
+ fin_use_fsat = .true.
+ use_aereoxid_prog = .true.
+/
+&clm_humanindex_inparm
+/
+!#--------------------------------------------------------------------------------------------------------------------------
+!# lnd_in:: Comment:
+!# This namelist was created using the following command-line:
+!#     /nics/c/home/ywang254/models/E3SM/components/clm/bld/CLM build-namelist -infile /nics/c/home/ywang254/models/E3SM/cime/scripts/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/Buildconf/clmconf/namelist -csmdata /lustre/haven/user/ywang254/E3SM/inputdata -inputdata /nics/c/home/ywang254/models/E3SM/cime/scripts/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/Buildconf/clm.input_data_list -ignore_ic_year -namelist  &clm_inparm  start_ymd=20150101  / -use_case 20thC_transient -res 2x1pt_US-SPR -clm_usr_name 2x1pt_US-SPR -clm_start_type default -envxml_dir /nics/c/home/ywang254/models/E3SM/cime/scripts/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC -l_ncpl 24 -lnd_frac /lustre/haven/user/ywang254/E3SM/output/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/run/domain.nc -glc_nec 0 -co2_ppmv 379.0 -co2_type diagnostic -config /nics/c/home/ywang254/models/E3SM/cime/scripts/20220407_stopdate365_switch2_plot11_US-SPR_ICB20TRCNPRDCTCBC/Buildconf/clmconf/config_cache.xml -bgc bgc -nutrient cnp -nutrient_comp_pathway rd -soil_decomp ctc -methane -nitrif_denitrif
+!# For help on options use: /nics/c/home/ywang254/models/E3SM/components/clm/bld/CLM build-namelist -help
+!#--------------------------------------------------------------------------------------------------------------------------

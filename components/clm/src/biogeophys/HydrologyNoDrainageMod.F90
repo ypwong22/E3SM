@@ -97,7 +97,7 @@ contains
     type(atm2lnd_type)       , intent(in)    :: atm2lnd_vars
     type(soilstate_type)     , intent(inout) :: soilstate_vars
     type(energyflux_type)    , intent(in)    :: energyflux_vars
-    type(canopystate_type)   , intent(in)  :: canopystate_vars
+    type(canopystate_type)   , intent(in)    :: canopystate_vars
     type(temperature_type)   , intent(inout) :: temperature_vars
     type(waterflux_type)     , intent(inout) :: waterflux_vars
     type(waterstate_type)    , intent(inout) :: waterstate_vars

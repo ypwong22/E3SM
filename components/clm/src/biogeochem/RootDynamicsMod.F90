@@ -49,7 +49,7 @@ contains
     ! i.e. VerticalProfileMod
     !
     ! !USES:
-
+    use pftvarcon      , only: ndllf_evr_brl_tree
 
     ! !ARGUMENTS:
     type(bounds_type)        , intent(in)    :: bounds             ! bounds
@@ -221,7 +221,7 @@ contains
             new_croot_growth = (cpool_to_livecrootc(p) + cpool_to_deadcrootc(p) + &
                                 deadcrootc_xfer_to_deadcrootc(p) + livecrootc_xfer_to_livecrootc(p))*dt
          end if
-         if (evergreen(ivt(p)) == 0._r8) then
+         if (evergreen(ivt(p)) == 0._r8 .or. ivt(p)==ndllf_evr_brl_tree) then
             new_growth = new_growth + cpool_to_frootc_storage(p)*dt
             new_croot_growth = new_croot_growth + (cpool_to_livecrootc_storage(p) + &
                                                    cpool_to_deadcrootc_storage(p))*dt

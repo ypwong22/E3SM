@@ -1,0 +1,13 @@
+&modelio
+  diri = "/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch3_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/glc"
+  diro = "/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run"
+  logfile = "glc.log.5763277.apollo-acf.220419-123807"
+/
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 0
+  pio_stride = 16
+  pio_typename = "netcdf"
+/

@@ -1,0 +1,13 @@
+&modelio
+  diri = "/lustre/haven/user/ywang254/E3SM/output/20211201_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/rof"
+  diro = "/lustre/haven/user/ywang254/E3SM/output/20211201_US-SPR_ICB1850CNRDCTCBC_ad_spinup/run"
+  logfile = "rof.log.5459862.apollo-acf.211215-090117"
+/
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 0
+  pio_stride = 16
+  pio_typename = "netcdf"
+/

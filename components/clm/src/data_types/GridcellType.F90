@@ -49,6 +49,7 @@ module GridcellType
      real(r8) , pointer :: max_dayl    (:) => null() ! maximum daylength for this grid cell (s)
      real(r8) , pointer :: dayl        (:) => null() ! daylength (seconds)
      real(r8) , pointer :: prev_dayl   (:) => null() ! daylength from previous timestep (seconds)
+     integer  , pointer :: prev_ws_flag (:) => null() ! winter solstice flag from previous timestep (1: winter->summer, 0: summer->winter)
 
      ! indices into landunit-level arrays for landunits in this grid cell (ispval implies
      ! this landunit doesn't exist on this grid cell) [1:max_lunit, begg:endg]
@@ -101,6 +102,7 @@ contains
     allocate(this%max_dayl  (begg:endg)) ; this%max_dayl  (:) = nan
     allocate(this%dayl      (begg:endg)) ; this%dayl      (:) = nan
     allocate(this%prev_dayl (begg:endg)) ; this%prev_dayl (:) = nan
+    allocate(this%prev_ws_flag (begg:endg)) ; this%prev_ws_flag (:) = ispval
 
     allocate(this%landunit_indices(1:max_lunit, begg:endg)); this%landunit_indices(:,:) = ispval
 
@@ -134,6 +136,7 @@ contains
     deallocate(this%max_dayl         )
     deallocate(this%dayl             )
     deallocate(this%prev_dayl        )
+    deallocate(this%prev_ws_flag     )
     deallocate(this%landunit_indices )
     
   end subroutine grc_pp_clean

@@ -1531,7 +1531,7 @@ contains
                 if (j > nlevbed) then
                    this%h2osoi_vol(c,j) = 0.0_r8
                 else
-		             if (use_fates_planthydro .or. use_hydrstress) then
+                   if (use_fates_planthydro .or. use_hydrstress) then
                       this%h2osoi_vol(c,j) = 0.70_r8*watsat_input(c,j) !0.15_r8 to avoid very dry conditions that cause errors in FATES HYDRO
                    else
                       this%h2osoi_vol(c,j) = 0.15_r8
@@ -1695,7 +1695,7 @@ contains
                "effective radius to fresh snow value, and snow/aerosol masses to zero."
        endif
 
-       do c= bounds%begc, bounds%endc
+       do c = bounds%begc, bounds%endc
           if (col_pp%snl(c) < 0) then
              this%snw_rds(c,col_pp%snl(c)+1:0) = snw_rds_min
              this%snw_rds(c,-nlevsno+1:col_pp%snl(c)) = 0._r8
@@ -2718,11 +2718,11 @@ contains
     ! Spinup state
     !--------------------------------
 
-    if (carbon_type == 'c12'  .or. carbon_type == 'c14') then
+    if (carbon_type == 'c12'  .or. carbon_type == 'c14' .or. carbon_type == 'c13') then
         if (flag == 'write') then
            idata = spinup_state
         end if
-        if (carbon_type == 'c12' .or. (carbon_type == 'c14' .and. flag == 'read')) then
+        if (carbon_type == 'c12' .or. (carbon_type == 'c14' .and. flag == 'read') .or. (carbon_type == 'c13' .and. flag == 'read')) then
            call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
                 long_name='Spinup state of the model that wrote this restart file: ' &
                 // ' 0 = normal model mode, 1 = AD spinup', units='', &

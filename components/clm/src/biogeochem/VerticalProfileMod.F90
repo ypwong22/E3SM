@@ -72,6 +72,12 @@ contains
     real(r8) :: rootfr_tot
     real(r8) :: cinput_rootfr(bounds%begp:bounds%endp, 1:nlevdecomp_full)      ! pft-native root fraction used for calculating inputs
     real(r8) :: col_cinput_rootfr(bounds%begc:bounds%endc, 1:nlevdecomp_full)  ! col-native root fraction used for calculating inputs
+
+    ! adding a coarse root profile testing for SPRUCE site  
+    real(r8) :: cinput_crootfr(bounds%begp:bounds%endp, 1:nlevdecomp_full)      ! pft-native root fraction used for calculating inputs
+    real(r8) :: crootfr_tot
+    real(r8) :: crootprof_beta(bounds%begp:bounds%endp)
+
     integer  :: c, j, fc, p, fp, pi
     integer  :: alt_ind
     ! debugging temp variables
@@ -124,6 +130,7 @@ contains
          pdep_prof(begc:endc, :)      = 0._r8
 
          cinput_rootfr(begp:endp, :)     = 0._r8
+         cinput_crootfr(begp:endp, :)     = 0._r8
          col_cinput_rootfr(begc:endc, :) = 0._r8
 
          if ( exponential_rooting_profile ) then
@@ -133,6 +140,7 @@ contains
                   do fp = 1,num_soilp
                      p = filter_soilp(fp)
                      cinput_rootfr(p,j) = exp(-rootprof_exp * zsoi(j)) / dzsoi_decomp(j)
+                     cinput_crootfr(p,j) = exp(-rootprof_exp * zsoi(j)) / dzsoi_decomp(j)
                   end do
                end do
             else
@@ -144,9 +152,14 @@ contains
                         cinput_rootfr(p,j) = ( rootprof_beta(veg_pp%itype(p)) ** (zisoi(j-1)*100._r8) - &
                              rootprof_beta(veg_pp%itype(p)) ** (zisoi(j)*100._r8) ) &
                              / dzsoi_decomp(j)
+                        crootprof_beta(veg_pp%itype(p)) = rootprof_beta(veg_pp%itype(p))
+                        cinput_crootfr(p,j) = ( crootprof_beta(veg_pp%itype(p)) ** (zisoi(j-1)*100._r8) - &
+                             crootprof_beta(veg_pp%itype(p)) ** (zisoi(j)*100._r8) ) &
+                             / dzsoi_decomp(j)
                      end do
                   else
                      cinput_rootfr(p,1) = 1._r8 / dzsoi_decomp(1)
+                     cinput_crootfr(p,1) = 1._r8 / dzsoi_decomp(1)
                   endif
                end do
             endif
@@ -165,10 +178,13 @@ contains
             c = veg_pp%column(p)
             ! integrate rootfr over active layer of soil column
             rootfr_tot = 0._r8
+            crootfr_tot = 0._r8
             surface_prof_tot = 0._r8
             do j = 1, min(max(altmax_lastyear_indx(c), 1), nlevdecomp)
                rootfr_tot = rootfr_tot + cinput_rootfr(p,j) * dzsoi_decomp(j)
                surface_prof_tot = surface_prof_tot + surface_prof(j)  * dzsoi_decomp(j)
+
+               crootfr_tot = crootfr_tot + cinput_crootfr(p,j) * dzsoi_decomp(j)
             end do
             if ( (altmax_lastyear_indx(c) > 0) .and. (rootfr_tot > 0._r8) .and. (surface_prof_tot > 0._r8) ) then
                ! where there is not permafrost extending to the surface, integrate the profiles over the active layer
@@ -186,6 +202,18 @@ contains
                croot_prof(p,1) = 1./dzsoi_decomp(1)
                leaf_prof(p,1) = 1./dzsoi_decomp(1)
                stem_prof(p,1) = 1./dzsoi_decomp(1)
+            endif
+            ! modifying coarse root profile and stem profile 
+            if ( (altmax_lastyear_indx(c) > 0) .and. (crootfr_tot > 0._r8) ) then
+               ! where there is not permafrost extending to the surface, integrate the profiles over the active layer
+               ! this is equivalnet to integrating over all soil layers outside of permafrost regions
+               do j = 1, min(max(altmax_lastyear_indx(c), 1), nlevdecomp)
+                  croot_prof(p,j) = cinput_crootfr(p,j) / crootfr_tot
+                  stem_prof(p,j)  = croot_prof(p,j)
+               end do
+            else
+               ! if fully frozen, or no roots, put everything in the top layer
+               croot_prof(p,1) = 1./dzsoi_decomp(1)
             endif
 
          end do

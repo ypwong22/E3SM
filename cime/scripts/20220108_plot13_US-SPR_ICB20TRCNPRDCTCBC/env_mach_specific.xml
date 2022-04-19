@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<file id="env_mach_specific.xml" version="2.0">
+  <header>
+    These variables control the machine dependent environment including
+    the paths to compilers and libraries external to cime such as netcdf,
+    environment variables for use in the running job should also be set	here.
+    </header>
+  <group id="compliant_values">
+    <entry id="run_exe" value="${EXEROOT}/e3sm.exe ">
+      <type>char</type>
+      <desc>executable name</desc>
+    </entry>
+    <entry id="run_misc_suffix" value=" &gt;&gt; e3sm.log.$LID 2&gt;&amp;1 ">
+      <type>char</type>
+      <desc>redirect for job output</desc>
+    </entry>
+  </group>
+  <module_system type="module">
+    <init_path lang="sh">/usr/share/Modules/init/sh</init_path>
+    <init_path lang="csh">/usr/share/Modules/init/csh</init_path>
+    <init_path lang="perl">/usr/share/Modules/init/perl.pm</init_path>
+    <init_path lang="python">/usr/share/Modules/init/python.py</init_path>
+    <cmd_path lang="sh">module</cmd_path>
+    <cmd_path lang="csh">module</cmd_path>
+    <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
+    <cmd_path lang="python">/usr/bin/modulecmd python</cmd_path>
+    <modules>
+      <command name="purge"/>
+    </modules>
+    <modules compiler="intel">
+      <command name="load">PE-intel</command>
+    </modules>
+    <modules>
+      <command name="load">mkl/2017</command>
+      <command name="load">cmake/3.17.3</command>
+      <command name="load">nco/4.6.6</command>
+      <command name="load">hdf5-parallel/1.10.1</command>
+      <command name="load">netcdf/4.4.1.1</command>
+      <command name="load">perl/5.24.1</command>
+    </modules>
+  </module_system>
+  <environment_variables compiler="intel" mpilib="intel-mpi">
+    <env name="PETSC_PATH">/none/</env>
+  </environment_variables>
+  <environment_variables>
+    <env name="PERL5LIB">/nics/c/home/ywang254/perl5/lib/perl5:/opt/moab/lib/perl5:/sw/cs400_centos7.3_acfsoftware/perl/5.24.1/centos7.3_gnu6.3.0/lib/5.24.1/</env>
+  </environment_variables>
+  <mpirun compiler="intel" mpilib="intel-mpi">
+    <executable>mpirun</executable>
+    <arguments>
+      <arg name="num_tasks"> -np {{ total_tasks }}</arg>
+    </arguments>
+  </mpirun>
+  <mpirun mpilib="mpi-serial">
+    <executable> </executable>
+  </mpirun>
+</file>

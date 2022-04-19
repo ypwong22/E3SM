@@ -449,7 +449,7 @@ contains
 
          hui                          => crop_vars%gddplant_patch                              , & ! Input:  [real(r8) (:)   ]  =gdd since planting (gddplant)          
          leafout                      => crop_vars%gddtsoi_patch                               , & ! Input:  [real(r8) (:)   ]  =gdd from top soil layer temperature    
-
+         cpool                        => veg_cs%cpool                         , & ! Input:  [real(r8) (:)   ]  =photosynthate pool
          xsmrpool                     => veg_cs%xsmrpool                       , & ! Input:  [real(r8) (:)   ]  (gC/m2) temporary photosynthate C pool  
          leafc                        => veg_cs%leafc                          , & ! Input:  [real(r8) (:)   ]                                          
          frootc                       => veg_cs%frootc                         , & ! Input:  [real(r8) (:)   ]                                          
@@ -772,14 +772,26 @@ contains
             ! Determine rate of recovery for xsmrpool deficit
 
             xsmrpool_recover(p) = -xsmrpool(p)/(dayscrecover*secspday)
-            if (xsmrpool_recover(p) < availc(p)) then
-               ! available carbon reduced by amount for xsmrpool recovery
-               availc(p) = availc(p) - xsmrpool_recover(p)
-            else
-               ! all of the available carbon goes to xsmrpool recovery
-               xsmrpool_recover(p) = availc(p)
-               availc(p) = 0.0_r8
-            end if
+            !if (xsmrpool_recover(p) < availc(p)) then
+            !   ! available carbon reduced by amount for xsmrpool recovery
+            !   availc(p) = availc(p) - xsmrpool_recover(p)
+            !else
+            !   ! all of the available carbon goes to xsmrpool recovery
+            !   xsmrpool_recover(p) = availc(p)
+            !   availc(p) = 0.0_r8
+            if (cpool(p) < 10.0_r8 * xsmrpool_recover(p)*dt) then 
+              !Take xsmr recovery from existing cpool, if cpool too small then
+              !use availc
+              if (xsmrpool_recover(p) < availc(p)) then
+                ! available carbon reduced by amount for xsmrpool recovery
+                 availc(p) = availc(p) - xsmrpool_recover(p)
+              else
+                 ! all of the available carbon goes to xsmrpool recovery
+                 xsmrpool_recover(p) = availc(p)
+                 availc(p) = 0.0_r8
+              end if
+
+            end if 
             cpool_to_xsmrpool(p) = xsmrpool_recover(p)
          end if
 
@@ -3592,7 +3604,7 @@ contains
                cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f5 * fcur * (1 + g1)
                cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f5 * (1._r8 -fcur) * (1 + g1)
             end if
-           
+
             ! updated allocation if necessary
             nlc = min(nlc_adjust_high ,plant_calloc(p) / c_allometry(p) )
          end if
@@ -3751,7 +3763,7 @@ contains
          ! (1) maintain plant PC stoichiometry at optimal ratio under CN mode
          ! (2) maintain plant NC stoichiometry at optimal ratio under CP mode
          ! (3) maintain plant PC/NC stoichiometry at optimal ratios under C mode
-         
+
          if (nu_com .eq. 'ECA' .or. nu_com .eq. 'MIC') then
 
              supplement_to_plantn(p)  = 0.0_r8
@@ -4102,6 +4114,9 @@ contains
                         *(nfixation_prof(c,j)*dzsoi_decomp(j))         ! weighted by froot fractions in annual max. active layers
                   else
                      nuptake_prof(c,j) = sminn_vr_loc(c,j) / sminn_tot(c)   !original: if (use_nitrif_denitrif): nuptake_prof(c,j) = sminn_vr(c,j) / sminn_tot(c)
+                     ! test the model using uptake profile that follows fine
+                     ! root
+                     nuptake_prof(c,j) = nfixation_prof(c,j)     
                   end if
                else
                   nuptake_prof(c,j) = nfixation_prof(c,j)
@@ -4160,6 +4175,8 @@ contains
                !!! add P demand calculation
                if (solutionp_tot(c)  >  0.) then
                   puptake_prof(c,j) = solutionp_vr(c,j) / solutionp_tot(c)
+                  ! test the uptake profle that follows fine root
+                  puptake_prof(c,j) = nfixation_prof(c,j)      ! need modifications 
                else
                   puptake_prof(c,j) = nfixation_prof(c,j)      ! need modifications 
                endif

@@ -412,7 +412,7 @@ contains
               ws_flag = 0._r8
             end if
             !------ Seasonal deciduous phenology ----------------------
-#if defined HUM_HOL
+#if defined HUM_HOLXXX
             !crit_onset_gdd = exp(4.8_r8 + 0.13_r8*(tmean(p) - SHR_CONST_TKFRZ))
             crit_onset_gdd = phen_fstar
             if (.not. use_cn .and. season_decid(ivt(p)) == 1._r8) then

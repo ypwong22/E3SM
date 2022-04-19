@@ -142,12 +142,20 @@ module VegetationPropertiesType
      real(r8), allocatable :: mbbopt(:)           !Ball-Berry stomatal conductance slope
      real(r8), allocatable :: nstor(:)            !Nitrogen storage pool timescale 
      real(r8), allocatable :: br_xr(:)            !Base rate for excess respiration
+     real(r8), allocatable :: br_mr(:)            !Base rate for maintanence respiration
+     real(r8), allocatable :: q10_mr(:)           !Q10 for maintanence respiration
+     real(r8), allocatable :: crit_gdd1(:)        !Deciduous pheonlogy critical GDD intercept
+     real(r8), allocatable :: crit_gdd2(:)        !Deciduous pheonlogy criticalGDD slope
      real(r8)              :: tc_stress           !Critial temperature for moisture stress
-
-
+     real(r8), allocatable :: proot_a(:)          !First parameter in the root growth phenology equation
+     real(r8), allocatable :: proot_b(:)          !Second parameter in the root growth phenology equation
+     real(r8), allocatable :: proot_npp_frac(:)   !Percentage of allocated root carbon that is displayed immediately
+     real(r8), allocatable :: proot_onset_tbase(:)!Base temperature for calculating the GDD-controlled growth
+     real(r8), allocatable :: proot_onset_intercept(:) ! linear regression intercept for soil temperature-controlled growth start date
+     real(r8), allocatable :: proot_onset_slope(:) ! linear regression slope for soil temperature-controlled growth start date
    contains
    procedure, public :: Init => veg_vp_init
-  
+
    end type vegetation_properties_type
 
   type(vegetation_properties_type), public :: veg_vp ! patch ecophysiological constants structure
@@ -180,9 +188,10 @@ contains
     use pftvarcon , only : leafcp_obs, frootcp_obs, livewdcp_obs, deadwdcp_obs
     use pftvarcon , only : fnr, act25, kcha, koha, cpha, vcmaxha, jmaxha, tpuha
     use pftvarcon , only : lmrha, vcmaxhd, jmaxhd, tpuhd, lmrse, qe, theta_cj
-    use pftvarcon , only : bbbopt, mbbopt, nstor, br_xr, tc_stress, lmrhd 
+    use pftvarcon , only : bbbopt, mbbopt, nstor, br_xr, br_mr, q10_mr, tc_stress, lmrhd, crit_gdd1, crit_gdd2
+    use pftvarcon , only : proot_a, proot_b, proot_npp_frac, proot_onset_tbase, proot_onset_intercept, proot_onset_slope
     !
-    
+
     class (vegetation_properties_type) :: this
 
     !LOCAL VARIABLES:
@@ -290,6 +299,16 @@ contains
     allocate( this%mbbopt(0:numpft))                             ; this%mbbopt(:)                =nan
     allocate( this%nstor(0:numpft))                              ; this%nstor(:)                 =nan
     allocate( this%br_xr(0:numpft))                              ; this%br_xr(:)                 =nan
+    allocate( this%br_mr(0:numpft))                              ; this%br_mr(:)                 =nan
+    allocate( this%q10_mr(0:numpft))                             ; this%q10_mr(:)                =nan
+    allocate( this%crit_gdd1(0:numpft))                          ; this%crit_gdd1(:)             =nan
+    allocate( this%crit_gdd2(0:numpft))                          ; this%crit_gdd2(:)             =nan
+    allocate( this%proot_a(0:numpft))                            ; this%proot_a(:)               =nan
+    allocate( this%proot_b(0:numpft))                            ; this%proot_b(:)               =nan
+    allocate( this%proot_npp_frac(0:numpft))                     ; this%proot_npp_frac(:)        =nan
+    allocate( this%proot_onset_tbase(0:numpft))                  ; this%proot_onset_tbase(:)     =nan
+    allocate( this%proot_onset_intercept(0:numpft))          ; this%proot_onset_intercept(:) =nan
+    allocate( this%proot_onset_slope(0:numpft))              ; this%proot_onset_slope(:)  =nan
 
     do m = 0,numpft
 
@@ -377,9 +396,19 @@ contains
        this%mbbopt(m)       = mbbopt(m)
        this%nstor(m)        = nstor(m)
        this%br_xr(m)        = br_xr(m)
- 
+       this%br_mr(m)        = br_mr(m)
+       this%q10_mr(m)       = q10_mr(m)
+       this%crit_gdd1(m)    = crit_gdd1(m)
+       this%crit_gdd2(m)    = crit_gdd2(m)
+       this%proot_a(m)      = proot_a(m)
+       this%proot_b(m)      = proot_b(m)
+       this%proot_npp_frac(m)             = proot_npp_frac(m)
+       this%proot_onset_tbase(m)          = proot_onset_tbase(m)
+       this%proot_onset_intercept(m)  = proot_onset_intercept(m)
+       this%proot_onset_slope(m)      = proot_onset_slope(m)
+
     end do
-    
+
     do m = 0,numpft
         this%alpha_nfix(m)     = alpha_nfix(m)
         this%alpha_ptase(m)    = alpha_ptase(m)

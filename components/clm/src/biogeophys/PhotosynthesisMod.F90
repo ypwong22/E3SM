@@ -235,8 +235,7 @@ contains
     
     !
     ! !LOCAL VARIABLES:
-    !
-    ! Leaf photosynthesis parameters
+    !-=    ! Leaf photosynthesis parameters
     real(r8) :: jmax_z(bounds%begp:bounds%endp,nlevcan)  ! maximum electron transport rate (umol electrons/m**2/s)
     real(r8) :: lnc(bounds%begp:bounds%endp)   ! leaf N concentration (gN leaf/m^2)
     real(r8) :: bbbopt(bounds%begp:bounds%endp)! Ball-Berry minimum leaf conductance, unstressed (umol H2O/m**2/s)
@@ -374,6 +373,8 @@ contains
          flnr          => veg_vp%flnr                          , & ! Input:  [real(r8) (:)   ]  fraction of leaf N in the Rubisco enzyme (gN Rubisco / gN leaf)       
          fnitr         => veg_vp%fnitr                         , & ! Input:  [real(r8) (:)   ]  foliage nitrogen limitation factor (-)                                
          slatop        => veg_vp%slatop                        , & ! Input:  [real(r8) (:)   ]  specific leaf area at top of canopy, projected area basis [m^2/gC]    
+         br_mr         => veg_vp%br_mr                         , &
+         q10_mr        => veg_vp%q10_mr                        , &
 
          forc_pbot     => top_as%pbot                              , & ! Input:  [real(r8) (:)   ]  atmospheric pressure (Pa)                                             
 
@@ -407,15 +408,15 @@ contains
          leafn         => veg_ns%leafn           , &
          leafn_storage => veg_ns%leafn_storage   , &
          leafn_xfer    => veg_ns%leafn_xfer      , &
-         leafp         => veg_ps%leafp         , &
-         leafp_storage => veg_ps%leafp_storage , &
-         leafp_xfer    => veg_ps%leafp_xfer    , &
-         i_vcmax       => veg_vp%i_vc                          , &
-         s_vcmax       => veg_vp%s_vc                          , &
-         h2o_moss_wc   => veg_ws%h2o_moss_wc                  , & !Input: [real(r8) (:)   ]  Total Moss water content
-         h2osfc        => col_ws%h2osfc                         & !Input: [real(r8) (:)   ]  Surface water
+         leafp         => veg_ps%leafp           , &
+         leafp_storage => veg_ps%leafp_storage   , &
+         leafp_xfer    => veg_ps%leafp_xfer      , &
+         i_vcmax       => veg_vp%i_vc            , &
+         s_vcmax       => veg_vp%s_vc            , &
+         h2o_moss_wc   => veg_ws%h2o_moss_wc     , & !Input: [real(r8) (:)   ]  Total Moss water content
+         h2osfc        => col_ws%h2osfc          & !Input: [real(r8) (:)   ]  Surface water
          )
-      
+    
       if (phase == 'sun') then
          par_z     =>    solarabs_vars%parsun_z_patch        ! Input:  [real(r8) (:,:) ]  par absorbed per unit lai for canopy layer (w/m**2)                 
          lai_z     =>    canopystate_vars%laisun_z_patch     ! Input:  [real(r8) (:,:) ]  leaf area index for canopy layer, sunlit or shaded                  
@@ -718,7 +719,8 @@ contains
             !
             ! Then scale this value at the top of the canopy for canopy depth
 
-            lmr25top = 2.525e-6_r8 * (ParamsShareInst%Q10_mr ** ((25._r8 - 20._r8)/10._r8))
+            !lmr25top = 2.525e-6_r8 * (ParamsShareInst%Q10_mr ** ((25._r8 - 20._r8)/10._r8))
+            lmr25top = br_mr(veg_pp%itype(p)) * q10_mr(veg_pp%itype(p)) **((25._r8 - 20._r8)/10._r8)
             lmr25top = lmr25top * lnc(p) / 12.e-06_r8
 
          else
@@ -760,7 +762,7 @@ contains
             lmr25 = lmr25top * nscaler
             if (c3flag(p)) then
 #if (defined HUM_HOL)
-               lmr_z(p,iv) = lmr25 * ParamsShareInst%Q10_mr**((t_veg(p)-(tfrz+25._r8))/10._r8)
+               lmr_z(p,iv) = lmr25 * q10_mr(veg_pp%itype(p))**((t_veg(p)-(tfrz+25._r8))/10._r8)
 #else
                lmr_z(p,iv) = lmr25 * ft(t_veg(p), lmrha) * fth(t_veg(p), lmrhd, lmrse, lmrc)
 #endif
@@ -1927,6 +1929,9 @@ contains
          stem_leaf     => veg_vp%stem_leaf                         , & ! allocation parameter: new stem c per new leaf C (gC/gC)
          froot_leaf     => veg_vp%froot_leaf                         , & ! allocation parameter: new fine root C per new leaf C (gC/gC)
          croot_stem     => veg_vp%croot_stem                         , & ! allocation parameter: new coarse root C per new stem C (gC/gC)
+         br_mr      => veg_vp%br_mr                          ,&       
+         q10_mr     => veg_vp%q10_mr                         ,&
+      
          forc_pbot  => top_as%pbot                           , & ! Input:  [real(r8) (:)   ]  atmospheric pressure (Pa)
 
          t_veg         => veg_es%t_veg             , & ! Input:  [real(r8) (:)   ]  vegetation temperature (Kelvin)                                       
@@ -2327,7 +2332,7 @@ contains
             !
             ! Then scale this value at the top of the canopy for canopy depth
 
-            lmr25top = 2.525e-6_r8 * (ParamsShareInst%Q10_mr ** ((25._r8 - 20._r8)/10._r8))
+            lmr25top = br_mr(veg_pp%itype(p)) * q10_mr(veg_pp%itype(p)) ** ((25._r8 - 20._r8)/10._r8)
             lmr25top = lmr25top * lnc(p) / 12.e-06_r8
 
          else

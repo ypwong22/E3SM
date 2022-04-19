@@ -17,7 +17,7 @@ module VegetationDataType
   use clm_varcon      , only : spval, ispval, sb
   use clm_varcon      , only : c13ratio, c14ratio
   use landunit_varcon , only : istsoil, istcrop
-  use pftvarcon       , only : npcropmin, noveg, nstor
+  use pftvarcon       , only : npcropmin, noveg, nstor,ndllf_dcd_brl_tree
   use clm_varctl      , only : iulog, use_cn, spinup_state, spinup_mortality_factor, use_fates  
   use clm_varctl      , only : nu_com, use_crop, use_c13
   use clm_varctl      , only : use_lch4, use_betr
@@ -53,6 +53,7 @@ module VegetationDataType
     real(r8), pointer :: t_ref2m_u          (:) => null() ! urban 2 m height surface air temperature (K)
     ! temperature summary and accumulator variables
     real(r8), pointer :: t_a10              (:) => null() ! 10-day running mean of the 2 m temperature (K)
+    real(r8), pointer :: t_a21              (:) => null() ! 21-day running mean of the 2 m temperature (K)
     real(r8), pointer :: t_a10min           (:) => null() ! 10-day running mean of min 2-m temperature
     real(r8), pointer :: t_a5min            (:) => null() ! 5-day running mean of min 2-m temperature
     real(r8), pointer :: t_ref2m_min        (:) => null() ! daily minimum of average 2 m height surface air temperature (K)
@@ -76,10 +77,9 @@ module VegetationDataType
     real(r8), pointer :: gdd020             (:) => null() ! 20-year average of gdd0                     (ddays)
     real(r8), pointer :: gdd820             (:) => null() ! 20-year average of gdd8                     (ddays)
     real(r8), pointer :: gdd1020            (:) => null() ! 20-year average of gdd10                    (ddays)
-    ! temperature-related variables
     real(r8), pointer :: thm                (:) => null() ! intermediate variable (forc_t+0.0098*forc_hgt_t_patch)
     real(r8), pointer :: emv                (:) => null() ! vegetation emissivity (unitless)
-
+    ! temperature-related variables
     contains
     procedure, public :: Init    => veg_es_init
     procedure, public :: Restart => veg_es_restart
@@ -88,7 +88,7 @@ module VegetationDataType
     procedure, public :: InitAccVars   => init_acc_vars_veg_es
     procedure, public :: UpdateAccVars => update_acc_vars_veg_es
   end type vegetation_energy_state
-  
+
   !-----------------------------------------------------------------------
   ! Define the data structure that holds water state information at the vegetation level.
   !-----------------------------------------------------------------------
@@ -123,6 +123,7 @@ module VegetationDataType
     real(r8), pointer :: leafc_xfer         (:) => null() ! (gC/m2) leaf C transfer
     real(r8), pointer :: frootc             (:) => null() ! (gC/m2) fine root C
     real(r8), pointer :: frootc_storage     (:) => null() ! (gC/m2) fine root C storage
+    real(r8), pointer :: prev_frootc_storage(:) => null() ! (gC/m2) last year's fine root C storage at year end
     real(r8), pointer :: frootc_xfer        (:) => null() ! (gC/m2) fine root C transfer
     real(r8), pointer :: livestemc          (:) => null() ! (gC/m2) live stem C
     real(r8), pointer :: livestemc_storage  (:) => null() ! (gC/m2) live stem C storage
@@ -132,9 +133,11 @@ module VegetationDataType
     real(r8), pointer :: deadstemc_xfer     (:) => null() ! (gC/m2) dead stem C transfer
     real(r8), pointer :: livecrootc         (:) => null() ! (gC/m2) live coarse root C
     real(r8), pointer :: livecrootc_storage (:) => null() ! (gC/m2) live coarse root C storage
+    real(r8), pointer :: prev_livecrootc_storage (:) => null() ! (gC/m2) live coarse root C storage
     real(r8), pointer :: livecrootc_xfer    (:) => null() ! (gC/m2) live coarse root C transfer
     real(r8), pointer :: deadcrootc         (:) => null() ! (gC/m2) dead coarse root C
     real(r8), pointer :: deadcrootc_storage (:) => null() ! (gC/m2) dead coarse root C storage
+    real(r8), pointer :: prev_deadcrootc_storage (:) => null() ! (gC/m2) dead coarse root C storage
     real(r8), pointer :: deadcrootc_xfer    (:) => null() ! (gC/m2) dead coarse root C transfer
     real(r8), pointer :: gresp_storage      (:) => null() ! (gC/m2) growth respiration storage
     real(r8), pointer :: gresp_xfer         (:) => null() ! (gC/m2) growth respiration transfer
@@ -172,6 +175,7 @@ module VegetationDataType
     real(r8), pointer :: leafn_xfer             (:)   => null()  ! (gN/m2) leaf N transfer
     real(r8), pointer :: frootn                 (:)   => null()  ! (gN/m2) fine root N
     real(r8), pointer :: frootn_storage         (:)   => null()  ! (gN/m2) fine root N storage
+    real(r8), pointer :: prev_frootn_storage    (:)   => null()  ! (gN/m2) previous year's fine root N storage
     real(r8), pointer :: frootn_xfer            (:)   => null()  ! (gN/m2) fine root N transfer
     real(r8), pointer :: livestemn              (:)   => null()  ! (gN/m2) live stem N
     real(r8), pointer :: livestemn_storage      (:)   => null()  ! (gN/m2) live stem N storage
@@ -181,9 +185,11 @@ module VegetationDataType
     real(r8), pointer :: deadstemn_xfer         (:)   => null()  ! (gN/m2) dead stem N transfer
     real(r8), pointer :: livecrootn             (:)   => null()  ! (gN/m2) live coarse root N
     real(r8), pointer :: livecrootn_storage     (:)   => null()  ! (gN/m2) live coarse root N storage
+    real(r8), pointer :: prev_livecrootn_storage    (:)   => null()  ! (gN/m2) previous year's live coarse root N storage
     real(r8), pointer :: livecrootn_xfer        (:)   => null()  ! (gN/m2) live coarse root N transfer
     real(r8), pointer :: deadcrootn             (:)   => null()  ! (gN/m2) dead coarse root N
     real(r8), pointer :: deadcrootn_storage     (:)   => null()  ! (gN/m2) dead coarse root N storage
+    real(r8), pointer :: prev_deadcrootn_storage (:) => null() ! (gN/m2) previous year's dead coarse root N storage
     real(r8), pointer :: deadcrootn_xfer        (:)   => null()  ! (gN/m2) dead coarse root N transfer
     real(r8), pointer :: retransn               (:)   => null()  ! (gN/m2) plant pool of retranslocated N
     real(r8), pointer :: npool                  (:)   => null()  ! (gN/m2) temporary plant N pool
@@ -260,6 +266,7 @@ module VegetationDataType
     real(r8), pointer :: leafp_xfer             (:)     ! (gP/m2) leaf P transfer
     real(r8), pointer :: frootp                 (:)     ! (gP/m2) fine root P
     real(r8), pointer :: frootp_storage         (:)     ! (gP/m2) fine root P storage
+    real(r8), pointer :: prev_frootp_storage(:) => null() ! (gP/m2) last year's fine root P storage at year end
     real(r8), pointer :: frootp_xfer            (:)     ! (gP/m2) fine root P transfer
     real(r8), pointer :: livestemp              (:)     ! (gP/m2) live stem P
     real(r8), pointer :: livestemp_storage      (:)     ! (gP/m2) live stem P storage
@@ -269,9 +276,11 @@ module VegetationDataType
     real(r8), pointer :: deadstemp_xfer         (:)     ! (gP/m2) dead stem P transfer
     real(r8), pointer :: livecrootp             (:)     ! (gP/m2) live coarse root P
     real(r8), pointer :: livecrootp_storage     (:)     ! (gP/m2) live coarse root P storage
+    real(r8), pointer :: prev_livecrootp_storage (:) => null() ! (gP/m2) live coarse root P storage
     real(r8), pointer :: livecrootp_xfer        (:)     ! (gP/m2) live coarse root P transfer
     real(r8), pointer :: deadcrootp             (:)     ! (gP/m2) dead coarse root P
     real(r8), pointer :: deadcrootp_storage     (:)     ! (gP/m2) dead coarse root P storage
+    real(r8), pointer :: prev_deadcrootp_storage (:) => null() ! (gP/m2) dead coarse root P storage
     real(r8), pointer :: deadcrootp_xfer        (:)     ! (gP/m2) dead coarse root P transfer
     real(r8), pointer :: retransp               (:)     ! (gP/m2) plant pool of retranslocated P
     real(r8), pointer :: ppool                  (:)     ! (gP/m2) temporary plant P pool
@@ -1064,6 +1073,7 @@ module VegetationDataType
     allocate(this%t_ref2m_r          (begp:endp))                   ; this%t_ref2m_r          (:)   = nan
     allocate(this%t_ref2m_u          (begp:endp))                   ; this%t_ref2m_u          (:)   = nan
     allocate(this%t_a10              (begp:endp))                   ; this%t_a10              (:)   = nan
+    allocate(this%t_a21              (begp:endp))                   ; this%t_a21              (:)   = nan
     allocate(this%t_a10min           (begp:endp))                   ; this%t_a10min           (:)   = nan
     allocate(this%t_a5min            (begp:endp))                   ; this%t_a5min            (:)   = nan
     allocate(this%t_ref2m_min        (begp:endp))                   ; this%t_ref2m_min        (:)   = nan
@@ -1207,6 +1217,7 @@ module VegetationDataType
        call hist_addfld1d (fname='GDD1020', units='ddays', &
             avgflag='A', long_name='Twenty year average of growing degree days base 10C from planting', &
             ptr_patch=this%gdd1020, default='inactive')
+
     end if
     
     if (use_cn ) then
@@ -1414,6 +1425,10 @@ module VegetationDataType
          desc='10-day running mean of 2-m temperature', accum_type='runmean', accum_period=-10, &
          subgrid_type='pft', numlev=1,init_value=SHR_CONST_TKFRZ+20._r8)
 
+     call init_accum_field (name='T21', units='K', &
+         desc='10-day running mean of 2-m temperature', accum_type='runmean', accum_period=-21, &
+         subgrid_type='pft', numlev=1,init_value=SHR_CONST_TKFRZ+20._r8)
+
     call init_accum_field(name='TREFAV', units='K', &
          desc='average over an hour of 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
          subgrid_type='pft', numlev=1, init_value=0._r8)
@@ -1507,6 +1522,9 @@ module VegetationDataType
 
     call extract_accum_field ('T10', rbufslp, nstep)
     this%t_a10(begp:endp) = rbufslp(begp:endp)
+
+    call extract_accum_field ('T21', rbufslp, nstep)
+    this%t_a21(begp:endp) = rbufslp(begp:endp)
 
     call extract_accum_field ('T_VEG24', rbufslp, nstep)
     this%t_veg24(begp:endp) = rbufslp(begp:endp)
@@ -1604,9 +1622,11 @@ module VegetationDataType
     do p = begp,endp
        rbufslp(p) = this%t_veg(p)
     end do
-    
+
     call update_accum_field  ('T10', this%t_ref2m, nstep)
     call extract_accum_field ('T10', this%t_a10  , nstep)
+    call update_accum_field  ('T21', this%t_ref2m, nstep)
+    call extract_accum_field ('T21', this%t_a21  , nstep)
     call update_accum_field  ('T_VEG24' , rbufslp       , nstep)
     call extract_accum_field ('T_VEG24' , this%t_veg24  , nstep)
     call update_accum_field  ('T_VEG240', rbufslp       , nstep)
@@ -1933,6 +1953,7 @@ module VegetationDataType
        allocate(this%leafc_xfer         (begp :endp))   ;  this%leafc_xfer         (:)   = nan
        allocate(this%frootc             (begp :endp))   ;  this%frootc             (:)   = nan
        allocate(this%frootc_storage     (begp :endp))   ;  this%frootc_storage     (:)   = nan
+       allocate(this%prev_frootc_storage(begp :endp))   ;  this%prev_frootc_storage(:)   = nan
        allocate(this%frootc_xfer        (begp :endp))   ;  this%frootc_xfer        (:)   = nan
        allocate(this%livestemc          (begp :endp))   ;  this%livestemc          (:)   = nan
        allocate(this%livestemc_storage  (begp :endp))   ;  this%livestemc_storage  (:)   = nan
@@ -1942,10 +1963,12 @@ module VegetationDataType
        allocate(this%deadstemc_xfer     (begp :endp))   ;  this%deadstemc_xfer     (:)   = nan
        allocate(this%livecrootc         (begp :endp))   ;  this%livecrootc         (:)   = nan
        allocate(this%livecrootc_storage (begp :endp))   ;  this%livecrootc_storage (:)   = nan
+       allocate(this%prev_livecrootc_storage(begp :endp))   ;  this%prev_livecrootc_storage(:)   = nan
        allocate(this%livecrootc_xfer    (begp :endp))   ;  this%livecrootc_xfer    (:)   = nan
        allocate(this%deadcrootc         (begp :endp))   ;  this%deadcrootc         (:)   = nan
        allocate(this%deadcrootc_storage (begp :endp))   ;  this%deadcrootc_storage (:)   = nan
        allocate(this%deadcrootc_xfer    (begp :endp))   ;  this%deadcrootc_xfer    (:)   = nan
+       allocate(this%prev_deadcrootc_storage(begp :endp))   ;  this%prev_deadcrootc_storage(:)   = nan
        allocate(this%gresp_storage      (begp :endp))   ;  this%gresp_storage      (:)   = nan
        allocate(this%gresp_xfer         (begp :endp))   ;  this%gresp_xfer         (:)   = nan
        allocate(this%cpool              (begp :endp))   ;  this%cpool              (:)   = nan
@@ -2001,6 +2024,11 @@ module VegetationDataType
              avgflag='A', long_name='fine root C storage', &
              ptr_patch=this%frootc_storage, default='inactive')
 
+       this%prev_frootc_storage(begp:endp) = spval
+       call hist_addfld1d (fname='PREV_FROOTC_STORAGE', units='gC/m^2', &
+            avgflag='A', long_name='previous year fine root C storage', &
+            ptr_patch=this%prev_frootc_storage, default='inactive')
+      
        this%frootc_xfer(begp:endp) = spval
        call hist_addfld1d (fname='FROOTC_XFER', units='gC/m^2', &
              avgflag='A', long_name='fine root C transfer', &
@@ -2046,6 +2074,11 @@ module VegetationDataType
              avgflag='A', long_name='live coarse root C storage', &
              ptr_patch=this%livecrootc_storage, default='inactive')
 
+       this%prev_livecrootc_storage(begp:endp) = spval
+       call hist_addfld1d (fname='PREV_LIVECROOTC_STORAGE', units='gC/m^2', &
+            avgflag='A', long_name='previous year live coarse root C storage', &
+            ptr_patch=this%prev_livecrootc_storage, default='inactive')
+      
        this%livecrootc_xfer(begp:endp) = spval
        call hist_addfld1d (fname='LIVECROOTC_XFER', units='gC/m^2', &
              avgflag='A', long_name='live coarse root C transfer', &
@@ -2060,6 +2093,11 @@ module VegetationDataType
        call hist_addfld1d (fname='DEADCROOTC_STORAGE', units='gC/m^2', &
              avgflag='A', long_name='dead coarse root C storage', &
              ptr_patch=this%deadcrootc_storage,  default='inactive')
+
+       this%prev_deadcrootc_storage(begp:endp) = spval
+       call hist_addfld1d (fname='PREV_DEADCROOTC_STORAGE', units='gC/m^2', &
+             avgflag='A', long_name='previous year dead coarse root C storage', &
+             ptr_patch=this%prev_deadcrootc_storage, default='inactive')
 
        this%deadcrootc_xfer(begp:endp) = spval
        call hist_addfld1d (fname='DEADCROOTC_XFER', units='gC/m^2', &
@@ -2465,11 +2503,20 @@ module VegetationDataType
                    this%leafc_storage(p) = 1._r8 * ratio
                 end if
              end if
+
+             !! increase leafc_storage for larch
+             if (veg_pp%itype(p) == ndllf_dcd_brl_tree) then
+                this%leafc(p) = 0._r8
+                this%leafc_storage(p) = 20._r8 * ratio 
+             end if 
+                 
+
              this%leafc_xfer(p) = 0._r8
 
-             this%frootc(p)            = 0._r8 
-             this%frootc_storage(p)    = 0._r8 
-             this%frootc_xfer(p)       = 0._r8 
+             this%frootc(p)              = 0._r8 
+             this%frootc_storage(p)      = 0._r8 
+             this%prev_frootc_storage(p) = 0._r8 
+             this%frootc_xfer(p)         = 0._r8 
 
              this%livestemc(p)         = 0._r8 
              this%livestemc_storage(p) = 0._r8 
@@ -2492,11 +2539,13 @@ module VegetationDataType
                       this%leafc_storage(p) = 0._r8
                       this%frootc(p) = 20._r8 * ratio
                       this%frootc_storage(p) = 0._r8
-                   else
+                      this%prev_frootc_storage(p)    = 0._r8 
+                    else
                       this%leafc(p) = 0._r8 
                       this%leafc_storage(p) = 20._r8 * ratio
                       this%frootc(p) = 0._r8
                       this%frootc_storage(p) = 20._r8 * ratio
+                      this%prev_frootc_storage(p)    = 20._r8 * ratio
                    end if
                 end if
              end if
@@ -2504,10 +2553,12 @@ module VegetationDataType
              this%livecrootc(p)         = 0._r8 
              this%livecrootc_storage(p) = 0._r8 
              this%livecrootc_xfer(p)    = 0._r8 
+             this%prev_livecrootc_storage(p) = 0._r8 
 
              this%deadcrootc(p)         = 0._r8 
              this%deadcrootc_storage(p) = 0._r8 
              this%deadcrootc_xfer(p)    = 0._r8 
+             this%prev_deadcrootc_storage(p) = 0._r8 
 
              this%gresp_storage(p)      = 0._r8 
              this%gresp_xfer(p)         = 0._r8 
@@ -2580,6 +2631,7 @@ module VegetationDataType
           this%leafc_xfer(p)           = value_veg
           this%frootc(p)               = value_veg
           this%frootc_storage(p)       = value_veg
+          this%prev_frootc_storage(p)  = value_veg
           this%frootc_xfer(p)          = value_veg
           this%livestemc(p)            = value_veg
           this%livestemc_storage(p)    = value_veg
@@ -2589,9 +2641,11 @@ module VegetationDataType
           this%deadstemc_xfer(p)       = value_veg
           this%livecrootc(p)           = value_veg
           this%livecrootc_storage(p)   = value_veg
+          this%prev_livecrootc_storage(p)  = value_veg
           this%livecrootc_xfer(p)      = value_veg
           this%deadcrootc(p)           = value_veg
           this%deadcrootc_storage(p)   = value_veg
+          this%prev_deadcrootc_storage(p)  = value_veg
           this%deadcrootc_xfer(p)      = value_veg
           this%gresp_storage(p)        = value_veg
           this%gresp_xfer(p)           = value_veg
@@ -2681,7 +2735,11 @@ module VegetationDataType
 
           call restartvar(ncid=ncid, flag=flag, varname='frootc_storage', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_storage) 
+               interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
+
+          call restartvar(ncid=ncid, flag=flag, varname='prev_frootc_storage', xtype=ncd_double,  &
+               dim1name='pft', long_name='', units='', &
+               interpinic_flag='interp', readvar=readvar, data=this%prev_frootc_storage)
 
           call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
@@ -2719,6 +2777,10 @@ module VegetationDataType
                dim1name='pft', long_name='', units='', &
                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage) 
 
+          call restartvar(ncid=ncid, flag=flag, varname='prev_livecrootc_storage', xtype=ncd_double,  &
+               dim1name='pft', long_name='', units='', &
+               interpinic_flag='interp', readvar=readvar, data=this%prev_livecrootc_storage)
+
           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer) 
@@ -2730,6 +2792,10 @@ module VegetationDataType
           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage) 
+
+          call restartvar(ncid=ncid, flag=flag, varname='prev_deadcrootc_storage', xtype=ncd_double,  &
+               dim1name='pft', long_name='', units='', &
+               interpinic_flag='interp', readvar=readvar, data=this%prev_deadcrootc_storage) 
 
           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
@@ -3461,7 +3527,7 @@ module VegetationDataType
     !--------------------------------
     ! the spinup_state variable is being written by the column-level carbon state restart
     ! routine, so only need to handle the reading part here    
-    if (carbon_type == 'c12'  .or. carbon_type == 'c14') then
+    if (carbon_type == 'c12'  .or. carbon_type == 'c14' .or. carbon_type == 'c13') then
         if (flag == 'read') then
            call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
                 long_name='Spinup state of the model that wrote this restart file: ' &
@@ -3686,6 +3752,7 @@ module VegetationDataType
     allocate(this%leafn_xfer             (begp:endp))           ; this%leafn_xfer          (:)   = nan
     allocate(this%frootn                 (begp:endp))           ; this%frootn              (:)   = nan
     allocate(this%frootn_storage         (begp:endp))           ; this%frootn_storage      (:)   = nan
+    allocate(this%prev_frootn_storage         (begp:endp))           ; this%prev_frootn_storage      (:)   = nan
     allocate(this%frootn_xfer            (begp:endp))           ; this%frootn_xfer         (:)   = nan
     allocate(this%livestemn              (begp:endp))           ; this%livestemn           (:)   = nan
     allocate(this%livestemn_storage      (begp:endp))           ; this%livestemn_storage   (:)   = nan
@@ -3695,9 +3762,11 @@ module VegetationDataType
     allocate(this%deadstemn_xfer         (begp:endp))           ; this%deadstemn_xfer      (:)   = nan
     allocate(this%livecrootn             (begp:endp))           ; this%livecrootn          (:)   = nan
     allocate(this%livecrootn_storage     (begp:endp))           ; this%livecrootn_storage  (:)   = nan
+    allocate(this%prev_livecrootn_storage         (begp:endp))           ; this%prev_livecrootn_storage      (:)   = nan
     allocate(this%livecrootn_xfer        (begp:endp))           ; this%livecrootn_xfer     (:)   = nan
     allocate(this%deadcrootn             (begp:endp))           ; this%deadcrootn          (:)   = nan
     allocate(this%deadcrootn_storage     (begp:endp))           ; this%deadcrootn_storage  (:)   = nan
+    allocate(this%prev_deadcrootn_storage         (begp:endp))           ; this%prev_deadcrootn_storage      (:)   = nan
     allocate(this%deadcrootn_xfer        (begp:endp))           ; this%deadcrootn_xfer     (:)   = nan
     allocate(this%retransn               (begp:endp))           ; this%retransn            (:)   = nan
     allocate(this%npool                  (begp:endp))           ; this%npool               (:)   = nan
@@ -3791,6 +3860,11 @@ module VegetationDataType
          avgflag='A', long_name='fine root N storage', &
          ptr_patch=this%frootn_storage, default='inactive')
 
+     this%prev_frootn_storage(begp:endp) = spval
+     call hist_addfld1d (fname='PREV_FROOTN_STORAGE', units='gN/m^2', &
+          avgflag='A', long_name='previous year fine root N storage', &
+          ptr_patch=this%prev_frootn_storage, default='inactive')
+     
     this%frootn_xfer(begp:endp) = spval
     call hist_addfld1d (fname='FROOTN_XFER', units='gN/m^2', &
          avgflag='A', long_name='fine root N transfer', &
@@ -3836,6 +3910,11 @@ module VegetationDataType
          avgflag='A', long_name='live coarse root N storage', &
          ptr_patch=this%livecrootn_storage, default='inactive')
 
+     this%prev_livecrootn_storage(begp:endp) = spval
+     call hist_addfld1d (fname='PREV_LIVECROOTN_STORAGE', units='gN/m^2', &
+          avgflag='A', long_name='previous year live coarse root N storage', &
+          ptr_patch=this%prev_livecrootn_storage, default='inactive')
+    
     this%livecrootn_xfer(begp:endp) = spval
     call hist_addfld1d (fname='LIVECROOTN_XFER', units='gN/m^2', &
          avgflag='A', long_name='live coarse root N transfer', &
@@ -3856,6 +3935,11 @@ module VegetationDataType
          avgflag='A', long_name='dead coarse root N transfer', &
          ptr_patch=this%deadcrootn_xfer, default='inactive')
 
+     this%prev_deadcrootn_storage(begp:endp) = spval
+     call hist_addfld1d (fname='PREV_DEADCROOTN_XFER', units='gN/m^2', &
+          avgflag='A', long_name='previous year dead coarse root N storage', &
+          ptr_patch=this%prev_deadcrootn_storage, default='inactive')
+    
     this%retransn(begp:endp) = spval
     call hist_addfld1d (fname='RETRANSN', units='gN/m^2', &
          avgflag='A', long_name='plant pool of retranslocated N', &
@@ -3928,6 +4012,7 @@ module VegetationDataType
           this%cropseedn_deficit(p) = 0._r8
           this%frootn(p)            = 0._r8
           this%frootn_storage(p)    = 0._r8
+          this%prev_frootn_storage(p)    = 0._r8
           this%frootn_xfer(p)       = 0._r8
           this%livestemn(p)         = 0._r8
           this%livestemn_storage(p) = 0._r8
@@ -3941,13 +4026,14 @@ module VegetationDataType
           else
              this%deadstemn(p) = 0._r8
           end if
-          
+
           if (nu_com .ne. 'RD') then
               ! ECA competition calculate root NP uptake as a function of fine root biomass
               ! better to initialize root CNP pools with a non-zero value
               if (veg_pp%itype(p) .ne. noveg) then
                  this%frootn(p) = veg_cs%frootc(p) / veg_vp%frootcn(veg_pp%itype(p))
                  this%frootn_storage(p) = veg_cs%frootc_storage(p) / veg_vp%frootcn(veg_pp%itype(p))
+                 this%prev_frootn_storage(p) = veg_cs%prev_frootc_storage(p) / veg_vp%frootcn(veg_pp%itype(p))
               end if
           end if
 
@@ -3955,9 +4041,11 @@ module VegetationDataType
           this%deadstemn_xfer(p)     = 0._r8
           this%livecrootn(p)         = 0._r8
           this%livecrootn_storage(p) = 0._r8
+          this%prev_livecrootn_storage(p) = 0._r8
           this%livecrootn_xfer(p)    = 0._r8
           this%deadcrootn(p)         = 0._r8
           this%deadcrootn_storage(p) = 0._r8
+          this%prev_deadcrootn_storage(p) = 0._r8
           this%deadcrootn_xfer(p)    = 0._r8
           this%retransn(p)           = 0._r8
           this%npool(p)              = 0._r8
@@ -4034,6 +4122,10 @@ module VegetationDataType
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%frootn_storage) 
 
+     call restartvar(ncid=ncid, flag=flag, varname='prev_frootn_storage', xtype=ncd_double,  &
+         dim1name='pft', long_name='', units='', &
+         interpinic_flag='interp', readvar=readvar, data=this%prev_frootn_storage) 
+
     call restartvar(ncid=ncid, flag=flag, varname='frootn_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%frootn_xfer) 
@@ -4070,7 +4162,11 @@ module VegetationDataType
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%livecrootn_storage) 
 
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootn_xfer', xtype=ncd_double,  &
+     call restartvar(ncid=ncid, flag=flag, varname='prev_livecrootn_storage', xtype=ncd_double,  &
+         dim1name='pft', long_name='', units='', &
+         interpinic_flag='interp', readvar=readvar, data=this%prev_livecrootn_storage) 
+
+     call restartvar(ncid=ncid, flag=flag, varname='livecrootn_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%livecrootn_xfer) 
 
@@ -4081,6 +4177,10 @@ module VegetationDataType
     call restartvar(ncid=ncid, flag=flag, varname='deadcrootn_storage', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%deadcrootn_storage) 
+
+     call restartvar(ncid=ncid, flag=flag, varname='prev_deadcrootn_storage', xtype=ncd_double,  &
+         dim1name='pft', long_name='', units='', &
+         interpinic_flag='interp', readvar=readvar, data=this%prev_deadcrootn_storage) 
 
     call restartvar(ncid=ncid, flag=flag, varname='deadcrootn_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
@@ -4296,6 +4396,7 @@ module VegetationDataType
        this%leafn_xfer(i)         = value_veg
        this%frootn(i)             = value_veg
        this%frootn_storage(i)     = value_veg
+       this%prev_frootn_storage(i)     = value_veg
        this%frootn_xfer(i)        = value_veg
        this%livestemn(i)          = value_veg
        this%livestemn_storage(i)  = value_veg
@@ -4305,9 +4406,11 @@ module VegetationDataType
        this%deadstemn_xfer(i)     = value_veg
        this%livecrootn(i)         = value_veg
        this%livecrootn_storage(i) = value_veg
+       this%prev_livecrootn_storage(i)     = value_veg
        this%livecrootn_xfer(i)    = value_veg
        this%deadcrootn(i)         = value_veg
        this%deadcrootn_storage(i) = value_veg
+       this%prev_deadcrootn_storage(i)     = value_veg
        this%deadcrootn_xfer(i)    = value_veg
        this%retransn(i)           = value_veg
        this%npool(i)              = value_veg
@@ -4389,6 +4492,7 @@ module VegetationDataType
     allocate(this%leafp_xfer         (begp:endp)) ; this%leafp_xfer         (:) = nan     
     allocate(this%frootp             (begp:endp)) ; this%frootp             (:) = nan
     allocate(this%frootp_storage     (begp:endp)) ; this%frootp_storage     (:) = nan     
+    allocate(this%prev_frootp_storage     (begp:endp)) ; this%prev_frootp_storage     (:) = nan     
     allocate(this%frootp_xfer        (begp:endp)) ; this%frootp_xfer        (:) = nan     
     allocate(this%livestemp          (begp:endp)) ; this%livestemp          (:) = nan
     allocate(this%livestemp_storage  (begp:endp)) ; this%livestemp_storage  (:) = nan
@@ -4398,9 +4502,11 @@ module VegetationDataType
     allocate(this%deadstemp_xfer     (begp:endp)) ; this%deadstemp_xfer     (:) = nan
     allocate(this%livecrootp         (begp:endp)) ; this%livecrootp         (:) = nan
     allocate(this%livecrootp_storage (begp:endp)) ; this%livecrootp_storage (:) = nan
+    allocate(this%prev_livecrootp_storage     (begp:endp)) ; this%prev_livecrootp_storage     (:) = nan     
     allocate(this%livecrootp_xfer    (begp:endp)) ; this%livecrootp_xfer    (:) = nan
     allocate(this%deadcrootp         (begp:endp)) ; this%deadcrootp         (:) = nan
     allocate(this%deadcrootp_storage (begp:endp)) ; this%deadcrootp_storage (:) = nan
+    allocate(this%prev_deadcrootp_storage     (begp:endp)) ; this%prev_deadcrootp_storage     (:) = nan     
     allocate(this%deadcrootp_xfer    (begp:endp)) ; this%deadcrootp_xfer    (:) = nan
     allocate(this%retransp           (begp:endp)) ; this%retransp           (:) = nan
     allocate(this%ppool              (begp:endp)) ; this%ppool              (:) = nan
@@ -4455,6 +4561,11 @@ module VegetationDataType
          avgflag='A', long_name='fine root P storage', &
          ptr_patch=this%frootp_storage, default='inactive')
 
+     this%prev_frootp_storage(begp:endp) = spval
+     call hist_addfld1d (fname='PREV_FROOTP_STORAGE', units='gP/m^2', &
+          avgflag='A', long_name='previous year fine root P storage', &
+          ptr_patch=this%prev_frootp_storage, default='inactive')
+     
     this%frootp_xfer(begp:endp) = spval
     call hist_addfld1d (fname='FROOTP_XFER', units='gP/m^2', &
          avgflag='A', long_name='fine root P transfer', &
@@ -4500,6 +4611,11 @@ module VegetationDataType
          avgflag='A', long_name='live coarse root P storage', &
          ptr_patch=this%livecrootp_storage, default='inactive')
 
+     this%prev_livecrootp_storage(begp:endp) = spval
+     call hist_addfld1d (fname='PREV_LIVECROOTP_STORAGE', units='gP/m^2', &
+          avgflag='A', long_name='previous year live coarse root P storage', &
+          ptr_patch=this%prev_livecrootp_storage, default='inactive')
+    
     this%livecrootp_xfer(begp:endp) = spval
     call hist_addfld1d (fname='LIVECROOTP_XFER', units='gP/m^2', &
          avgflag='A', long_name='live coarse root P transfer', &
@@ -4515,6 +4631,11 @@ module VegetationDataType
          avgflag='A', long_name='dead coarse root P storage', &
          ptr_patch=this%deadcrootp_storage, default='inactive')
 
+     this%prev_deadcrootp_storage(begp:endp) = spval
+     call hist_addfld1d (fname='PREV_DEADCROOTP_STORAGE', units='gP/m^2', &
+          avgflag='A', long_name='previous year dead coarse root P storage', &
+          ptr_patch=this%prev_deadcrootp_storage, default='inactive')
+    
     this%deadcrootp_xfer(begp:endp) = spval
     call hist_addfld1d (fname='DEADCROOTP_XFER', units='gP/m^2', &
          avgflag='A', long_name='dead coarse root P transfer', &
@@ -4593,6 +4714,7 @@ module VegetationDataType
           this%cropseedp_deficit(p) = 0._r8
           this%frootp(p)            = 0._r8
           this%frootp_storage(p)    = 0._r8
+          this%prev_frootp_storage(p)    = 0._r8
           this%frootp_xfer(p)       = 0._r8
           this%livestemp(p)         = 0._r8
           this%livestemp_storage(p) = 0._r8
@@ -4613,6 +4735,7 @@ module VegetationDataType
               if (veg_pp%itype(p) .ne. noveg) then
                  this%frootp(p) = veg_cs%frootc(p) / veg_vp%frootcp(veg_pp%itype(p))
                  this%frootp_storage(p) = veg_cs%frootc_storage(p) / veg_vp%frootcp(veg_pp%itype(p))
+                 this%prev_frootp_storage(p) = veg_cs%prev_frootc_storage(p) / veg_vp%frootcp(veg_pp%itype(p))
               end if
           end if
            
@@ -4620,9 +4743,11 @@ module VegetationDataType
           this%deadstemp_xfer(p)     = 0._r8
           this%livecrootp(p)         = 0._r8
           this%livecrootp_storage(p) = 0._r8
+          this%prev_livecrootp_storage(p) = 0._r8
           this%livecrootp_xfer(p)    = 0._r8
           this%deadcrootp(p)         = 0._r8
           this%deadcrootp_storage(p) = 0._r8
+          this%prev_deadcrootp_storage(p) = 0._r8
           this%deadcrootp_xfer(p)    = 0._r8
           this%retransp(p)           = 0._r8
           this%ppool(p)              = 0._r8
@@ -4695,6 +4820,10 @@ module VegetationDataType
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%frootp_storage) 
 
+     call restartvar(ncid=ncid, flag=flag, varname='prev_frootp_storage', xtype=ncd_double,  &
+         dim1name='pft', long_name='', units='', &
+         interpinic_flag='interp', readvar=readvar, data=this%prev_frootp_storage) 
+
     call restartvar(ncid=ncid, flag=flag, varname='frootp_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%frootp_xfer) 
@@ -4731,6 +4860,10 @@ module VegetationDataType
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%livecrootp_storage) 
 
+     call restartvar(ncid=ncid, flag=flag, varname='prev_livecrootp_storage', xtype=ncd_double,  &
+         dim1name='pft', long_name='', units='', &
+         interpinic_flag='interp', readvar=readvar, data=this%prev_livecrootp_storage) 
+
     call restartvar(ncid=ncid, flag=flag, varname='livecrootp_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%livecrootp_xfer) 
@@ -4742,6 +4875,10 @@ module VegetationDataType
     call restartvar(ncid=ncid, flag=flag, varname='deadcrootp_storage', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%deadcrootp_storage) 
+
+     call restartvar(ncid=ncid, flag=flag, varname='prev_deadcrootp_storage', xtype=ncd_double,  &
+         dim1name='pft', long_name='', units='', &
+         interpinic_flag='interp', readvar=readvar, data=this%prev_deadcrootp_storage) 
 
     call restartvar(ncid=ncid, flag=flag, varname='deadcrootp_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
@@ -4863,6 +5000,7 @@ module VegetationDataType
        this%leafp_xfer(i)         = value_patch
        this%frootp(i)             = value_patch
        this%frootp_storage(i)     = value_patch
+       this%prev_frootp_storage(i)     = value_patch
        this%frootp_xfer(i)        = value_patch
        this%livestemp(i)          = value_patch
        this%livestemp_storage(i)  = value_patch
@@ -4872,9 +5010,11 @@ module VegetationDataType
        this%deadstemp_xfer(i)     = value_patch
        this%livecrootp(i)         = value_patch
        this%livecrootp_storage(i) = value_patch
+       this%prev_livecrootp_storage(i)     = value_patch
        this%livecrootp_xfer(i)    = value_patch
        this%deadcrootp(i)         = value_patch
        this%deadcrootp_storage(i) = value_patch
+       this%prev_deadcrootp_storage(i)     = value_patch
        this%deadcrootp_xfer(i)    = value_patch
        this%retransp(i)           = value_patch
        this%ppool(i)              = value_patch
