@@ -6,7 +6,7 @@
  create_crop_landunit = .false.
  dtime = 3600
  fatmlndfrc = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/domain.nc'
- finidat = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch3_US-SPR_ICB20TRCNPRDCTCBC/run/20220407_stopdate171_switch3_US-SPR_ICB20TRCNPRDCTCBC.clm2.r.2015-01-01-00000.nc'
+ finidat = ''
  fsnowaging = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/snicardata/snicar_drdt_bst_fit_60_c070416.nc'
  fsnowoptics = '/lustre/haven/user/ywang254/E3SM/inputdata/lnd/clm2/snicardata/snicar_optics_5bnd_mam_c160322.nc'
  fsoilordercon = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch3_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/CNP_parameters.nc'

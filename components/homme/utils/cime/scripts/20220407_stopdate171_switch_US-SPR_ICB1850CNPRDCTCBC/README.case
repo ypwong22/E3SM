@@ -1,0 +1,50 @@
+2022-04-19 12:23:44: ./create_newcase --case /nics/c/home/ywang254/models/E3SM/cime/scripts/20220407_stopdate171_switch_US-SPR_ICB1850CNPRDCTCBC --mach utk --compset ICB1850CNPRDCTCBC --res CLM_USRDAT --mpilib mpi-serial --walltime 6:00:00 --handle-preexisting-dirs u
+ ---------------------------------------------------
+2022-04-19 12:23:44: Compset longname is 1850_SATM_CLM45%CNPRDCTCBC_SICE_SOCN_MOSART_SGLC_SWAV_SIAC_SESP
+ ---------------------------------------------------
+2022-04-19 12:23:44: Compset specification file is /nics/c/home/ywang254/models/E3SM/components/clm/cime_config/config_compsets.xml
+ ---------------------------------------------------
+2022-04-19 12:23:44: Pes     specification file is /nics/c/home/ywang254/models/E3SM/cime/config/e3sm/allactive/config_pesall.xml
+ ---------------------------------------------------
+2022-04-19 12:23:44: Forcing is 
+ ---------------------------------------------------
+2022-04-19 12:23:44: Component CPL is pre-industrial:
+ ---------------------------------------------------
+2022-04-19 12:23:44: Using None coupler instances
+ ---------------------------------------------------
+2022-04-19 12:23:44: Component ATM is Stub atm component
+ ---------------------------------------------------
+2022-04-19 12:23:44: ATM_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:44: Component LND is clm4.5 physics:clm4.5 cn:alm1.0 C-N-P, nutirent competition via relative demand, ctc soil cascade with black carbon deposition:
+ ---------------------------------------------------
+2022-04-19 12:23:44: LND_GRID is CLM_USRDAT
+ ---------------------------------------------------
+2022-04-19 12:23:44: Component ICE is Stub ice component
+ ---------------------------------------------------
+2022-04-19 12:23:44: ICE_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:44: Component OCN is Stub ocn component
+ ---------------------------------------------------
+2022-04-19 12:23:44: OCN_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:44: Component ROF is MOSART:
+ ---------------------------------------------------
+2022-04-19 12:23:45: ROF_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:45: Component GLC is Stub glacier (land ice) component
+ ---------------------------------------------------
+2022-04-19 12:23:45: GLC_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:45: Component WAV is Stub wave component
+ ---------------------------------------------------
+2022-04-19 12:23:45: WAV_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:45: Component IAC is Stub iac component
+ ---------------------------------------------------
+2022-04-19 12:23:45: IAC_GRID is null
+ ---------------------------------------------------
+2022-04-19 12:23:45: Component ESP is Stub external system processing (ESP) component
+ ---------------------------------------------------
+2022-04-19 12:23:45: ESP_GRID is None
+ ---------------------------------------------------

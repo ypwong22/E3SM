@@ -2029,16 +2029,18 @@
 
   <machine MACH="cades">
     <DESC>OR-CONDO, CADES-CCSI, os is Linux, 16 pes/nodes, batch system is PBS</DESC>
-    <NODENAME_REGEX>or-condo</NODENAME_REGEX>
+    <NODENAME_REGEX>or-slurm</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>gnu,intel</COMPILERS>
     <MPILIBS>openmpi</MPILIBS>
-    <CIME_OUTPUT_ROOT>/lustre/or-hydra/cades-ccsi/scratch/$USER</CIME_OUTPUT_ROOT>
-    <DIN_LOC_ROOT>/lustre/or-hydra/cades-ccsi/proj-shared/project_acme/ACME_inputdata</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>/lustre/or-hydra/cades-ccsi/proj-shared/project_acme/ACME_inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <PROJECT>ccsi</PROJECT>
+    <CHARGE_ACCOUNT>ccsi</CHARGE_ACCOUNT>
+    <CIME_OUTPUT_ROOT>/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
-    <BASELINE_ROOT>/lustre/or-hydra/cades-ccsi/proj-shared/project_acme/baselines/$COMPILER</BASELINE_ROOT>
-    <CCSM_CPRNC>/lustre/or-hydra/cades-ccsi/proj-shared/tools/cprnc.orcondo</CCSM_CPRNC>
+    <BASELINE_ROOT>/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/baseline</BASELINE_ROOT>
+    <CCSM_CPRNC>/lustre/or-scratch/cades-ccsi/proj-shared/tools/cprnc.orcondo</CCSM_CPRNC>
     <GMAKE_J>4</GMAKE_J>
     <TESTS>e3sm_developer</TESTS>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
@@ -2069,16 +2071,25 @@
       </modules>
       <modules compiler="gnu">
         <command name="load">PE-gnu</command>
+        <command name="load">perl</command>
+        <command name="load">mkl/2018.1.163</command> <!-- this shall generate 3 env vars: MKLROOT, MKLROOT_INC, MKLROOT_LIB -->
+        <command name="load">cmake/3.20.3</command>
+        <command name="load">openmpi/3.0.0</command>
+        <command name="load">python/3.6.3</command>
       </modules>
-      <modules>
-        <command name="load">mkl/2017</command>
-        <command name="load">cmake/3.12.0</command>
-        <command name="load">python/2.7.12</command>
-        <command name="load">nco/4.6.9</command>
-        <command name="load">hdf5-parallel/1.8.17</command>
+      <!-- by default, PE-gnu/1.0-->
+      <modules compiler="gnu" mpilib="mpi-serial">
+        <command name="load">hdf5-parallel/1.10.6</command>
+        <command name="load">netcdf/4.3.3.1</command>
+        <command name="load">pnetcdf/1.9.0</command>
+      </modules>
+      <!-- by default, PE-gnu/1.0-->
+      <modules compiler="gnu" mpilib="openmpi">
+        <command name="load">hdf5-parallel/1.10.6</command>
         <command name="load">netcdf-hdf5parallel/4.3.3.1</command>
         <command name="load">pnetcdf/1.9.0</command>
       </modules>
+
     </module_system>
 
     <!-- customize these fields as appropriate for your system (max tasks) and

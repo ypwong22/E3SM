@@ -1,7 +1,7 @@
 &modelio
   diri = "/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch1_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/cpl"
   diro = "/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch1_plot10_US-SPR_ICB20TRCNPRDCTCBC/run"
-  logfile = "cpl.log.5763270.apollo-acf.220419-123803"
+  logfile = "cpl.log.5885975.apollo-acf.220617-204850"
 /
 &pio_inparm
   pio_netcdf_format = "64bit_offset"

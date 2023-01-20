@@ -421,7 +421,7 @@ contains
 
     associate(                                                                                   &
          ivt                          => veg_pp%itype                                             , & ! Input:  [integer  (:) ]  pft vegetation type                                
-         
+
          woody                        => veg_vp%woody                                      , & ! Input:  [real(r8) (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
          froot_leaf                   => veg_vp%froot_leaf                                 , & ! Input:  [real(r8) (:)   ]  allocation parameter: new fine root C per new leaf C (gC/gC)
          croot_stem                   => veg_vp%croot_stem                                 , & ! Input:  [real(r8) (:)   ]  allocation parameter: new coarse root C per new stem C (gC/gC)
@@ -443,7 +443,7 @@ contains
          c13_psnsha                   => photosyns_vars%c13_psnsha_patch                       , & ! Input:  [real(r8) (:)   ]  shaded leaf-level photosynthesis (umol CO2 /m**2/ s)
          c14_psnsun                   => photosyns_vars%c14_psnsun_patch                       , & ! Input:  [real(r8) (:)   ]  sunlit leaf-level photosynthesis (umol CO2 /m**2/ s)
          c14_psnsha                   => photosyns_vars%c14_psnsha_patch                       , & ! Input:  [real(r8) (:)   ]  shaded leaf-level photosynthesis (umol CO2 /m**2/ s)
-         
+
          laisun                       => canopystate_vars%laisun_patch                         , & ! Input:  [real(r8) (:)   ]  sunlit projected leaf area index        
          laisha                       => canopystate_vars%laisha_patch                         , & ! Input:  [real(r8) (:)   ]  shaded projected leaf area index        
 
@@ -580,7 +580,7 @@ contains
          sminn_to_plant_vr            => col_nf%sminn_to_plant_vr               , & ! Output: [real(r8) (:,:) ]                                        
          potential_immob_vr           => col_nf%potential_immob_vr              , & ! Output: [real(r8) (:,:) ]                                        
          actual_immob_vr              => col_nf%actual_immob_vr                 , & ! Output: [real(r8) (:,:) ]                                        
-         
+
          !!! add phosphorus variables  - X. YANG  
          sminp_vr                     => col_ps%sminp_vr                     , & ! Input:  [real(r8) (:,:) ]  (gP/m3) soil mineral P                
          solutionp_vr                 => col_ps%solutionp_vr                 , & ! Input:  [real(r8) (:,:) ]  (gP/m3) soil mineral P                
@@ -3635,7 +3635,7 @@ contains
             cpool_to_grainc(p)             = nlc * f5 * fcur
             cpool_to_grainc_storage(p)     = nlc * f5 * (1._r8 -fcur)
          end if
-         
+
          ! corresponding N fluxes
          ! recover default coefficient for carbon allocation to leaf,  which is possibly changed due to previous time step allocation adjustment
          !nlc = plant_calloc(p) / c_allometry(p) 
@@ -3755,7 +3755,7 @@ contains
             gresp_storage = gresp_storage + cpool_to_grainc_storage(p)
          end if
          cpool_to_gresp_storage(p) = gresp_storage * g1 * (1._r8 - g2)
-       
+
          ! ECA root NP uptake is based on kinetics, plant CNP stoichiometry can vary even
          ! when certain element is set to not limiting (e.g., P not limiting under CN mode)
          ! additional supplement N/P come from first soil layer

@@ -1,0 +1,114 @@
+2022-11-02 12:16:33: xmlchange success <command> ./xmlchange SAVE_TIMING=FALSE  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:33: xmlchange success <command> ./xmlchange EXEROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:33: xmlchange success <command> ./xmlchange PIO_VERSION=2  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:33: xmlchange success <command> ./xmlchange MOSART_MODE=NULL  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:33: xmlchange success <command> ./xmlchange RUNDIR=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:34: xmlchange success <command> ./xmlchange DOUT_S=TRUE  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:34: xmlchange success <command> ./xmlchange DOUT_S_ROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/archive/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:34: xmlchange success <command> ./xmlchange DIN_LOC_ROOT=/nfs/data/ccsi/proj-shared/E3SM/inputdata  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:34: xmlchange success <command> ./xmlchange DIN_LOC_ROOT_CLMFORC=/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:35: xmlchange success <command> ./xmlchange CLM_USRDAT_NAME=2x1pt_US-SPR  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:35: xmlchange success <command> ./xmlchange ATM_DOMAIN_PATH=${RUNDIR}  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:35: xmlchange success <command> ./xmlchange LND_DOMAIN_PATH=${RUNDIR}  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:35: xmlchange success <command> ./xmlchange ATM_DOMAIN_FILE=domain.nc  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:36: xmlchange success <command> ./xmlchange LND_DOMAIN_FILE=domain.nc  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:36: xmlchange success <command> ./xmlchange DOUT_S=FALSE  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:36: xmlchange success <command> ./xmlchange ATM_NCPL=24  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:36: xmlchange success <command> ./xmlchange RUN_REFDATE=0407-01-01  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:37: xmlchange success <command> ./xmlchange CCSM_BGC=CO2A  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:37: xmlchange success <command> ./xmlchange CLM_CO2_TYPE=diagnostic  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:37: xmlchange success <command> ./xmlchange RUN_STARTDATE=1850-01-01  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:37: xmlchange success <command> ./xmlchange NTASKS_ATM=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:37: xmlchange success <command> ./xmlchange NTHRDS_ATM=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:38: xmlchange success <command> ./xmlchange NTASKS_LND=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:38: xmlchange success <command> ./xmlchange NTHRDS_LND=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:38: xmlchange success <command> ./xmlchange NTASKS_ICE=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:38: xmlchange success <command> ./xmlchange NTHRDS_ICE=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:39: xmlchange success <command> ./xmlchange NTASKS_OCN=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:39: xmlchange success <command> ./xmlchange NTHRDS_OCN=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:39: xmlchange success <command> ./xmlchange NTASKS_CPL=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:39: xmlchange success <command> ./xmlchange NTHRDS_CPL=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:39: xmlchange success <command> ./xmlchange NTASKS_GLC=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:40: xmlchange success <command> ./xmlchange NTHRDS_GLC=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:40: xmlchange success <command> ./xmlchange NTASKS_ROF=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:40: xmlchange success <command> ./xmlchange NTHRDS_ROF=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:40: xmlchange success <command> ./xmlchange NTASKS_WAV=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:40: xmlchange success <command> ./xmlchange NTHRDS_WAV=1  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:41: xmlchange success <command> ./xmlchange STOP_OPTION=nyears  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:41: xmlchange success <command> ./xmlchange STOP_N=165  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:41: xmlchange success <command> ./xmlchange --id PIO_TYPENAME --val netcdf  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:41: xmlchange success <command> ./xmlchange -id BATCH_SYSTEM --val none  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:42: case.setup starting 
+ ---------------------------------------------------
+2022-11-02 12:16:43: case.setup success 
+ ---------------------------------------------------
+2022-11-02 12:16:43: xmlchange success <command> ./xmlchange -id CLM_CONFIG_OPTS --append --val -cppdefs -DHUM_HOL  </command>
+ ---------------------------------------------------
+2022-11-02 12:16:44: xmlchange success <command> ./xmlchange BUILD_COMPLETE=TRUE  </command>
+ ---------------------------------------------------
+2022-11-02 15:36:56: case.submit starting 
+ ---------------------------------------------------
+2022-11-02 15:36:59: case.run starting 
+ ---------------------------------------------------
+2022-11-02 15:37:01: model execution starting 
+ ---------------------------------------------------
+2022-11-02 15:37:02: model execution success 
+ ---------------------------------------------------
+2022-11-02 15:37:02: case.run error 
+ERROR: RUN FAIL: Command '   /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/e3sm.exe   >> e3sm.log.$LID 2>&1 ' failed
+See log file for details: /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/e3sm.log.3250015.221102-153659
+ ---------------------------------------------------
+2022-11-02 15:37:02: case.submit success 
+ ---------------------------------------------------
+2022-11-03 17:08:51: case.submit starting 
+ ---------------------------------------------------
+2022-11-03 17:08:54: case.run starting 
+ ---------------------------------------------------
+2022-11-03 17:08:55: model execution starting 
+ ---------------------------------------------------
+2022-11-03 18:06:04: model execution success 
+ ---------------------------------------------------
+2022-11-03 18:06:05: case.run success 
+ ---------------------------------------------------
+2022-11-03 18:06:07: case.submit success 
+ ---------------------------------------------------

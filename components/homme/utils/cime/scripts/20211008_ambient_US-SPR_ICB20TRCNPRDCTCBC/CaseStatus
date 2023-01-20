@@ -1,0 +1,126 @@
+2021-12-15 13:26:46: xmlchange success <command> ./xmlchange SAVE_TIMING=FALSE  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:46: xmlchange success <command> ./xmlchange EXEROOT=/lustre/haven/user/ywang254/E3SM/output/20211008_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:47: xmlchange success <command> ./xmlchange PIO_VERSION=2  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:48: xmlchange success <command> ./xmlchange MOSART_MODE=NULL  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:48: xmlchange success <command> ./xmlchange RUNDIR=/lustre/haven/user/ywang254/E3SM/output/20211008_ambient_US-SPR_ICB20TRCNPRDCTCBC/run  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:49: xmlchange success <command> ./xmlchange DOUT_S=TRUE  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:50: xmlchange success <command> ./xmlchange DOUT_S_ROOT=/lustre/haven/user/ywang254/E3SM/output/archive/20211008_ambient_US-SPR_ICB20TRCNPRDCTCBC  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:50: xmlchange success <command> ./xmlchange DIN_LOC_ROOT=/lustre/haven/user/ywang254/E3SM/inputdata  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:51: xmlchange success <command> ./xmlchange DIN_LOC_ROOT_CLMFORC=/lustre/haven/user/ywang254/E3SM/inputdata/atm/datm7/  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:52: xmlchange success <command> ./xmlchange CLM_USRDAT_NAME=2x1pt_US-SPR  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:52: xmlchange success <command> ./xmlchange RUN_STARTDATE=2015-01-01  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:53: xmlchange success <command> ./xmlchange ATM_DOMAIN_PATH=${RUNDIR}  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:54: xmlchange success <command> ./xmlchange LND_DOMAIN_PATH=${RUNDIR}  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:54: xmlchange success <command> ./xmlchange ATM_DOMAIN_FILE=domain.nc  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:55: xmlchange success <command> ./xmlchange LND_DOMAIN_FILE=domain.nc  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:56: xmlchange success <command> ./xmlchange DOUT_S=FALSE  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:56: xmlchange success <command> ./xmlchange ATM_NCPL=24  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:57: xmlchange success <command> ./xmlchange RUN_REFDATE=2015-01-01  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:58: xmlchange success <command> ./xmlchange CCSM_BGC=CO2A  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:58: xmlchange success <command> ./xmlchange CLM_CO2_TYPE=diagnostic  </command>
+ ---------------------------------------------------
+2021-12-15 13:26:59: xmlchange success <command> ./xmlchange NTASKS_ATM=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:00: xmlchange success <command> ./xmlchange NTHRDS_ATM=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:00: xmlchange success <command> ./xmlchange NTASKS_LND=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:01: xmlchange success <command> ./xmlchange NTHRDS_LND=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:02: xmlchange success <command> ./xmlchange NTASKS_ICE=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:02: xmlchange success <command> ./xmlchange NTHRDS_ICE=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:03: xmlchange success <command> ./xmlchange NTASKS_OCN=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:04: xmlchange success <command> ./xmlchange NTHRDS_OCN=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:04: xmlchange success <command> ./xmlchange NTASKS_CPL=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:05: xmlchange success <command> ./xmlchange NTHRDS_CPL=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:05: xmlchange success <command> ./xmlchange NTASKS_GLC=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:06: xmlchange success <command> ./xmlchange NTHRDS_GLC=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:07: xmlchange success <command> ./xmlchange NTASKS_ROF=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:07: xmlchange success <command> ./xmlchange NTHRDS_ROF=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:08: xmlchange success <command> ./xmlchange NTASKS_WAV=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:08: xmlchange success <command> ./xmlchange NTHRDS_WAV=1  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:09: xmlchange success <command> ./xmlchange STOP_OPTION=nyears  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:10: xmlchange success <command> ./xmlchange STOP_N=6  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:10: xmlchange success <command> ./xmlchange -id BATCH_SYSTEM --val none  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:11: case.setup starting 
+ ---------------------------------------------------
+2021-12-15 13:27:15: case.setup success 
+ ---------------------------------------------------
+2021-12-15 13:27:15: xmlchange success <command> ./xmlchange -id CLM_CONFIG_OPTS --append --val -cppdefs -DHUM_HOL  </command>
+ ---------------------------------------------------
+2021-12-15 13:27:16: xmlchange success <command> ./xmlchange BUILD_COMPLETE=TRUE  </command>
+ ---------------------------------------------------
+2021-12-15 13:29:36: case.submit starting 
+ ---------------------------------------------------
+2021-12-15 13:29:43: case.run starting 
+ ---------------------------------------------------
+2021-12-15 13:29:46: model execution starting 
+ ---------------------------------------------------
+2021-12-15 13:29:50: model execution success 
+ ---------------------------------------------------
+2021-12-15 13:29:50: case.run error 
+ERROR: RUN FAIL: Command '   /lustre/haven/user/ywang254/E3SM/output/20211008_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/e3sm.exe   >> e3sm.log.$LID 2>&1 ' failed
+See log file for details: /lustre/haven/user/ywang254/E3SM/output/20211008_ambient_US-SPR_ICB20TRCNPRDCTCBC/run/e3sm.log.5460398.apollo-acf.211215-132943
+ ---------------------------------------------------
+2021-12-15 13:29:50: case.submit success 
+ ---------------------------------------------------
+2021-12-15 13:31:19: case.submit starting 
+ ---------------------------------------------------
+2021-12-15 13:31:23: case.run starting 
+ ---------------------------------------------------
+2021-12-15 13:31:26: model execution starting 
+ ---------------------------------------------------
+2021-12-15 13:31:28: model execution success 
+ ---------------------------------------------------
+2021-12-15 13:31:28: case.run error 
+ERROR: RUN FAIL: Command '   /lustre/haven/user/ywang254/E3SM/output/20211008_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/e3sm.exe   >> e3sm.log.$LID 2>&1 ' failed
+See log file for details: /lustre/haven/user/ywang254/E3SM/output/20211008_ambient_US-SPR_ICB20TRCNPRDCTCBC/run/e3sm.log.5460401.apollo-acf.211215-133123
+ ---------------------------------------------------
+2021-12-15 13:31:28: case.submit success 
+ ---------------------------------------------------
+2021-12-15 13:33:01: case.submit starting 
+ ---------------------------------------------------
+2021-12-15 13:33:05: case.run starting 
+ ---------------------------------------------------
+2021-12-15 13:33:08: model execution starting 
+ ---------------------------------------------------
+2021-12-15 13:42:33: model execution success 
+ ---------------------------------------------------
+2021-12-15 13:42:33: case.run success 
+ ---------------------------------------------------
+2021-12-15 13:42:35: case.submit success 
+ ---------------------------------------------------

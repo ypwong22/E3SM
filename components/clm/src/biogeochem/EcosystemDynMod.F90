@@ -206,7 +206,6 @@ contains
        !-----------------------------------------------------------------------
 
        call t_startf('CNUpdate3')
-
        call NitrogenStateUpdate3(num_soilc, filter_soilc, num_soilp, filter_soilp, &
             nitrogenflux_vars, nitrogenstate_vars)
        call t_stopf('CNUpdate3')
@@ -519,6 +518,7 @@ contains
 !    use NitrogenDynamicsMod         , only: NitrogenDeposition,NitrogenFixation, NitrogenFert, CNSoyfix
 !    use MaintenanceRespMod             , only: MaintenanceResp
 !    use SoilLittDecompMod            , only: SoilLittDecompAlloc
+    use clm_varctl          , only : iulog 
     use PhenologyMod         , only: Phenology, CNLitterToColumn
     use GrowthRespMod             , only: GrowthResp
     use CarbonStateUpdate1Mod     , only: CarbonStateUpdate1,CarbonStateUpdate0
@@ -580,7 +580,6 @@ contains
     type(phosphorusflux_type)  , intent(inout) :: phosphorusflux_vars
     type(phosphorusstate_type) , intent(inout) :: phosphorusstate_vars
     type(sedflux_type)       , intent(in)    :: sedflux_vars
-
     !-----------------------------------------------------------------------
 
     ! Call the main CN routines
@@ -623,7 +622,6 @@ contains
        ! Phenology needs to be called after SoilLittDecompAlloc, because it
        ! depends on current time-step fluxes to new growth on the last
        ! litterfall timestep in deciduous systems
-
        call t_startf('Phenology')
        call Phenology(num_soilc, filter_soilc, num_soilp, filter_soilp, &
             num_pcropp, filter_pcropp, doalb, atm2lnd_vars, &
@@ -894,8 +892,9 @@ contains
        if( use_c14 ) then
           call c14_col_cf%SummaryCH4(bounds, num_soilc, filter_soilc)
           call c14_veg_cf%SummaryCH4(bounds, num_soilp, filter_soilp)
-       endif    
-    end if !end of if not use_fates block
+       endif
+
+     end if !end of if not use_fates block
 
   end subroutine EcosystemDynNoLeaching2
 

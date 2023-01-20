@@ -138,7 +138,7 @@ contains
     use tracer_varcon       , only : is_active_betr_bgc
     use subgridAveMod       , only : p2c
     use decompMod           , only : bounds_type  
-    use clm_varctl          , only : spinup_state 
+    use clm_varctl          , only : spinup_state, iulog
     use clm_varpar          , only : ndecomp_pools
 
     ! !ARGUMENTS:
@@ -160,6 +160,7 @@ contains
     integer  :: year, mon, day, sec
     real(r8) :: dt        ! radiation time step (seconds)
     real(r8) :: spinup_term, burial_rate
+
     !-----------------------------------------------------------------------
 
     associate(                                                                                 & 
@@ -292,7 +293,8 @@ contains
    endif   !end if is_active_betr_bgc()
 
    if (.not.use_fates) then
-    
+
+
       ! patch loop
       do fp = 1,num_soilp
          p = filter_soilp(fp)
@@ -482,7 +484,9 @@ contains
             veg_cs%grainc_storage(p)     = veg_cs%grainc_storage(p)    - veg_cf%grainc_storage_to_xfer(p)*dt
             veg_cs%grainc_xfer(p)        = veg_cs%grainc_xfer(p)       + veg_cf%grainc_storage_to_xfer(p)*dt
          end if
+
       end do ! end of patch loop
+
 
    end if
 

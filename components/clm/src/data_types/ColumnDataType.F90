@@ -2122,7 +2122,7 @@ contains
        call hist_addfld1d (fname='C13_TOTPRODC', units='gC13/m^2', &
              avgflag='A', long_name='C13 total wood product C', &
              ptr_col=this%totprodc)
-       
+
        
     else if ( carbon_type == 'c14' ) then
        this%decomp_cpools_vr(begc:endc,:,:) = spval
@@ -2343,7 +2343,7 @@ contains
           end do
        end do
     end do
-          
+
   end subroutine col_cs_init
     
   !------------------------------------------------------------------------

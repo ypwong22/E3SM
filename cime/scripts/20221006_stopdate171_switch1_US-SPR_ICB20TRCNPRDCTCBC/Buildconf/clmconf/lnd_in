@@ -1,0 +1,105 @@
+&clm_inparm
+ aero_file = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/cam/chem/trop_mozart_aero/aero/aerosoldep_rcp4.5_monthly_1849-2104_1.9x2.5_c100402.nc'
+ albice = 0.60,0.40
+ co2_file = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/CO2/fco2_datm_rcp4.5_1765-2500_c130312.nc'
+ co2_type = 'diagnostic'
+ create_crop_landunit = .false.
+ dtime = 3600
+ fatmlndfrc = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/domain.nc'
+ finidat = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB1850CNPRDCTCBC/run/20221006_stopdate171_switch1_US-SPR_ICB1850CNPRDCTCBC.clm2.r.0407-01-01-00000.nc'
+ fsnowaging = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/snicardata/snicar_drdt_bst_fit_60_c070416.nc'
+ fsnowoptics = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/snicardata/snicar_optics_5bnd_mam_c160322.nc'
+ fsoilordercon = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/CNP_parameters.nc'
+ fsurdat = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/surfdata.nc'
+ glc_do_dynglacier = .false.
+ hist_mfilt = 365
+ hist_nhtfrq = -24
+ maxpatch_glcmec = 0
+ maxpatch_pft = 17
+ metdata_bypass = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/inputdata/atm/datm7/CLM1PT_data/SPRUCE_data'
+ metdata_type = 'site'
+ more_vertlayers = .false.
+ nsegspc = 20
+ nu_com = 'RD'
+ nyears_ad_carbon_only = 25
+ paramfile = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/clm_params.nc'
+ spinup_mortality_factor = 10
+ spinup_state = 0
+ suplnitro = 'NONE'
+ suplphos = 'NONE'
+ urban_hac = 'ON'
+ urban_traffic = .false.
+ use_century_decomp = .false.
+ use_cn = .true.
+ use_crop = .false.
+ use_dynroot = .false.
+ use_fates = .false.
+ use_lch4 = .true.
+ use_nitrif_denitrif = .true.
+ use_nofire = .true.
+ use_vertsoilc = .true.
+/
+&ndepdyn_nml
+ model_year_align_ndep = 1850
+ ndepmapalgo = 'bilinear'
+ stream_fldfilename_ndep = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/ndepdata/fndep_clm_rcp4.5_simyr1849-2106_1.9x2.5_c100428.nc'
+ stream_year_first_ndep = 1850
+ stream_year_last_ndep = 2005
+/
+&pdepdyn_nml
+ model_year_align_pdep = 2000
+ pdepmapalgo = 'bilinear'
+ stream_fldfilename_pdep = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/pdepdata/fpdep_clm_hist_simyr2000_1.9x2.5_c150929.nc'
+ stream_year_first_pdep = 2000
+ stream_year_last_pdep = 2000
+/
+&popd_streams
+ model_year_align_popdens = 1850
+ popdensmapalgo = 'bilinear'
+ stream_fldfilename_popdens = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/firedata/clmforc.Li_2012_hdm_0.5x0.5_AVHRR_simyr1850-2010_c130401.nc'
+ stream_year_first_popdens = 1850
+ stream_year_last_popdens = 2010
+/
+&light_streams
+ lightngmapalgo = 'bilinear'
+ stream_fldfilename_lightng = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/NASA_LIS/clmforc.Li_2012_climo1995-2011.T62.lnfm_Total_c140423.nc'
+ stream_year_first_lightng = 0001
+ stream_year_last_lightng = 0001
+/
+&lai_streams
+/
+&clm_canopyhydrology_inparm
+/
+&clm_soilhydrology_inparm
+/
+&dynamic_subgrid
+ do_harvest = .true.
+ do_transient_pfts = .true.
+ flanduse_timeseries = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/surfdata.pftdyn.nc'
+/
+&finidat_consistency_checks
+ check_finidat_fsurdat_consistency = .false.
+ check_finidat_year_consistency = .false.
+/
+&dynpft_consistency_checks
+/
+&clmu_inparm
+/
+&clm_soilstate_inparm
+/
+&clm_pflotran_inparm
+/
+&betr_inparm
+/
+&ch4par_in
+ fin_use_fsat = .true.
+ use_aereoxid_prog = .true.
+/
+&clm_humanindex_inparm
+/
+!#--------------------------------------------------------------------------------------------------------------------------
+!# lnd_in:: Comment:
+!# This namelist was created using the following command-line:
+!#     /nfs/home/ywo/models/E3SM/components/clm/bld/CLM build-namelist -infile /home/ywo/models/E3SM/cime/scripts/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/Buildconf/clmconf/namelist -csmdata /nfs/data/ccsi/proj-shared/E3SM/inputdata -inputdata /home/ywo/models/E3SM/cime/scripts/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/Buildconf/clm.input_data_list -ignore_ic_year -namelist  &clm_inparm  start_ymd=18500101  / -use_case 20thC_transient -res 2x1pt_US-SPR -clm_usr_name 2x1pt_US-SPR -clm_start_type default -envxml_dir /home/ywo/models/E3SM/cime/scripts/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC -l_ncpl 24 -lnd_frac /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/run/domain.nc -glc_nec 0 -co2_ppmv 379.0 -co2_type diagnostic -config /home/ywo/models/E3SM/cime/scripts/20221006_stopdate171_switch1_US-SPR_ICB20TRCNPRDCTCBC/Buildconf/clmconf/config_cache.xml -bgc bgc -nutrient cnp -nutrient_comp_pathway rd -soil_decomp ctc -methane -nitrif_denitrif
+!# For help on options use: /nfs/home/ywo/models/E3SM/components/clm/bld/CLM build-namelist -help
+!#--------------------------------------------------------------------------------------------------------------------------

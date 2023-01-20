@@ -1,4 +1,5 @@
 &clm_inparm
+ add_co2 = 500
  aero_file = '/lustre/haven/user/ywang254/E3SM/inputdata/atm/cam/chem/trop_mozart_aero/aero/aerosoldep_rcp4.5_monthly_1849-2104_1.9x2.5_c100402.nc'
  albice = 0.60,0.40
  co2_file = '/lustre/haven/user/ywang254/E3SM/inputdata/atm/datm7/CO2/fco2_datm_rcp4.5_1765-2500_c130312.nc'
@@ -30,7 +31,7 @@
          'TLAI', 'RH2M', 'QRUNOFF', 'TOTLITC', 'TOTSOMC', 'CWDC', 'LITR1C_vr',
          'LITR2C_vr', 'LITR3C_vr', 'SOIL1C_vr', 'SOIL2C_vr', 'SOIL3C_vr', 'H2OSFC', 'ZWT',
          'SNOWDP', 'TLAI', 'CPOOL', 'NPOOL', 'PPOOL', 'FPI', 'FPI_P',
-         'FPG', 'FPG_P', 'FPI_vr', 'FPI_P_vr', 'SOIL4C_vr'
+         'FPG', 'FPG_P', 'FPI_vr', 'FPI_P_vr', 'CH4PROD', 'LITFALL', 'SOIL4C_vr'
  hist_fincl3 = 'QVEGE', 'QVEGT', 'PSNSUN', 'PSNSHA', 'LEAFC_XFER_TO_LEAFC', 'LEAFC_STORAGE_TO_XFER',
          'PROOT_ONSET_FLAG', 'PROOT_ONSET_OFFSET', 'PROOT_GDD2', 'PROOT_CWD2', 'PROOT_SUMFRAC', 'GPP',
          'NPP', 'LEAFC_ALLOC', 'AGNPP', 'CPOOL_TO_DEADSTEMC', 'LIVECROOTC_XFER_TO_LIVECROOTC', 'DEADCROOTC_XFER_TO_DEADCROOTC',
@@ -42,7 +43,8 @@
          'LEAFC', 'LIVESTEMC', 'DEADSTEMC', 'FROOTC', 'LIVECROOTC', 'DEADCROOTC',
          'DEADSTEMC_STORAGE', 'LIVESTEMC_STORAGE', 'DEADCROOTC_STORAGE', 'LIVECROOTC_STORAGE', 'CPOOL_TO_DEADSTEMC_STORAGE', 'CPOOL_TO_LIVESTEMC_STORAGE',
          'CPOOL_TO_DEADCROOTC_STORAGE', 'CPOOL_TO_LIVECROOTC_STORAGE', 'FROOTC_STORAGE', 'LEAFC_STORAGE', 'LEAFC_XFER', 'FROOTC_XFER',
-         'LIVESTEMC_XFER', 'DEADSTEMC_XFER', 'LIVECROOTC_XFER', 'DEADCROOTC_XFER', 'TLAI', 'CPOOL_TO_LIVESTEMC'
+         'LIVESTEMC_XFER', 'DEADSTEMC_XFER', 'LIVECROOTC_XFER', 'DEADCROOTC_XFER', 'TLAI', 'CPOOL_TO_LIVESTEMC',
+         'LITFALL'
  hist_mfilt = 8760,365,365
  hist_nhtfrq = -1,-24,-24
  maxpatch_glcmec = 0
@@ -56,6 +58,7 @@
  paramfile = '/lustre/haven/user/ywang254/E3SM/output/20220407_stopdate171_switch1_plot04_US-SPR_ICB20TRCNPRDCTCBC/run/clm_params.nc'
  spinup_mortality_factor = 10
  spinup_state = 0
+ startdate_add_co2 = '20160301'
  suplnitro = 'NONE'
  suplphos = 'NONE'
  urban_hac = 'ON'
