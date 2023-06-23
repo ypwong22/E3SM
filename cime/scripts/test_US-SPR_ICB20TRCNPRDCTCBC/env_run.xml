@@ -90,7 +90,7 @@
       Reference case for hybrid or branch runs
     </desc>
     </entry>
-    <entry id="RUN_REFDATE" value="2015-01-01">
+    <entry id="RUN_REFDATE" value="0407-01-01">
       <type>char</type>
       <desc>
       Reference date for hybrid or branch runs (yyyy-mm-dd)
@@ -110,7 +110,7 @@
       If TRUE, then the refcase data is prestaged into the executable directory
     </desc>
     </entry>
-    <entry id="RUN_STARTDATE" value="2015-01-01">
+    <entry id="RUN_STARTDATE" value="1850-01-01">
       <type>char</type>
       <desc>
       Run start date (yyyy-mm-dd). Only used for startup or hybrid runs.
@@ -122,14 +122,14 @@
       Run start time-of-day
     </desc>
     </entry>
-    <entry id="STOP_OPTION" value="ndays">
+    <entry id="STOP_OPTION" value="nyears">
       <type>char</type>
       <valid_values>none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end</valid_values>
       <desc>
       Sets the run length along with STOP_N and STOP_DATE
     </desc>
     </entry>
-    <entry id="STOP_N" value="730">
+    <entry id="STOP_N" value="165">
       <type>integer</type>
       <desc>
       Provides a numerical count for $STOP_OPTION.
@@ -882,7 +882,7 @@
       Indicates to case.submit that this is a test case.
     </desc>
     </entry>
-    <entry id="DIN_LOC_ROOT" value="/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/inputdata">
+    <entry id="DIN_LOC_ROOT" value="/nfs/data/ccsi/proj-shared/E3SM/inputdata">
       <type>char</type>
       <desc>
       The root directory of all CIME and component input data for the selected machine.
@@ -891,7 +891,7 @@
       $CIMEROOT/machines/config_machines.xml
     </desc>
     </entry>
-    <entry id="DIN_LOC_ROOT_CLMFORC" value="/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/inputdata/atm/datm7/">
+    <entry id="DIN_LOC_ROOT_CLMFORC" value="/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/">
       <type>char</type>
       <desc>CLM-specific root directory for CLM type input forcing data
     This directory will only be used for I (CLM/DATM) compsets and only
@@ -974,7 +974,7 @@
     </entry>
     <entry id="PIO_TYPENAME">
       <type>char</type>
-      <valid_values>netcdf,nothing</valid_values>
+      <valid_values>netcdf,pnetcdf,netcdf4p,netcdf4c,default</valid_values>
       <desc>pio io type</desc>
       <values>
         <value compclass="ATM">netcdf</value>

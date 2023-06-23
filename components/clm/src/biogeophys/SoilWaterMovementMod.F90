@@ -365,7 +365,7 @@ contains
          icefrac           =>    soilhydrology_vars%icefrac_col     , & ! Input:  [real(r8) (:,:) ]  fraction of ice                                 
          hkdepth           =>    soilhydrology_vars%hkdepth_col     , & ! Input:  [real(r8) (:)   ]  decay factor (m)                                  
 
-         smpmin            =>    soilstate_vars%smpmin_col          , & ! Input:  [real(r8) (:)   ]  restriction for min of soil potential (mm)        
+         smpmin            =>    soilstate_vars%smpmin_col          , & ! Input:  [real(r8) (:)   ]  restriction for min of soil potential (mm)
          watsat            =>    soilstate_vars%watsat_col          , & ! Input:  [real(r8) (:,:) ]  volumetric soil water at saturation (porosity)  
          hksat             =>    soilstate_vars%hksat_col           , & ! Input:  [real(r8) (:,:) ]  hydraulic conductivity at saturation (mm H2O /s)
          bsw               =>    soilstate_vars%bsw_col             , & ! Input:  [real(r8) (:,:) ]  Clapp and Hornberger "b"                        

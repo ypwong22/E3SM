@@ -1,0 +1,13 @@
+&modelio
+  diri = "/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230510_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/rof"
+  diro = "/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230510_plot08_US-SPR_ICB20TRCNPRDCTCBC/run"
+  logfile = "rof.log.3911117.230511-081005"
+/
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 0
+  pio_stride = 32
+  pio_typename = "netcdf"
+/

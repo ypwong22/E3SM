@@ -1,0 +1,122 @@
+2023-05-26 14:03:44: xmlchange success <command> ./xmlchange SAVE_TIMING=FALSE  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:44: xmlchange success <command> ./xmlchange EXEROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230526_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:45: xmlchange success <command> ./xmlchange PIO_VERSION=2  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:45: xmlchange success <command> ./xmlchange MOSART_MODE=NULL  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:46: xmlchange success <command> ./xmlchange RUNDIR=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230526_US-SPR_ICB1850CNRDCTCBC_ad_spinup/run  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:46: xmlchange success <command> ./xmlchange DOUT_S=TRUE  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:47: xmlchange success <command> ./xmlchange DOUT_S_ROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/archive/20230526_US-SPR_ICB1850CNRDCTCBC_ad_spinup  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:47: xmlchange success <command> ./xmlchange DIN_LOC_ROOT=/nfs/data/ccsi/proj-shared/E3SM/inputdata  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:48: xmlchange success <command> ./xmlchange DIN_LOC_ROOT_CLMFORC=/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:48: xmlchange success <command> ./xmlchange CLM_USRDAT_NAME=2x1pt_US-SPR  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:49: xmlchange success <command> ./xmlchange --append CLM_BLDNML_OPTS=-bgc_spinup on  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:49: xmlchange success <command> ./xmlchange ATM_DOMAIN_PATH=${RUNDIR}  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:50: xmlchange success <command> ./xmlchange LND_DOMAIN_PATH=${RUNDIR}  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:50: xmlchange success <command> ./xmlchange ATM_DOMAIN_FILE=domain.nc  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:51: xmlchange success <command> ./xmlchange LND_DOMAIN_FILE=domain.nc  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:51: xmlchange success <command> ./xmlchange DOUT_S=FALSE  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:52: xmlchange success <command> ./xmlchange ATM_NCPL=24  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:52: xmlchange success <command> ./xmlchange NTASKS_ATM=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:53: xmlchange success <command> ./xmlchange NTHRDS_ATM=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:53: xmlchange success <command> ./xmlchange NTASKS_LND=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:54: xmlchange success <command> ./xmlchange NTHRDS_LND=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:54: xmlchange success <command> ./xmlchange NTASKS_ICE=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:55: xmlchange success <command> ./xmlchange NTHRDS_ICE=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:55: xmlchange success <command> ./xmlchange NTASKS_OCN=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:56: xmlchange success <command> ./xmlchange NTHRDS_OCN=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:56: xmlchange success <command> ./xmlchange NTASKS_CPL=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:57: xmlchange success <command> ./xmlchange NTHRDS_CPL=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:57: xmlchange success <command> ./xmlchange NTASKS_GLC=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:58: xmlchange success <command> ./xmlchange NTHRDS_GLC=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:58: xmlchange success <command> ./xmlchange NTASKS_ROF=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:59: xmlchange success <command> ./xmlchange NTHRDS_ROF=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:03:59: xmlchange success <command> ./xmlchange NTASKS_WAV=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:00: xmlchange success <command> ./xmlchange NTHRDS_WAV=1  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:00: xmlchange success <command> ./xmlchange STOP_OPTION=nyears  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:01: xmlchange success <command> ./xmlchange STOP_N=203  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:01: xmlchange success <command> ./xmlchange --id PIO_TYPENAME --val netcdf  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:02: xmlchange success <command> ./xmlchange -id BATCH_SYSTEM --val none  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:02: case.setup starting 
+ ---------------------------------------------------
+2023-05-26 14:04:04: case.setup success 
+ ---------------------------------------------------
+2023-05-26 14:04:05: xmlchange success <command> ./xmlchange -id CLM_CONFIG_OPTS --append --val -cppdefs -DHUM_HOL  </command>
+ ---------------------------------------------------
+2023-05-26 14:04:05: case.build starting 
+ ---------------------------------------------------
+2023-05-26 14:06:29: case.build success 
+ ---------------------------------------------------
+2023-05-26 14:07:19: case.submit starting 
+ ---------------------------------------------------
+2023-05-26 14:07:22: case.run starting 
+ ---------------------------------------------------
+2023-05-26 14:07:24: model execution starting 
+ ---------------------------------------------------
+2023-05-26 15:09:59: model execution success 
+ ---------------------------------------------------
+2023-05-26 15:09:59: case.run success 
+ ---------------------------------------------------
+2023-05-26 15:10:01: case.submit success 
+ ---------------------------------------------------
+2023-06-06 18:54:15: case.submit starting 
+ ---------------------------------------------------
+2023-06-06 18:54:21: case.run starting 
+ ---------------------------------------------------
+2023-06-06 18:54:24: model execution starting 
+ ---------------------------------------------------
+2023-06-06 18:54:26: model execution success 
+ ---------------------------------------------------
+2023-06-06 18:54:26: case.run error 
+ERROR: RUN FAIL: Command '   /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230526_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/e3sm.exe   >> e3sm.log.$LID 2>&1 ' failed
+See log file for details: /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230526_US-SPR_ICB1850CNRDCTCBC_ad_spinup/run/e3sm.log.3987491.230606-185421
+ ---------------------------------------------------
+2023-06-06 18:54:26: case.submit success 
+ ---------------------------------------------------
+2023-06-06 18:55:36: case.submit starting 
+ ---------------------------------------------------
+2023-06-06 18:55:39: case.run starting 
+ ---------------------------------------------------
+2023-06-06 18:55:41: model execution starting 
+ ---------------------------------------------------
+2023-06-06 19:59:57: model execution success 
+ ---------------------------------------------------
+2023-06-06 20:00:00: case.run success 
+ ---------------------------------------------------
+2023-06-06 20:00:08: case.submit success 
+ ---------------------------------------------------

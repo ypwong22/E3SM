@@ -1,6 +1,6 @@
 &comp_inparm 
 
- hist_mfilt = 1
+ hist_mfilt = 1,1
 
  hist_nhtfrq = -61320, -61320
 

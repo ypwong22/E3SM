@@ -5,17 +5,17 @@
       control jobs that will be submitted and their dependancies.
     </header>
   <group id="case.run">
-    <entry id="prereq" value="$BUILD_COMPLETE and not $TEST">
+    <entry id="template" value="template.case.run">
       <type>char</type>
     </entry>
-    <entry id="template" value="template.case.run">
+    <entry id="prereq" value="$BUILD_COMPLETE and not $TEST">
       <type>char</type>
     </entry>
     <entry id="CHARGE_ACCOUNT" value="ccsi">
       <type>char</type>
       <desc>project to charge in scripts if different from PROJECT</desc>
     </entry>
-    <entry id="PROJECT" value="ccsi">
+    <entry id="PROJECT" value="e3sm">
       <type>char</type>
       <desc>project for project-sensitive build and run paths, and job scripts</desc>
     </entry>
@@ -48,6 +48,9 @@
     </entry>
   </group>
   <group id="case.st_archive">
+    <entry id="template" value="template.st_archive">
+      <type>char</type>
+    </entry>
     <entry id="dependency" value="case.run or case.test">
       <type>char</type>
     </entry>
@@ -57,9 +60,6 @@
     <entry id="task_count" value="1">
       <type>char</type>
     </entry>
-    <entry id="template" value="template.st_archive">
-      <type>char</type>
-    </entry>
     <entry id="walltime" value="0:20:00">
       <type>char</type>
     </entry>
@@ -67,7 +67,7 @@
       <type>char</type>
       <desc>project to charge in scripts if different from PROJECT</desc>
     </entry>
-    <entry id="PROJECT" value="ccsi">
+    <entry id="PROJECT" value="e3sm">
       <type>char</type>
       <desc>project for project-sensitive build and run paths, and job scripts</desc>
     </entry>

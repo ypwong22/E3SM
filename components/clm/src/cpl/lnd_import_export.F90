@@ -394,10 +394,10 @@ contains
                     !metdata_fname = 'WCYCL1850S.ne30_' // trim(metvars(v)) // '_0076-0100_z' // zst(2:3) // '.nc'
                     metdata_fname = 'CBGC1850S.ne30_' // trim(metvars(v)) // '_0566-0590_z' // zst(2:3) // '.nc'
             end if
-  
+
             ierr = nf90_open(trim(metdata_bypass) // '/' // trim(metdata_fname), NF90_NOWRITE, met_ncids(v))
             if (ierr .ne. 0) call endrun(msg=' ERROR: Failed to open cpl_bypass input meteorology file' )
-       
+
             !get timestep information
             ierr = nf90_inq_dimid(met_ncids(v), 'DTIME', dimid)
             ierr = nf90_Inquire_Dimension(met_ncids(v), dimid, len = atm2lnd_vars%timelen(v))

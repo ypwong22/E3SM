@@ -464,7 +464,6 @@ contains
                c = filter_hydrologyc(fc)
 
                if (h2osoi_liq(c,j) > 0._r8) then
-
                   vwc = h2osoi_liq(c,j)/(dz(c,j)*denh2o)
 
                   ! the following limit set to catch very small values of 
@@ -475,7 +474,7 @@ contains
                   psi = sucsat(c,j) * (-9.8e-6_r8) * (fsattmp)**(-bsw(c,j))  ! Mpa
                   soilpsi(c,j) = min(max(psi,-15.0_r8),0._r8)
 
-               else 
+               else
                   soilpsi(c,j) = -15.0_r8
                end if
             end do

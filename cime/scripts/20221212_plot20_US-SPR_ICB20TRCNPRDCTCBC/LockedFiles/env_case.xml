@@ -30,7 +30,7 @@
       <type>char</type>
       <desc>Scripts root utils directory location (setup automatically to $CIMEROOT/scripts/Tools - DO NOT EDIT)</desc>
     </entry>
-    <entry id="MODEL_VERSION" value="8c1b629">
+    <entry id="MODEL_VERSION" value="2f4e061">
       <type>char</type>
       <desc>Apparent version of the model used for this case</desc>
     </entry>
@@ -243,11 +243,11 @@
       <valid_values>TRUE,FALSE</valid_values>
       <desc>user is not on the requested machine</desc>
     </entry>
-    <entry id="CIMEROOT" value="/nfs/home/ywo/models/E3SM/cime">
+    <entry id="CIMEROOT" value="/home/ywo/models/E3SM/cime">
       <type>char</type>
       <desc>full pathname of CIME source root directory</desc>
     </entry>
-    <entry id="SRCROOT" value="/nfs/home/ywo/models/E3SM">
+    <entry id="SRCROOT" value="/home/ywo/models/E3SM">
       <type>char</type>
       <desc>full pathname of source root directory</desc>
     </entry>
@@ -263,7 +263,7 @@
       <type>char</type>
       <desc>Machine name</desc>
     </entry>
-    <entry id="MACHDIR" value="/nfs/home/ywo/models/E3SM/cime/config/e3sm/machines">
+    <entry id="MACHDIR" value="/home/ywo/models/E3SM/cime/config/e3sm/machines">
       <type>char</type>
       <desc>Machines directory location</desc>
     </entry>

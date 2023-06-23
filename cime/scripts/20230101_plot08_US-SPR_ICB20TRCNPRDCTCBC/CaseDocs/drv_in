@@ -177,7 +177,7 @@
   mct_usealltoall = .false.
   mct_usevector = .false.
   model_doi_url = "https://doi.org/10.11578/E3SM/dc.20180418.36"
-  model_version = "8c1b629"
+  model_version = "2f4e061"
   ocn_gnam = "null"
   ocn_surface_flux_scheme = 0
   orb_eccen = 1.e36

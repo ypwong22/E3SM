@@ -17,7 +17,7 @@
  hist_fincl2 = 'CWDC_vr', 'CWDN_vr', 'CWDP_vr', 'SOIL2C_vr', 'SOIL2N_vr', 'SOIL2P_vr', 'SOIL3C_vr', 'SOIL3N_vr',
          'SOIL3P_vr', 'DEADSTEMC', 'DEADSTEMN', 'DEADSTEMP', 'DEADCROOTC', 'DEADCROOTN', 'DEADCROOTP', 'LITR3C_vr',
          'LITR3N_vr', 'LITR3P_vr', 'LEAFC', 'TOTVEGC', 'TLAI', 'SOIL4C_vr', 'SOIL4N_vr', 'SOIL4P_vr'
- hist_mfilt = 1,1
+ hist_mfilt = 1
  hist_nhtfrq = -61320,-61320
  maxpatch_glcmec = 0
  maxpatch_pft = 17

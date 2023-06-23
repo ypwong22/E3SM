@@ -3,9 +3,9 @@
 <config_definition>
 
 <commandline>
-/nfs/home/ywo/models/E3SM/components/clm/bld/configure -comp_intf mct -phys clm4_5 -phys clm4_5 -cppdefs -DMODAL_AER -cppdefs -DHUM_HOL -usr_src /home/ywo/models/E3SM/cime/scripts/20221212_US-SPR_ICB1850CNRDCTCBC_ad_spinup/SourceMods/src.clm
+/home/ywo/models/E3SM/components/clm/bld/configure -comp_intf mct -phys clm4_5 -phys clm4_5 -cppdefs -DMODAL_AER -cppdefs -DHUM_HOL -usr_src /home/ywo/models/E3SM/cime/scripts/20221212_US-SPR_ICB1850CNRDCTCBC_ad_spinup/SourceMods/src.clm
 </commandline>
-<entry id="clm_root" value="/nfs/home/ywo/models/E3SM/components/clm" list="" valid_values="">
+<entry id="clm_root" value="/home/ywo/models/E3SM/components/clm" list="" valid_values="">
 Root directory of CLM source distribution (directory above CLM configure).
 </entry>
 <entry id="comp_intf" value="mct" list="" valid_values="ESMF,MCT,cpl_\$COMP">

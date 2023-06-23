@@ -1,0 +1,11 @@
+stream_fldfilename_popdens = /nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/firedata/clmforc.Li_2012_hdm_0.5x0.5_AVHRR_simyr1850-2010_c130401.nc
+stream_fldfilename_pdep = /nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/pdepdata/fpdep_clm_hist_simyr2000_1.9x2.5_c150929.nc
+fsoilordercon = /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230212_US-SPR_ICB1850CNPRDCTCBC/run/CNP_parameters.nc
+fsnowoptics = /nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/snicardata/snicar_optics_5bnd_mam_c160322.nc
+fatmlndfrc = /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230212_US-SPR_ICB1850CNPRDCTCBC/run/domain.nc
+fsnowaging = /nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/snicardata/snicar_drdt_bst_fit_60_c070416.nc
+fsurdat = /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230212_US-SPR_ICB1850CNPRDCTCBC/run/surfdata.nc
+paramfile = /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230212_US-SPR_ICB1850CNPRDCTCBC/run/clm_params.nc
+finidat = /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230212_US-SPR_ICB1850CNRDCTCBC_ad_spinup/run/20230212_US-SPR_ICB1850CNRDCTCBC_ad_spinup.clm2.r.0204-01-01-00000.nc
+stream_fldfilename_ndep = /nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/ndepdata/fndep_clm_rcp4.5_simyr1849-2106_1.9x2.5_c100428.nc
+stream_fldfilename_lightng = /nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/NASA_LIS/clmforc.Li_2012_climo1995-2011.T62.lnfm_Total_c140423.nc

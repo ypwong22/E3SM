@@ -1625,7 +1625,7 @@ contains
              this%h2osoi_liq(c,j) = col_pp%dz(c,j)*denh2o*this%h2osoi_vol(c,j)
           endif
        end do
-       
+
        this%h2osoi_liq_old(c,:) = this%h2osoi_liq(c,:)
        this%h2osoi_ice_old(c,:) = this%h2osoi_ice(c,:)
     end do
@@ -2982,7 +2982,7 @@ contains
             this%prod1c(c)   + &
             this%ctrunc(c)   + &
             this%cropseedc_deficit(c)
-            
+
        this%totabgc(c) = &
             this%totpftc(c)  + &
             this%totprodc(c) + &

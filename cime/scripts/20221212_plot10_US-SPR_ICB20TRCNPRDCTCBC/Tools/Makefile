@@ -1,1 +1,1 @@
-/nfs/home/ywo/models/E3SM/cime/scripts/Tools/Makefile
+/home/ywo/models/E3SM/cime/scripts/Tools/Makefile

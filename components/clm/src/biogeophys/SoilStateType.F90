@@ -47,7 +47,7 @@ module SoilStateType
      real(r8), pointer :: hksat_col            (:,:) ! col hydraulic conductivity at saturation (mm H2O /s) 
      real(r8), pointer :: hksat_min_col        (:,:) ! col mineral hydraulic conductivity at saturation (hksat) (mm/s)
      real(r8), pointer :: hk_l_col             (:,:) ! col hydraulic conductivity (mm/s)
-     real(r8), pointer :: smp_l_col            (:,:) ! col soil matric potential (mm)
+     real(r8), pointer :: smp_l_col            (:,:) ! col soil matric potential (mm water)
      real(r8), pointer :: smpmin_col           (:)   ! col restriction for min of soil potential (mm) 
      real(r8), pointer :: bsw_col              (:,:) ! col Clapp and Hornberger "b" (nlevgrnd)  
      real(r8), pointer :: watsat_col           (:,:) ! col volumetric soil water at saturation (porosity) 
@@ -217,6 +217,7 @@ contains
     else
        active = "inactive"
     end if
+
     call hist_addfld2d (fname='SMP',  units='mm', type2d='levgrnd',  &
          avgflag='A', long_name='soil matric potential (vegetated landunits only)', &
          ptr_col=this%smp_l_col, set_spec=spval, l2g_scale_type='veg', default=active)

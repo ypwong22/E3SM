@@ -13,7 +13,7 @@
 cd /home/ywo/models/E3SM/cime/scripts/20221212_US-SPR_ICB1850CNPRDCTCBC
 
 # Set PYTHONPATH so we can make cime calls if needed
-LIBDIR=/nfs/home/ywo/models/E3SM/cime/scripts/lib
+LIBDIR=/home/ywo/models/E3SM/cime/scripts/lib
 export PYTHONPATH=$LIBDIR:$PYTHONPATH
 
 # get new lid

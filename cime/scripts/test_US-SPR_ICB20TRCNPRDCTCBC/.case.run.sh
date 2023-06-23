@@ -13,7 +13,7 @@
 cd /home/ywo/models/E3SM/cime/scripts/test_US-SPR_ICB20TRCNPRDCTCBC
 
 # Set PYTHONPATH so we can make cime calls if needed
-LIBDIR=/nfs/home/ywo/models/E3SM/cime/scripts/lib
+LIBDIR=/home/ywo/models/E3SM/cime/scripts/lib
 export PYTHONPATH=$LIBDIR:$PYTHONPATH
 
 # get new lid
@@ -44,7 +44,7 @@ export OMP_NUM_THREADS=$(./xmlquery THREAD_COUNT --value)
 
 # MPIRUN!
 cd $(./xmlquery RUNDIR --value)
-   /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/test_US-SPR_ICB20TRCNPRDCTCBC/bld/e3sm.exe   >> e3sm.log.$LID 2>&1 
+   /lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/test_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/e3sm.exe   >> e3sm.log.$LID 2>&1 
 
 # save logs?
 

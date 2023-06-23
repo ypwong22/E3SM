@@ -17,7 +17,7 @@ DO NOT RUN THIS SCRIPT MANUALLY
 import os, sys
 os.chdir( '/home/ywo/models/E3SM/cime/scripts/20221212_plot17_US-SPR_ICB20TRCNPRDCTCBC')
 
-_LIBDIR = os.path.join("/nfs/home/ywo/models/E3SM/cime", "scripts", "Tools")
+_LIBDIR = os.path.join("/home/ywo/models/E3SM/cime", "scripts", "Tools")
 sys.path.append(_LIBDIR)
 
 from standard_script_setup          import *

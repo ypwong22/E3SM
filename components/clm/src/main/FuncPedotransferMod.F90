@@ -76,7 +76,7 @@ contains
    bsw = 3.10+0.157*clay-0.003*sand            
    sucsat  = 10._r8 * ( 10._r8**(1.54_r8-0.0095_r8*sand+0.0063*(100._r8-sand-clay)))            
    xksat         = 0.0070556 *(10.**(-0.60+0.0126*sand-0.0064*clay) )     !mm/s now use table 4.
-      
+
    end subroutine pedotransf_cosby1984_table4
    
 !------------------------------------------------------------------------------------------

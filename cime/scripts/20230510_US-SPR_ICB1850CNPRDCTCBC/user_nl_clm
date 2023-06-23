@@ -1,0 +1,16 @@
+&clm_inparm
+ hist_mfilt = 1
+ hist_nhtfrq = -61320
+ finidat = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230510_US-SPR_ICB1850CNRDCTCBC_ad_spinup/run/20230510_US-SPR_ICB1850CNRDCTCBC_ad_spinup.clm2.r.0204-01-01-00000.nc'
+ fsurdat = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230510_US-SPR_ICB1850CNPRDCTCBC/run/surfdata.nc'
+ paramfile = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230510_US-SPR_ICB1850CNPRDCTCBC/run/clm_params.nc'
+ fsoilordercon = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230510_US-SPR_ICB1850CNPRDCTCBC/run/CNP_parameters.nc'
+ stream_fldfilename_ndep = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/lnd/clm2/ndepdata/fndep_clm_rcp4.5_simyr1849-2106_1.9x2.5_c100428.nc'
+ use_nitrif_denitrif = .true.
+ use_nofire = .true.
+ nyears_ad_carbon_only = 25
+ spinup_mortality_factor = 10
+metdata_type = 'site'
+ metdata_bypass = '/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/inputdata/atm/datm7/CLM1PT_data/SPRUCE_data'
+ co2_file = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/CO2/fco2_datm_rcp4.5_1765-2500_c130312.nc'
+ aero_file = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/cam/chem/trop_mozart_aero/aero/aerosoldep_rcp4.5_monthly_1849-2104_1.9x2.5_c100402.nc'

@@ -268,6 +268,7 @@ contains
             err_found = .true.
             err_index = c
          end if
+
       end do ! end of columns loop
 
       ! Consider adapting this check to be fates compliant (rgk 04-2017)
@@ -488,8 +489,8 @@ contains
          if (use_pflotran .and. pf_cmode) then
             write(iulog,*)'pf_delta_decompn      = ',col_decompn_delta(c)*dt
          end if
-         call endrun(msg=errMsg(__FILE__, __LINE__))
 
+         call endrun(msg=errMsg(__FILE__, __LINE__))
 
       end if
 
@@ -689,6 +690,7 @@ contains
             write(iulog,*)'SOP erosion = ',som_p_yield(c)*dt
             write(iulog,*)'SIP erosion = ',(labilep_yield(c)+secondp_yield(c)+occlp_yield(c)+primp_yield(c))*dt
          end if
+
          call endrun(msg=errMsg(__FILE__, __LINE__))
       end if
 

@@ -160,7 +160,6 @@ contains
     integer  :: year, mon, day, sec
     real(r8) :: dt        ! radiation time step (seconds)
     real(r8) :: spinup_term, burial_rate
-
     !-----------------------------------------------------------------------
 
     associate(                                                                                 & 
@@ -486,7 +485,6 @@ contains
          end if
 
       end do ! end of patch loop
-
 
    end if
 

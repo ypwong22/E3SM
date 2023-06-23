@@ -958,6 +958,7 @@ contains
                        ch4_vars, photosyns_vars,                                        &
                        phosphorusflux_vars,phosphorusstate_vars)
 
+
              !--------------------------------------------------------------------------------
              if (use_clm_interface) then
                  ! STEP-1: pass data from CLM to clm_interface_data (INTERFACE DATA TYPE)
@@ -1039,7 +1040,7 @@ contains
                    photosyns_vars, soilhydrology_vars, energyflux_vars,          &
                    phosphorusflux_vars, phosphorusstate_vars, sedflux_vars)
 
-             !===========================================================================================
+ !===========================================================================================
              ! clm_interface: 'EcosystemDynNoLeaching' is divided into 2 subroutines (1 & 2): END
              !===========================================================================================
 
@@ -1211,6 +1212,7 @@ contains
           
        end if
        
+
        ! ============================================================================
        ! Check the energy and water balance, also carbon and nitrogen balance
        ! ============================================================================

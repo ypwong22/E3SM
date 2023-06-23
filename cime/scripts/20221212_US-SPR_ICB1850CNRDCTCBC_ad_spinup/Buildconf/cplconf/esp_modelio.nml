@@ -1,7 +1,7 @@
 &modelio
   diri = "/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221212_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld/esp"
   diro = "/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20221212_US-SPR_ICB1850CNRDCTCBC_ad_spinup/run"
-  logfile = "esp.log.3498550.230103-211951"
+  logfile = "esp.log.3825421.230412-161147"
 /
 &pio_inparm
   pio_netcdf_format = ""
