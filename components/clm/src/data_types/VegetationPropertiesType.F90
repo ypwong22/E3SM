@@ -146,22 +146,22 @@ module VegetationPropertiesType
      real(r8), allocatable :: br_mr(:)            !Base rate for maintanence respiration
      real(r8), allocatable :: q10_mr(:)           !Q10 for maintanence respiration
      real(r8)              :: tc_stress           !Critial temperature for moisture stress
+     ! phenology
+     real(r8), allocatable :: ndays_on(:)    ! number of days to complete leaf onset
+     real(r8), allocatable :: gdd_tbase(:)   ! base temperature for onset of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: crit_chil1(:)  ! intercept for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: crit_chil2(:)  ! scale for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: crit_chil3(:)  ! exponent for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: crit_gdd1(:)   ! deciduous pheonlogy critical GDD intercept
+     real(r8), allocatable :: crit_gdd2(:)   ! other deciduous pheonlogy criticalGDD slope
+     real(r8), allocatable :: ndays_off(:)   ! number of days to complete leaf offset (deciduous, stress) or the parameter controlling this (evergreen)
+     real(r8), allocatable :: crit_dayl(:)   ! critical daylength for leaf offset (seconds) (deciduous, stress)
+     real(r8), allocatable :: off_pstart(:)  ! critical day length to start accumulating temperature for offset model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: off_pend(:)    ! critical temperature accumulation to start offset (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: off_tbase(:)   ! offset model base temperature (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: hardiness_root(:)   ! base temperature for onset of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+     real(r8), allocatable :: crit_chil2_root(:)  ! scale for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
 
-     ! pft dependent parameters for vegetation phenology
-     real(r8), allocatable :: crit_dayl(:)        !Critical daylength for leaf offset (seconds) (evergreen, deciduous, stress)
-     real(r8), allocatable :: ndays_on(:)         !Number of days to complete leaf onset
-     real(r8), allocatable :: ndays_on_root(:)    !Number of days to complete root onset
-     real(r8), allocatable :: ndays_off(:)        !Number of days to complete leaf offset (this is approximate for evergreen)
-     real(r8), allocatable :: crit_gdd1(:)        !Deciduous pheonlogy critical GDD intercept
-     real(r8), allocatable :: crit_gdd2(:)        !Deciduous pheonlogy criticalGDD slope
-     real(r8), allocatable :: gdd_tbase(:)        !Base temperature for onset of the alternating model (279.5 for ndllf_dcd_brl_tree, 279.05 for nbrdlf_dcd_brl_shrub)
-     real(r8), allocatable :: crit_onset_chil(:)  ! critical number of chiling days to accumulate before fine root growth starts
-     real(r8), allocatable :: crit_chil1(:)       !Intercept for the critical onset gdd of the alternating model (9 for ndllf_dcd_brl_tree, 33 for nbrdlf_dcd_brl_shrub)
-     real(r8), allocatable :: crit_chil2(:)       !Scale for the critical onset gdd of the alternating model (2112 for ndllf_dcd_brl_tree, 1388 for nbrdlf_dcd_brl_shrub)
-     real(r8), allocatable :: crit_chil3(:)       !Exponent for the critical onset gdd of the alternating model (-0.04 for ndllf_dcd_brl_tree, -0.02 for nbrdlf_dcd_brl_shrub)
-     real(r8), allocatable :: off_pstart(:)       !Critical day length to start accumulating temperature for offset model (46800 for ndllf_dcd_brl_tree, 54600 for nbrdlf_dcd_brl_shrub)
-     real(r8), allocatable :: off_pend(:)         !Critical temperature accumulation to start offset (1750 for ndllf_dcd_brl_tree, 1600 for nbrdlf_dcd_brl_shrub)
-     real(r8), allocatable :: off_tbase(:)        !Offset model base temperature (294.5 for ndllf_dcd_brl_tree, 290.15_r8 for nbrdlf_dcd_brl_shrub)
    contains
    procedure, public :: Init => veg_vp_init
 
@@ -198,7 +198,7 @@ contains
     use pftvarcon , only : fnr, act25, kcha, koha, cpha, vcmaxha, jmaxha, tpuha
     use pftvarcon , only : lmrha, vcmaxhd, jmaxhd, tpuhd, lmrse, qe, theta_cj
     use pftvarcon , only : bbbopt, mbbopt, nstor, br_xr, br_mr, q10_mr, tc_stress, lmrhd
-    use pftvarcon , only : crit_dayl, ndays_on, ndays_on_root, ndays_off, crit_gdd1, crit_gdd2, gdd_tbase, crit_onset_chil, crit_chil1, crit_chil2, crit_chil3, off_pstart, off_pend, off_tbase
+    use pftvarcon , only : ndays_on, gdd_tbase, crit_chil1, crit_chil2, crit_chil3, crit_gdd1, crit_gdd2, ndays_off, crit_dayl, off_pstart, off_pend, off_tbase, hardiness_root, crit_chil2_root
     !
 
     class (vegetation_properties_type) :: this
@@ -262,7 +262,6 @@ contains
     allocate(this%convfact      (0:numpft))        ; this%convfact     (:)   =nan
     allocate(this%fyield        (0:numpft))        ; this%fyield       (:)   =nan
 
-
     allocate(this%leafcp        (0:numpft))        ; this%leafcp       (:)   =nan
     allocate(this%lflitcp       (0:numpft))        ; this%lflitcp      (:)   =nan
     allocate(this%frootcp       (0:numpft))        ; this%frootcp      (:)   =nan
@@ -311,20 +310,21 @@ contains
     allocate( this%br_mr(0:numpft))                              ; this%br_mr(:)                 =nan
     allocate( this%q10_mr(0:numpft))                             ; this%q10_mr(:)                =nan
 
-    allocate( this%crit_dayl(0:numpft))                          ; this%crit_dayl(:)             =nan
-    allocate( this%ndays_on (0:numpft))                          ; this%ndays_on (:)             =nan
-    allocate( this%ndays_on_root (0:numpft))                     ; this%ndays_on_root (:)        =nan
-    allocate( this%ndays_off(0:numpft))                          ; this%ndays_off(:)             =nan
-    allocate( this%crit_gdd1(0:numpft))                          ; this%crit_gdd1(:)             =nan
-    allocate( this%crit_gdd2(0:numpft))                          ; this%crit_gdd2(:)             =nan
-    allocate( this%gdd_tbase(0:numpft))                          ; this%gdd_tbase(:)             =nan
-    allocate( this%crit_onset_chil(0:numpft))                    ; this%crit_onset_chil(:)       =nan
-    allocate( this%crit_chil1(0:numpft))                         ; this%crit_chil1(:)            =nan
-    allocate( this%crit_chil2(0:numpft))                         ; this%crit_chil2(:)            =nan
-    allocate( this%crit_chil3(0:numpft))                         ; this%crit_chil3(:)            =nan
-    allocate( this%off_pstart(0:numpft))                         ; this%off_pstart(:)            =nan
-    allocate( this%off_pend  (0:numpft))                         ; this%off_pend  (:)            =nan
-    allocate( this%off_tbase (0:numpft))                         ; this%off_tbase (:)            =nan
+    ! phenology
+    allocate( ndays_on (0:numpft) )                              ; this%ndays_on(:)              =nan
+    allocate( gdd_tbase (0:numpft) )                             ; this%gdd_tbase(:)             =nan
+    allocate( crit_chil1 (0:numpft) )                            ; this%crit_chil1(:)            =nan
+    allocate( crit_chil2 (0:numpft) )                            ; this%crit_chil2(:)            =nan
+    allocate( crit_chil3 (0:numpft) )                            ; this%crit_chil3(:)            =nan
+    allocate( crit_gdd1 (0:numpft) )                             ; this%crit_gdd1(:)             =nan
+    allocate( crit_gdd2 (0:numpft) )                             ; this%crit_gdd2(:)             =nan
+    allocate( ndays_off (0:numpft) )                             ; this%ndays_off(:)             =nan
+    allocate( crit_dayl (0:numpft) )                             ; this%crit_dayl(:)             =nan
+    allocate( off_pstart (0:numpft) )                            ; this%off_pstart(:)            =nan
+    allocate( off_pend (0:numpft) )                              ; this%off_pend(:)              =nan
+    allocate( off_tbase (0:numpft) )                             ; this%off_tbase(:)             =nan
+    allocate( hardiness_root (0:numpft) )                        ; this%hardiness_root(:)        =nan
+    allocate( crit_chil2_root (0:numpft) )                       ; this%crit_chil2_root(:)       =nan
 
     do m = 0,numpft
 
@@ -414,21 +414,6 @@ contains
        this%br_xr(m)        = br_xr(m)
        this%br_mr(m)        = br_mr(m)
        this%q10_mr(m)       = q10_mr(m)
-
-       this%crit_dayl(m)    = crit_dayl(m)
-       this%ndays_on(m)     = ndays_on(m)
-       this%ndays_on_root(m)= ndays_on_root(m)
-       this%ndays_off(m)    = ndays_off(m)
-       this%crit_gdd1(m)    = crit_gdd1(m)
-       this%crit_gdd2(m)    = crit_gdd2(m)
-       this%gdd_tbase(m)    = gdd_tbase(m)
-       this%crit_onset_chil(m) = crit_onset_chil(m)
-       this%crit_chil1(m)   = crit_chil1(m)
-       this%crit_chil2(m)   = crit_chil2(m)
-       this%crit_chil3(m)   = crit_chil3(m)
-       this%off_pstart(m)   = off_pstart(m)
-       this%off_pend(m)     = off_pend(m)
-       this%off_tbase(m)    = off_tbase(m)
     end do
 
     do m = 0,numpft
@@ -480,6 +465,25 @@ contains
     this%lamda_ptase   = lamda_ptase
 
     this%tc_stress     = tc_stress
+
+    do m = 0, numpft
+
+       this%ndays_on(m) = ndays_on(m)
+       this%gdd_tbase(m) = gdd_tbase(m)
+       this%crit_chil1(m) = crit_chil1(m)
+       this%crit_chil2(m) = crit_chil2(m)
+       this%crit_chil3(m) = crit_chil3(m)
+       this%crit_gdd1(m) = crit_gdd1(m)
+       this%crit_gdd2(m) = crit_gdd2(m)
+       this%ndays_off(m) = ndays_off(m)
+       this%crit_dayl(m) = crit_dayl(m)
+       this%off_pstart(m) = off_pstart(m)
+       this%off_pend(m) = off_pend(m)
+       this%off_tbase(m) = off_tbase(m)
+       this%hardiness_root(m) = hardiness_root(m)
+       this%crit_chil2_root(m) = crit_chil2_root(m)
+
+    end do
      
   end subroutine veg_vp_init
 

@@ -123,7 +123,6 @@ module VegetationDataType
     real(r8), pointer :: leafc_xfer         (:) => null() ! (gC/m2) leaf C transfer
     real(r8), pointer :: frootc             (:) => null() ! (gC/m2) fine root C
     real(r8), pointer :: frootc_storage     (:) => null() ! (gC/m2) fine root C storage
-    real(r8), pointer :: prev_frootc_storage(:) => null() ! (gC/m2) last year's fine root C storage at year end
     real(r8), pointer :: frootc_xfer        (:) => null() ! (gC/m2) fine root C transfer
     real(r8), pointer :: livestemc          (:) => null() ! (gC/m2) live stem C
     real(r8), pointer :: livestemc_storage  (:) => null() ! (gC/m2) live stem C storage
@@ -175,7 +174,6 @@ module VegetationDataType
     real(r8), pointer :: leafn_xfer             (:)   => null()  ! (gN/m2) leaf N transfer
     real(r8), pointer :: frootn                 (:)   => null()  ! (gN/m2) fine root N
     real(r8), pointer :: frootn_storage         (:)   => null()  ! (gN/m2) fine root N storage
-    real(r8), pointer :: prev_frootn_storage    (:)   => null()  ! (gN/m2) previous year's fine root N storage
     real(r8), pointer :: frootn_xfer            (:)   => null()  ! (gN/m2) fine root N transfer
     real(r8), pointer :: livestemn              (:)   => null()  ! (gN/m2) live stem N
     real(r8), pointer :: livestemn_storage      (:)   => null()  ! (gN/m2) live stem N storage
@@ -266,7 +264,6 @@ module VegetationDataType
     real(r8), pointer :: leafp_xfer             (:)     ! (gP/m2) leaf P transfer
     real(r8), pointer :: frootp                 (:)     ! (gP/m2) fine root P
     real(r8), pointer :: frootp_storage         (:)     ! (gP/m2) fine root P storage
-    real(r8), pointer :: prev_frootp_storage(:) => null() ! (gP/m2) last year's fine root P storage at year end
     real(r8), pointer :: frootp_xfer            (:)     ! (gP/m2) fine root P transfer
     real(r8), pointer :: livestemp              (:)     ! (gP/m2) live stem P
     real(r8), pointer :: livestemp_storage      (:)     ! (gP/m2) live stem P storage
@@ -1953,7 +1950,6 @@ module VegetationDataType
        allocate(this%leafc_xfer         (begp :endp))   ;  this%leafc_xfer         (:)   = nan
        allocate(this%frootc             (begp :endp))   ;  this%frootc             (:)   = nan
        allocate(this%frootc_storage     (begp :endp))   ;  this%frootc_storage     (:)   = nan
-       allocate(this%prev_frootc_storage(begp :endp))   ;  this%prev_frootc_storage(:)   = nan
        allocate(this%frootc_xfer        (begp :endp))   ;  this%frootc_xfer        (:)   = nan
        allocate(this%livestemc          (begp :endp))   ;  this%livestemc          (:)   = nan
        allocate(this%livestemc_storage  (begp :endp))   ;  this%livestemc_storage  (:)   = nan
@@ -2023,11 +2019,6 @@ module VegetationDataType
        call hist_addfld1d (fname='FROOTC_STORAGE', units='gC/m^2', &
              avgflag='A', long_name='fine root C storage', &
              ptr_patch=this%frootc_storage, default='inactive')
-
-       this%prev_frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='PREV_FROOTC_STORAGE', units='gC/m^2', &
-            avgflag='A', long_name='previous year fine root C storage', &
-            ptr_patch=this%prev_frootc_storage, default='inactive')
       
        this%frootc_xfer(begp:endp) = spval
        call hist_addfld1d (fname='FROOTC_XFER', units='gC/m^2', &
@@ -2515,7 +2506,6 @@ module VegetationDataType
 
              this%frootc(p)              = 0._r8 
              this%frootc_storage(p)      = 0._r8 
-             this%prev_frootc_storage(p) = 0._r8 
              this%frootc_xfer(p)         = 0._r8 
 
              this%livestemc(p)         = 0._r8 
@@ -2539,13 +2529,11 @@ module VegetationDataType
                       this%leafc_storage(p) = 0._r8
                       this%frootc(p) = 20._r8 * ratio
                       this%frootc_storage(p) = 0._r8
-                      this%prev_frootc_storage(p)    = 0._r8 
                     else
                       this%leafc(p) = 0._r8 
                       this%leafc_storage(p) = 20._r8 * ratio
                       this%frootc(p) = 0._r8
                       this%frootc_storage(p) = 20._r8 * ratio
-                      this%prev_frootc_storage(p)    = 20._r8 * ratio
                    end if
                 end if
              end if
@@ -2631,7 +2619,6 @@ module VegetationDataType
           this%leafc_xfer(p)           = value_veg
           this%frootc(p)               = value_veg
           this%frootc_storage(p)       = value_veg
-          this%prev_frootc_storage(p)  = value_veg
           this%frootc_xfer(p)          = value_veg
           this%livestemc(p)            = value_veg
           this%livestemc_storage(p)    = value_veg
@@ -2736,10 +2723,6 @@ module VegetationDataType
           call restartvar(ncid=ncid, flag=flag, varname='frootc_storage', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
                interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='prev_frootc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%prev_frootc_storage)
 
           call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer', xtype=ncd_double,  &
                dim1name='pft', long_name='', units='', &
@@ -3752,7 +3735,6 @@ module VegetationDataType
     allocate(this%leafn_xfer             (begp:endp))           ; this%leafn_xfer          (:)   = nan
     allocate(this%frootn                 (begp:endp))           ; this%frootn              (:)   = nan
     allocate(this%frootn_storage         (begp:endp))           ; this%frootn_storage      (:)   = nan
-    allocate(this%prev_frootn_storage         (begp:endp))           ; this%prev_frootn_storage      (:)   = nan
     allocate(this%frootn_xfer            (begp:endp))           ; this%frootn_xfer         (:)   = nan
     allocate(this%livestemn              (begp:endp))           ; this%livestemn           (:)   = nan
     allocate(this%livestemn_storage      (begp:endp))           ; this%livestemn_storage   (:)   = nan
@@ -3860,11 +3842,6 @@ module VegetationDataType
          avgflag='A', long_name='fine root N storage', &
          ptr_patch=this%frootn_storage, default='inactive')
 
-     this%prev_frootn_storage(begp:endp) = spval
-     call hist_addfld1d (fname='PREV_FROOTN_STORAGE', units='gN/m^2', &
-          avgflag='A', long_name='previous year fine root N storage', &
-          ptr_patch=this%prev_frootn_storage, default='inactive')
-     
     this%frootn_xfer(begp:endp) = spval
     call hist_addfld1d (fname='FROOTN_XFER', units='gN/m^2', &
          avgflag='A', long_name='fine root N transfer', &
@@ -4012,7 +3989,6 @@ module VegetationDataType
           this%cropseedn_deficit(p) = 0._r8
           this%frootn(p)            = 0._r8
           this%frootn_storage(p)    = 0._r8
-          this%prev_frootn_storage(p)    = 0._r8
           this%frootn_xfer(p)       = 0._r8
           this%livestemn(p)         = 0._r8
           this%livestemn_storage(p) = 0._r8
@@ -4033,7 +4009,6 @@ module VegetationDataType
               if (veg_pp%itype(p) .ne. noveg) then
                  this%frootn(p) = veg_cs%frootc(p) / veg_vp%frootcn(veg_pp%itype(p))
                  this%frootn_storage(p) = veg_cs%frootc_storage(p) / veg_vp%frootcn(veg_pp%itype(p))
-                 this%prev_frootn_storage(p) = veg_cs%prev_frootc_storage(p) / veg_vp%frootcn(veg_pp%itype(p))
               end if
           end if
 
@@ -4121,10 +4096,6 @@ module VegetationDataType
     call restartvar(ncid=ncid, flag=flag, varname='frootn_storage', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%frootn_storage) 
-
-     call restartvar(ncid=ncid, flag=flag, varname='prev_frootn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prev_frootn_storage) 
 
     call restartvar(ncid=ncid, flag=flag, varname='frootn_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
@@ -4396,7 +4367,6 @@ module VegetationDataType
        this%leafn_xfer(i)         = value_veg
        this%frootn(i)             = value_veg
        this%frootn_storage(i)     = value_veg
-       this%prev_frootn_storage(i)     = value_veg
        this%frootn_xfer(i)        = value_veg
        this%livestemn(i)          = value_veg
        this%livestemn_storage(i)  = value_veg
@@ -4492,7 +4462,6 @@ module VegetationDataType
     allocate(this%leafp_xfer         (begp:endp)) ; this%leafp_xfer         (:) = nan     
     allocate(this%frootp             (begp:endp)) ; this%frootp             (:) = nan
     allocate(this%frootp_storage     (begp:endp)) ; this%frootp_storage     (:) = nan     
-    allocate(this%prev_frootp_storage     (begp:endp)) ; this%prev_frootp_storage     (:) = nan     
     allocate(this%frootp_xfer        (begp:endp)) ; this%frootp_xfer        (:) = nan     
     allocate(this%livestemp          (begp:endp)) ; this%livestemp          (:) = nan
     allocate(this%livestemp_storage  (begp:endp)) ; this%livestemp_storage  (:) = nan
@@ -4561,11 +4530,6 @@ module VegetationDataType
          avgflag='A', long_name='fine root P storage', &
          ptr_patch=this%frootp_storage, default='inactive')
 
-     this%prev_frootp_storage(begp:endp) = spval
-     call hist_addfld1d (fname='PREV_FROOTP_STORAGE', units='gP/m^2', &
-          avgflag='A', long_name='previous year fine root P storage', &
-          ptr_patch=this%prev_frootp_storage, default='inactive')
-     
     this%frootp_xfer(begp:endp) = spval
     call hist_addfld1d (fname='FROOTP_XFER', units='gP/m^2', &
          avgflag='A', long_name='fine root P transfer', &
@@ -4714,7 +4678,6 @@ module VegetationDataType
           this%cropseedp_deficit(p) = 0._r8
           this%frootp(p)            = 0._r8
           this%frootp_storage(p)    = 0._r8
-          this%prev_frootp_storage(p)    = 0._r8
           this%frootp_xfer(p)       = 0._r8
           this%livestemp(p)         = 0._r8
           this%livestemp_storage(p) = 0._r8
@@ -4735,7 +4698,6 @@ module VegetationDataType
               if (veg_pp%itype(p) .ne. noveg) then
                  this%frootp(p) = veg_cs%frootc(p) / veg_vp%frootcp(veg_pp%itype(p))
                  this%frootp_storage(p) = veg_cs%frootc_storage(p) / veg_vp%frootcp(veg_pp%itype(p))
-                 this%prev_frootp_storage(p) = veg_cs%prev_frootc_storage(p) / veg_vp%frootcp(veg_pp%itype(p))
               end if
           end if
            
@@ -4819,10 +4781,6 @@ module VegetationDataType
     call restartvar(ncid=ncid, flag=flag, varname='frootp_storage', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
          interpinic_flag='interp', readvar=readvar, data=this%frootp_storage) 
-
-     call restartvar(ncid=ncid, flag=flag, varname='prev_frootp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prev_frootp_storage) 
 
     call restartvar(ncid=ncid, flag=flag, varname='frootp_xfer', xtype=ncd_double,  &
          dim1name='pft', long_name='', units='', &
@@ -5000,7 +4958,6 @@ module VegetationDataType
        this%leafp_xfer(i)         = value_patch
        this%frootp(i)             = value_patch
        this%frootp_storage(i)     = value_patch
-       this%prev_frootp_storage(i)     = value_patch
        this%frootp_xfer(i)        = value_patch
        this%livestemp(i)          = value_patch
        this%livestemp_storage(i)  = value_patch

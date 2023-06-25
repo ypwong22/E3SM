@@ -184,11 +184,18 @@ contains
     end if
 
     call getfil( filename, locfn, 0 )
+
+    write (iulog,*) 'Checkpoint1'
+
     call ncd_pio_openfile (ncid, trim(locfn), 0)
+
+    write (iulog,*) 'Checkpoint2'
 
     ! Determine dimensions
     call ncd_inqfdims(ncid, isgrid2d, ni, nj, ns)
-    
+
+    write (iulog,*) 'Checkpoint3'
+
     ! pflotran:beg-----------------------------------------------
     call ncd_inqdlen(ncid, dimid, nv, 'nv')
     if (nv>0) then
@@ -198,8 +205,12 @@ contains
     endif
     ! pflotran:end-----------------------------------------------
 
+    write (iulog,*) 'Checkpoint4'
+
     ! Determine isgrid2d flag for domain
     call domain_init(ldomain, isgrid2d=isgrid2d, ni=ni, nj=nj, nbeg=begg, nend=endg)
+
+    write (iulog,*) 'Checkpoint5'
 
     ! Determine type of file - old style grid file or new style domain file
     call check_var(ncid=ncid, varname='LONGXY', vardesc=vardesc, readvar=readvar) 

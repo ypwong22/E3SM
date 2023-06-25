@@ -119,8 +119,9 @@ module CNStateType
      real(r8), pointer :: onset_gddflag_root_patch     (:)     ! patch onset flag for growing degree day sum
      real(r8), pointer :: onset_fdd_patch              (:)     ! patch onset freezing degree days counter
      real(r8), pointer :: onset_gdd_patch              (:)     ! patch onset growing degree days
-     real(r8), pointer :: onset_chil_patch             (:)
-     real(r8), pointer :: onset_chil_root_patch        (:)
+     real(r8), pointer :: onset_gdd_root_patch         (:)     ! patch onset growing degree days for root
+     real(r8), pointer :: onset_chil_patch             (:)     ! patch onset chiling accumulation
+     real(r8), pointer :: onset_chil_root_patch        (:)     ! patch onset chiling accumulation for root
      real(r8), pointer :: dayl_temp                    (:)
      real(r8), pointer :: onset_swi_patch              (:)     ! patch onset soil water index
      real(r8), pointer :: offset_flag_patch            (:)     ! patch offset flag
@@ -319,6 +320,7 @@ contains
     allocate(this%onset_gddflag_root_patch    (begp:endp)) ;    this%onset_gddflag_root_patch    (:) = nan
     allocate(this%onset_fdd_patch             (begp:endp)) ;    this%onset_fdd_patch             (:) = nan
     allocate(this%onset_gdd_patch             (begp:endp)) ;    this%onset_gdd_patch             (:) = nan
+    allocate(this%onset_gdd_root_patch        (begp:endp)) ;    this%onset_gdd_root_patch        (:) = nan
     allocate(this%onset_chil_patch            (begp:endp)) ;    this%onset_chil_patch            (:) = nan
     allocate(this%onset_chil_root_patch       (begp:endp)) ;    this%onset_chil_root_patch       (:) = nan
     allocate(this%dayl_temp                   (begp:endp)) ;    this%dayl_temp                   (:) = nan
@@ -596,6 +598,11 @@ contains
     call hist_addfld1d (fname='ONSET_GDD', units='C degree-days', &
          avgflag='A', long_name='onset growing degree days', &
          ptr_patch=this%onset_gdd_patch, default='inactive')
+
+    this%onset_gdd_root_patch(begp:endp) = spval
+    call hist_addfld1d (fname='ONSET_GDD_ROOT', units='C degree-days', &
+         avgflag='A', long_name='onset growing degree days for root', &
+         ptr_patch=this%onset_gdd_root_patch, default='inactive')
 
     this%onset_chil_patch(begp:endp) = spval
     call hist_addfld1d (fname='ONSET_CHIL', units='none', &
@@ -1121,6 +1128,7 @@ contains
           this%onset_gddflag_root_patch(p)    = spval
           this%onset_fdd_patch(p)             = spval
           this%onset_gdd_patch(p)             = spval
+          this%onset_gdd_root_patch(p)        = spval
           this%onset_chil_patch(p)            = spval
           this%onset_chil_root_patch(p)       = spval
           this%dayl_temp(p)                   = spval
@@ -1179,6 +1187,7 @@ contains
           this%onset_gddflag_root_patch(p)  = 0._r8
           this%onset_fdd_patch(p)           = 0._r8
           this%onset_gdd_patch(p)           = 0._r8
+          this%onset_gdd_root_patch(p)      = 0._r8
           this%onset_chil_patch(p)          = 0._r8
           this%onset_chil_root_patch(p)     = 0._r8
           this%dayl_temp(p)                 = 0._r8
@@ -1309,6 +1318,11 @@ contains
          dim1name='pft', &
          long_name='onset growing degree days', units='days' , &
          interpinic_flag='interp', readvar=readvar, data=this%onset_gdd_patch) 
+
+    call restartvar(ncid=ncid, flag=flag, varname='onset_gdd_root', xtype=ncd_double,  &
+         dim1name='pft', &
+         long_name='onset growing degree days for root', units='days' , &
+         interpinic_flag='interp', readvar=readvar, data=this%onset_gdd_root_patch) 
 
     call restartvar(ncid=ncid, flag=flag, varname='onset_chil', xtype=ncd_double,  &
          dim1name='pft', &

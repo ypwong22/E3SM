@@ -54,50 +54,69 @@ module PhenologyMod
    !
    ! !PRIVATE DATA MEMBERS:
    type, private :: PhenolParamsType
-      ! Leaf phenology parameters
+      ! leaf phenology parameters
       real(r8) :: cumprec_onset         ! 10-day cumulative precipitation threshold for onset
-      real(r8) :: maxday_off            ! day of the year of maximum litterfall (evergreen)
       real(r8) :: fstor2tran            ! fraction of storage to move to transfer for each onset
+      real(r8) :: lwtop                 ! live wood turnover proportion (annual fraction)
+
       real(r8) :: crit_onset_fdd        ! critical number of freezing days to set gdd counter for stress deciduous phenology
       real(r8) :: crit_onset_swi        ! critical number of days > soilpsi_on for onset for stress deciduous phenology
       real(r8) :: soilpsi_on            ! critical soil water potential for leaf onset for stress deciduous phenology
+      real(r8) :: rf_scale              ! scale factor in the forcing accumulation term for ndllf_evr_brl_tree in the unified forcing model
+      real(r8) :: rf_tbase              ! base temperature in the forcing accumulation term for ndllf_evr_brl_tree in the unified forcing model
+      real(r8) :: crit_onset_rf         ! critical onset threshold for ndllf_evr_brl_tree in the unified forcing model
+      real(r8) :: maxday_off            ! day of the year of maximum litterfall (ndllf_evr_brl_tree)
       real(r8) :: crit_offset_fdd       ! critical number of freezing days to initiate offset for stress deciduous phenology
       real(r8) :: crit_offset_swi       ! critical number of water stress days to initiate offset for stress deciduous phenology
       real(r8) :: soilpsi_off           ! critical soil water potential for leaf offset for stress deciduous phenology
-      real(r8) :: lwtop                 ! live wood turnover proportion (annual fraction)
-
-      ! Root phenology parameters
-      real(r8) :: nmin_beta             ! exponent to adjust the relationship between stimulated root growth and nutrient limitation; default to 1
-      real(r8) :: sw_scale              ! scaling factor to adjust the inhibition of surface standing water on fine root growth (default = 100 mm)
-      real(r8) :: crit_h2osoi           ! threshold of volumetric soil water content below and above which roots die faster (default to 0.6)
-      real(r8) :: crit_tsoi             ! threshold of temperature below and above which roots die faster (default to 10 degrees celsius)
-      real(r8) :: crit_psi              ! threshold of soil matric potential (mm) at which water-related death rate is exactly 0.5 (default to 35)
-
+      ! root phenology parameters
+      real(r8) :: crit_onset_rf_root    ! critical onset threshold for ndllf_evr_brl_tree in the unified forcing model
+      real(r8) :: nmin_scale            ! exponent to adjust the relationship between fine root transfer growth rate and nutrient limitation
+      real(r8) :: wt_scale              ! scaling factor to adjust the inhibition of surface standing water on fine root transfer growth (unit: mm)
+      real(r8) :: mort_tsoi             ! temperature threshold at which root mortality rate is the lowest
+      real(r8) :: mort_a                ! slope in the temperature scaling factor on fine root mortality rate
+      real(r8) :: mort_b                ! intercept in the temperature scaling factor on fine root mortality rate
+      real(r8) :: mort_psi              ! threshold of soil matric potential (mm? hPa?) at which drought caused fine root mortality rate is lowest
+      real(r8) :: mort_h2o              ! threshold of volumetric soil water content below and above which roots die faster
+      real(r8) :: mort_d                ! scaling factor in the drought-related fine root mortalit yrate
+      real(r8) :: ndays_on_root         ! number of days to complete root onset
+      real(r8) :: ndays_off_fcur        ! number of days to decrease fcur_dyn from 1 to 0
    end type PhenolParamsType
 
    ! PhenolParamsInst is populated in readPhenolParams
    type(PhenolParamsType) ::  PhenolParamsInst
 
-   real(r8) :: dt                            ! radiation time step delta t (seconds)
-   real(r8) :: fracday                       ! dtime as a fraction of day
-   real(r8) :: fracyear                      ! fractional position in the current year at the beginning of the timestep
-   real(r8) :: cumprec_onset                 ! 10-day cumulative precipitation threshold for onset for stress deciduous phenology
-   real(r8) :: maxday_off                    ! day of the year of maximum litterfall (evergreen)
-   real(r8) :: fstor2tran                    ! fraction of storage to move to transfer on each onset
-   real(r8) :: crit_onset_fdd                ! critical number of freezing days
-   real(r8) :: crit_onset_swi                ! water stress days for offset trigger
-   real(r8) :: soilpsi_on                    ! water potential for onset trigger (MPa)
-   real(r8) :: crit_offset_fdd               ! critical number of freezing degree days to trigger offset
-   real(r8) :: crit_offset_swi               ! water stress days for offset trigger
-   real(r8) :: soilpsi_off                   ! water potential for offset trigger (MPa)
-   real(r8) :: lwtop                         ! live wood turnover proportion (annual fraction)
+   real(r8) :: dt                          ! radiation time step delta t (seconds)
+   real(r8) :: fracday                     ! dtime as a fraction of day
+   real(r8) :: fracyear                    ! fractional position in the current year at the beginning of the timestep
+   real(r8) :: fstor2tran                  ! fraction of storage to move to transfer on each onset
+   real(r8) :: lwtop                       ! live wood turnover proportion (annual fraction)
 
-   ! root phenology parameters
-   real(r8) :: crit_h2osoi
-   real(r8) :: crit_psi
-   real(r8) :: crit_tsoi
-   real(r8) :: nmin_beta
-   real(r8) :: sw_scale
+   real(r8) :: cumprec_onset               ! 10-day cumulative precipitation threshold for onset for stress deciduous phenology
+   real(r8) :: crit_onset_fdd              ! critical number of freezing days
+   real(r8) :: crit_onset_swi              ! water stress days for offset trigger
+   real(r8) :: soilpsi_on                  ! water potential for onset trigger (MPa)
+   real(r8) :: rf_scale                    ! scale factor in the forcing accumulation term for ndllf_evr_brl_tree in the unified forcing model
+   real(r8) :: rf_tbase                    ! base temperature in the forcing accumulation term for ndllf_evr_brl_tree in the unified forcing model
+   real(r8) :: crit_onset_rf               ! critical onset threshold for ndllf_evr_brl_tree in the unified forcing model
+
+   real(r8) :: maxday_off                  ! day of the year of maximum litterfall (ndllf_evr_brl_tree)
+   real(r8) :: crit_offset_fdd             ! critical number of freezing days to initiate offset for stress deciduous phenology
+   real(r8) :: crit_offset_swi             ! critical number of water stress days to initiate offset for stress deciduous phenology
+   real(r8) :: soilpsi_off                 ! critical soil water potential for leaf offset for stress deciduous phenology
+
+   ! Root phenology parameters
+   real(r8) :: crit_onset_rf_root    ! critical onset threshold for ndllf_evr_brl_tree in the unified forcing model
+   real(r8) :: nmin_scale            ! exponent to adjust the relationship between fine root transfer growth rate and nutrient limitation
+   real(r8) :: wt_scale              ! scaling factor to adjust the inhibition of surface standing water on fine root transfer growth (unit: mm)
+   real(r8) :: mort_tsoi             ! temperature threshold at which root mortality rate is the lowest
+   real(r8) :: mort_a                ! slope in the temperature scaling factor on fine root mortality rate
+   real(r8) :: mort_b                ! intercept in the temperature scaling factor on fine root mortality rate
+   real(r8) :: mort_psi              ! threshold of soil matric potential (mm? hPa?) at which drought caused fine root mortality rate is lowest
+   real(r8) :: mort_h2o              ! threshold of volumetric soil water content below and above which roots die faster
+   real(r8) :: mort_d                ! scaling factor in the drought-related fine root mortalit yrate
+   real(r8) :: ndays_on_root         ! number of days to complete root onset
+   real(r8) :: ndays_off_fcur        ! number of days to decrease fcur_dyn from 1 to 0
 
    ! CropPhenology variables and constants
    real(r8) :: p1d, p1v                      ! photoperiod factor constants for crop vernalization
@@ -137,10 +156,19 @@ contains
       real(r8)           :: tempr ! temporary to read in parameter
       character(len=100) :: tString ! temp. var for reading
       !-----------------------------------------------------------------------
-
       !
       ! read in parameters
       !
+      tString = 'fstor2tran'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%fstor2tran = tempr
+
+      tString = 'lwtop_ann'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%lwtop = tempr
+
       tString = 'cumprec_onset'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) then
@@ -148,16 +176,6 @@ contains
       else
          PhenolParamsInst%cumprec_onset = tempr
       end if
-
-      tString = 'maxday_off'
-      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
-      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%maxday_off = tempr
-
-      tString = 'fstor2tran'
-      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
-      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%fstor2tran = tempr
 
       tString = 'crit_onset_fdd'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
@@ -174,6 +192,26 @@ contains
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
       PhenolParamsInst%soilpsi_on = tempr
 
+      tString = 'rf_scale'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%rf_scale = tempr
+
+      tString = 'rf_tbase'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%rf_tbase = tempr
+
+      tString = 'crit_onset_rf'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%crit_onset_rf = tempr
+
+      tString = 'maxday_off'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%maxday_off = tempr
+
       tString = 'crit_offset_fdd'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
@@ -189,35 +227,60 @@ contains
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
       PhenolParamsInst%soilpsi_off = tempr
 
-      tString = 'lwtop_ann'
+      tString = 'crit_onset_rf_root'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%lwtop = tempr
+      PhenolParamsInst%crit_onset_rf_root = tempr
 
-      tString = 'crit_h2osoi'
+      tString = 'nmin_scale'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%crit_h2osoi = tempr
+      PhenolParamsInst%nmin_scale = tempr
 
-      tString = 'crit_psi'
+      tString = 'wt_scale'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%crit_psi = tempr
+      PhenolParamsInst%wt_scale = tempr
 
-      tString = 'nmin_beta'
+      tString = 'mort_tsoi'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%nmin_beta = tempr
+      PhenolParamsInst%mort_tsoi = tempr
 
-      tString = 'sw_scale'
+      tString = 'mort_a'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%sw_scale = tempr
+      PhenolParamsInst%mort_a = tempr
 
-      tString = 'crit_tsoi'
+      tString = 'mort_b'
       call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
       if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
-      PhenolParamsInst%crit_tsoi = tempr
+      PhenolParamsInst%mort_b = tempr
+
+      tString = 'mort_psi'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%mort_psi = tempr
+
+      tString = 'mort_h2o'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%mort_h2o = tempr
+
+      tString = 'mort_d'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%mort_d = tempr
+
+      tString = 'ndays_on_root'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%ndays_on_root = tempr
+
+      tString = 'ndays_off_fcur'
+      call ncd_io(varname=trim(tString), data=tempr, flag='read', ncid=ncid, readvar=readv)
+      if (.not. readv) call endrun(msg=trim(errCode)//trim(tString)//errMsg(__FILE__, __LINE__))
+      PhenolParamsInst%ndays_off_fcur = tempr
 
    end subroutine readPhenolParams
 
@@ -345,38 +408,29 @@ contains
       type(bounds_type), intent(in) :: bounds
       !
       ! !LOCAL VARIABLES:
-      integer :: m, doy_counter, hour_counter, n_fracday
+      integer :: m, n, doy_counter, hour_counter, n_fracday
       real(r8):: sum_of_rfrac, sum_of_fracday
       integer, allocatable :: pft_list(:)
       !------------------------------------------------------------------------
-
       !
       ! Get time-step and what fraction of a day it is
       !
       dt = real(get_step_size(), r8)
       fracday = dt/secspday
 
-      ! -----------------------------------------
-      ! Constants for CNEvergreenPhenology
-      ! -----------------------------------------
-      maxday_off = PhenolParamsInst%maxday_off
-
       ! set transfer parameters
       fstor2tran = PhenolParamsInst%fstor2tran
 
       ! -----------------------------------------
-      ! Constants for root phenology
+      ! For CNLivewoodTurnover
       ! -----------------------------------------
-      crit_h2osoi = PhenolParamsInst%crit_h2osoi
-      crit_psi = PhenolParamsInst%crit_psi
-      crit_tsoi = PhenolParamsInst%crit_tsoi
-      nmin_beta = PhenolParamsInst%nmin_beta
-      sw_scale = PhenolParamsInst%sw_scale
+      ! set the global parameter for livewood turnover rate
+      ! define as an annual fraction (0.7), and convert to fraction per second
+      lwtop = PhenolParamsInst%lwtop/31536000.0_r8 !annual fraction converted to per second
 
       ! -----------------------------------------
-      ! Constants for CNStressDecidPhenology
+      ! Onset parameters
       ! -----------------------------------------
-      ! onset parameters
       cumprec_onset = PhenolParamsInst%cumprec_onset
       crit_onset_fdd = PhenolParamsInst%crit_onset_fdd
       ! critical onset gdd now being calculated as a function of annual
@@ -385,19 +439,32 @@ contains
       ! crit_onset_gdd = 1000.0   ! c4 grass value
       crit_onset_swi = PhenolParamsInst%crit_onset_swi
       soilpsi_on = PhenolParamsInst%soilpsi_on
+      rf_scale = PhenolParamsInst%rf_scale
+      rf_tbase = PhenolParamsInst%rf_tbase
+      crit_onset_rf = PhenolParamsInst%crit_onset_rf
 
-      ! offset parameters
+      ! -----------------------------------------
+      ! Offset parameters
+      ! -----------------------------------------
+      maxday_off = PhenolParamsInst%maxday_off
       crit_offset_fdd = PhenolParamsInst%crit_offset_fdd
       crit_offset_swi = PhenolParamsInst%crit_offset_swi
       soilpsi_off = PhenolParamsInst%soilpsi_off
 
       ! -----------------------------------------
-      ! Constants for CNLivewoodTurnover
+      ! Root onset and mortality parameters
       ! -----------------------------------------
-
-      ! set the global parameter for livewood turnover rate
-      ! define as an annual fraction (0.7), and convert to fraction per second
-      lwtop = PhenolParamsInst%lwtop/31536000.0_r8 !annual fraction converted to per second
+      crit_onset_rf_root = PhenolParamsInst%crit_onset_rf_root
+      nmin_scale = PhenolParamsInst%nmin_scale
+      wt_scale = PhenolParamsInst%wt_scale
+      mort_tsoi = PhenolParamsInst%mort_tsoi
+      mort_a = PhenolParamsInst%mort_a
+      mort_b = PhenolParamsInst%mort_b
+      mort_psi = PhenolParamsInst%mort_psi
+      mort_h2o = PhenolParamsInst%mort_h2o
+      mort_d = PhenolParamsInst%mort_d
+      ndays_on_root = PhenolParamsInst%ndays_on_root
+      ndays_off_fcur = PhenolParamsInst%ndays_off_fcur
 
       ! -----------------------------------------
       ! Call any subroutine specific initialization routines
@@ -534,7 +601,6 @@ contains
       integer :: fp                      ! lake filter pft index
       integer :: g, c                     ! indices
       real(r8):: ws_flag                 ! winter-summer solstice flag (0 or 1)
-      real(r8):: crit_onset_gdd          ! critical onset growing degree-day sum
       integer :: kyr                     ! current year
       integer :: kmo                     ! month of year  (1, ..., 12)
       integer :: kda                     ! day of month   (1, ..., 31)
@@ -550,28 +616,25 @@ contains
          evergreen => veg_vp%evergreen, & ! Input:  [real(r8) (:) ]  binary flag for evergreen leaf habit (0 or 1)
          woody => veg_vp%woody, & ! Input:  [real(r8)  (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
          leaf_long => veg_vp%leaf_long, & ! Input:  [real(r8) (:) ]  leaf longevity (yrs)
-         gdd_tbase => veg_vp%gdd_tbase, & ! Input:  [real(r8) (:) ] temperature parameter in gdd function
-         crit_chil1 => veg_vp%crit_chil1, & ! Input:  [real(r8) (:) ] parameter in the chilling-controlled gdd threshold
-         crit_chil2 => veg_vp%crit_chil2, & ! Input:  [real(r8) (:) ] parameter in the chilling-controlled gdd threshold
-         crit_chil3 => veg_vp%crit_chil3, & ! Input:  [real(r8) (:) ] parameter in the chilling-controlled gdd threshold
-         ndays_on => veg_vp%ndays_on, & ! Input:  [real(r8) (:) ] number of days to complete leaf onset
-         ndays_off => veg_vp%ndays_off, & ! Input:  [real(r8) (:) ] number of days to complete leaf offset
-         crit_dayl => veg_vp%crit_dayl, & ! Input:  [real(r8) (:) ] critical deylength for senescence
          t_ref2m => veg_es%t_ref2m, & ! Input:  [real(r8) (:) ]  2 m height surface air temperature (K)
          dayl => grc_pp%dayl, & ! Input:  [real(r8)  (:)   ]  daylength (s)
          prev_dayl => grc_pp%prev_dayl, & ! Input:  [real(r8)  (:)   ]  daylength from previous time step (s)
+         ! phenology parameters
+         ndays_on => veg_vp%ndays_on, & ! Input:   [real(r8) (:) ] number of days to complete leaf onset
+         ndays_off => veg_vp%ndays_off, &  ! number of days to complete leaf offset (deciduous, stress) or the parameter controlling this (evergreen)
+         !! phenological phases
          dormant_flag => cnstate_vars%dormant_flag_patch, & ! Output: [real(r8)  (:)   ]  dormancy flag
          onset_flag => cnstate_vars%onset_flag_patch, & ! Output: [real(r8)  (:)   ]  onset flag
          onset_counter => cnstate_vars%onset_counter_patch, & ! Output: [real(r8)  (:)   ]  onset counter (seconds)
          onset_flag_root => cnstate_vars%onset_flag_root_patch, & ! Output: [real(r8)  (:)   ]  onset flag
          onset_gddflag => cnstate_vars%onset_gddflag_patch, & ! Output: [real(r8)  (:)   ]  degree days flag
-         onset_gdd => cnstate_vars%onset_gdd_patch, & ! Output: [real(r8)  (:)   ]  onset growing degree days
-         onset_chil => cnstate_vars%onset_chil_patch, & ! Output: [real(r8)  (:)   ]  cumulative chilling that controls the threshold of GDD
+         onset_gdd => cnstate_vars%onset_gdd_patch, & ! Output: [real(r8)  (:)   ]  onset cumulative forcing
          offset_flag => cnstate_vars%offset_flag_patch, & ! Output: [real(r8)  (:)   ]  offset flag
          offset_counter => cnstate_vars%offset_counter_patch, & ! Output: [real(r8)  (:)   ]  offset counter (seconds)
          bglfr_leaf => cnstate_vars%bglfr_leaf_patch, & ! Output: [real(r8) (:) ]  background leaf litterfall rate (1/s)
          bgtr => cnstate_vars%bgtr_patch, & ! Output: [real(r8) (:) ]  background transfer growth rate (1/s)
          lgsf => cnstate_vars%lgsf_patch, & ! Output: [real(r8) (:) ]  long growing season factor [0-1]
+         !! storage pools
          leafc_storage => veg_cs%leafc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) leaf C storage
          livestemc_storage => veg_cs%livestemc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) live stem C storage
          deadstemc_storage => veg_cs%deadstemc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) dead stem C storage
@@ -582,10 +645,10 @@ contains
          leafn_storage => veg_ns%leafn_storage, & ! Input:  [real(r8)  (:)   ]  (gN/m2) leaf N storage
          livestemn_storage => veg_ns%livestemn_storage, & ! Input:  [real(r8)  (:)   ]  (gN/m2) live stem N storage
          deadstemn_storage => veg_ns%deadstemn_storage, & ! Input:  [real(r8)  (:)   ]  (gN/m2) dead stem N storage
-         !! phosphorus
          leafp_storage => veg_ps%leafp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) leaf P storage
          livestemp_storage => veg_ps%livestemp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) live stem P storage
          deadstemp_storage => veg_ps%deadstemp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) dead stem P storage
+         !! transfer pools
          leafc_xfer => veg_cs%leafc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) leaf C transfer
          livestemc_xfer => veg_cs%livestemc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live stem C transfer
          deadstemc_xfer => veg_cs%deadstemc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead stem C transfer
@@ -595,6 +658,7 @@ contains
          leafp_xfer => veg_ps%leafp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) leaf P transfer
          livestemp_xfer => veg_ps%livestemp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) live stem P transfer
          deadstemp_xfer => veg_ps%deadstemp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) dead stem P transfer
+         !! fluxes
          prev_leafc_to_litter => veg_cf%prev_leafc_to_litter, & ! Output: [real(r8)  (:)   ]  previous timestep leaf C litterfall flux (gC/m2/s)
          leafc_storage_to_xfer => veg_cf%leafc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          livestemc_storage_to_xfer => veg_cf%livestemc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
@@ -632,11 +696,6 @@ contains
                ! -------------------------------------------------------------
                ! Calculate spring onset
                ! -------------------------------------------------------------
-               ! Leaf background litterfall as ratio to the annual average rate
-               offset_fraction = exp(-0.5_r8*((day_of_year/maxday_off)**ndays_off(ivt(p)))) &
-                                 *0.5_r8*ndays_off(ivt(p))/maxday_off* &
-                                 ((day_of_year/maxday_off)**(ndays_off(ivt(p)) - fracday))*dayspyr
-
                ! set flag for solstice period (winter->summer = 1, summer->winter = 0)
                if (dayl(g) >= prev_dayl(g)) then
                   ws_flag = 1._r8
@@ -644,12 +703,16 @@ contains
                   ws_flag = 0._r8
                end if
 
-               ! update offset_counter and test for the end of the offset period
+               ! Leaf background litterfall as ratio to the annual average rate
+               offset_fraction = exp(-0.5_r8*((day_of_year/maxday_off)**ndays_off(ivt(p)))) &
+                                 *0.5_r8*ndays_off(ivt(p))/maxday_off* &
+                                 ((day_of_year/maxday_off)**(ndays_off(ivt(p)) - fracday))*dayspyr
+
+               ! update offset_counter and test for the end of the intensive litterfall period
                if (offset_flag(p) == 1.0_r8) then
-                  ! if this is the end of the offset_period, reset phenology
-                  ! flags and indices; judge "intensive litterfall" by being greater than
-                  ! the annual average
-                  if (dayl(g) < crit_dayl(ivt(p)) .and. offset_fraction <= 1._r8) then
+                  ! if this is the end of the offset_period, reset phenology flags and indices
+                  ! judge "intensive litterfall" by >= twice annual average
+                  if (offset_fraction < 2._r8) then
                      ! this code block was originally handled by call cn_offset_cleanup(p)
                      ! inlined during vectorization
                      offset_flag(p) = 0._r8
@@ -707,7 +770,6 @@ contains
                   if (onset_gddflag(p) == 0._r8 .and. ws_flag == 1._r8) then
                      onset_gddflag(p) = 1._r8
                      onset_gdd(p) = 0._r8
-                     onset_chil(p) = 0._r8
                   end if
 
                   ! Test to turn off growing degree-day sum, if on.
@@ -720,24 +782,17 @@ contains
                      onset_gdd(p) = 0._r8
                   end if
 
-                  ! if the gdd flag is set, and if the soil is above freezing
-                  ! then accumulate growing degree days for onset trigger
-                  if (onset_gddflag(p) == 1.0_r8 .and. t_ref2m(p) > gdd_tbase(ivt(p)) .and. ws_flag == 1._r8) then
-                     onset_gdd(p) = onset_gdd(p) + (t_ref2m(p) - gdd_tbase(ivt(p)))*fracday
+                  ! if the gdd flag is set, accumulate forcing term for onset trigger
+                  if (onset_gddflag(p) == 1.0_r8 .and. ws_flag == 1._r8) then
+                     onset_gdd(p) = onset_gdd(p) + 1._r8 / (1._r8 + exp(rf_scale * (t_ref2m(p) - rf_tbase)))
                   end if
-                  !then accumulate chilling days for onset trigger
-                  if (onset_gddflag(p) == 1.0_r8 .and. t_ref2m(p) < gdd_tbase(ivt(p)) .and. ws_flag == 1._r8) then
-                     onset_chil(p) = onset_chil(p) + fracday
-                  end if
-                  crit_onset_gdd = crit_chil1(ivt(p)) + crit_chil2(ivt(p))*exp(crit_chil3(ivt(p))*onset_chil(p))
 
                   ! set onset_flag if critical growing degree-day sum is exceeded
-                  if (onset_gdd(p) > crit_onset_gdd) then
+                  if (onset_gdd(p) > crit_onset_rf) then
                      onset_flag(p) = 1.0_r8
                      dormant_flag(p) = 0.0_r8
                      onset_gddflag(p) = 0.0_r8
                      onset_gdd(p) = 0.0_r8
-                     onset_chil(p) = 0.0_r8
                      onset_counter(p) = ndays_on(ivt(p))*secspday
 
                      ! move all the storage pools into transfer pools,
@@ -776,9 +831,7 @@ contains
 
                   ! test for switching from growth period to offset period
                else if (offset_flag(p) == 0.0_r8) then
-                  ! if daylength is longer but offset reaches a threshold
-                  ! needed to send everything to storage during the offset period
-                  if (dayl(g) > crit_dayl(ivt(p)) .and. offset_fraction >= 1._r8) then
+                  if (offset_fraction >= 2._r8) then
                      offset_flag(p) = 1._r8
                      prev_leafc_to_litter(p) = 0._r8
                   end if
@@ -808,9 +861,9 @@ contains
 
    end subroutine CNEvergreenPhenologyLeaf
 
-   subroutine CNEvergreenPhenologyRoot (num_soilp, filter_soilp, temperature_vars, cnstate_vars, &
-                                        carbonstate_vars, nitrogenstate_vars, carbonflux_vars, nitrogenflux_vars, &
-                                        phosphorusstate_vars, phosphorusflux_vars, soilstate_vars)
+   subroutine CNEvergreenPhenologyRoot(num_soilp, filter_soilp, temperature_vars, cnstate_vars, &
+                                       carbonstate_vars, nitrogenstate_vars, carbonflux_vars, nitrogenflux_vars, &
+                                       phosphorusstate_vars, phosphorusflux_vars, soilstate_vars)
       !
       ! !DESCRIPTION:
       ! For coupled carbon-nitrogen code (CN).
@@ -860,9 +913,6 @@ contains
          evergreen => veg_vp%evergreen, & ! Input:  [real(r8) (:) ]  binary flag for evergreen leaf habit (0 or 1)
          woody => veg_vp%woody, & ! Input:  [real(r8)  (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
          froot_long => veg_vp%froot_long, & ! Input:  [real(r8) (:) ]  fine root longevity (yrs)
-         ndays_on_root => veg_vp%ndays_on_root, & ! input:  [real(r8) (:) ]  number of days for fine root storage to transfer out
-         gdd_tbase => veg_vp%gdd_tbase, & ! Input:  [real(r8) (:) ] temperature parameter in gdd function
-         crit_onset_chil => veg_vp%crit_onset_chil, & ! Input:  [real(r8) (:) ] critial onset chiling accumulation for root onset growth
          t_soisno => col_es%t_soisno, & ! Input:  [real(r8)  (:,:) ]  soil temperature (Kelvin)  (-nlevsno+1:nlevgrnd)
          t_ref2m => veg_es%t_ref2m, & ! Input:  [real(r8) (:) ]  2 m height surface air temperature (K)
          h2osoi_liq => col_ws%h2osoi_liq, & ! Input:  [real(r8) (:,:) ]  soil liquid water content (kg/m2)
@@ -874,17 +924,21 @@ contains
          smpmin => soilstate_vars%smpmin_col, & ! Input:  [real(r8) (:)   ]  restriction for min of soil potential (mm)
          downreg => cnstate_vars%downreg_patch, & ! Output: [real(r8) (:)   ]  fractional reduction in GPP due to N (and/or P) limitation (DIM)
          h2osfc => col_ws%h2osfc, & ! Input:  [real(r8) (:)   ]  surface water (mm)
+         ! phenological parameters
+         hardiness_root => veg_vp%hardiness_root, & ! Input: [real(r8) (:) ] fine root tolerance of cold (K)
+         !! phenological phases
          onset_flag => cnstate_vars%onset_flag_patch, & ! Input:  [real(r8)  (:)   ]  onset flag of aboveground part
          onset_gddflag => cnstate_vars%onset_gddflag_patch, & ! Input:  [real(r8) (:)   ]  degree days flag
-         fcur2 => veg_vp%fcur, & ! Input:  [real(r8) (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage
-         fcur_dyn => cnstate_vars%fcur_dyn_patch, & ! Output: [real(r8)  (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage, dynamic
          onset_flag_root => cnstate_vars%onset_flag_root_patch, & ! Output: [real(r8)  (:)   ]  onset flag of belowground part
          onset_gddflag_root => cnstate_vars%onset_gddflag_root_patch, & ! Output: [real(r8)  (:)   ]  flag to start accumulating gdd/chilling
-         onset_chil_root => cnstate_vars%onset_chil_root_patch, & ! Output: [real(r8)  (:)   ]  accumulated chilling
+         onset_gdd_root => cnstate_vars%onset_gdd_root_patch, & ! Output: [real(r8)  (:)   ]  accumulated growing degree days for root
          onset_counter_root => cnstate_vars%onset_counter_root_patch, & ! Output: [real(r8)  (:)   ]  onset counter (seconds)
          offset_flag_root => cnstate_vars%offset_flag_root_patch, & ! Output: [real(r8)  (:)   ]  flag to start shrinking allocation to displayed growth to zero
          offset_counter_root => cnstate_vars%offset_counter_root_patch, & ! Output: [real(r8)  (:)   ]  offset counter (seconds)
          dormant_flag_root => cnstate_vars%dormant_flag_root_patch, & ! Output: [real(r8)  (:)   ]  dormancy flag
+         fcur2 => veg_vp%fcur, & ! Input:  [real(r8)] fraction of allocation that goes to currently displayed growth, remainder to storage
+         fcur_dyn => cnstate_vars%fcur_dyn_patch, & ! Output: [real(r8)  (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage, dynamic
+         !! pool sizes
          frootc => veg_cs%frootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) fine root C
          livecrootc => veg_cs%livecrootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) live coarse root C
          deadcrootc => veg_cs%deadcrootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) dead coarse root C
@@ -907,21 +961,22 @@ contains
          frootp_storage => veg_ps%frootp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) fine root P storage
          livecrootp_storage => veg_ps%livecrootp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) live coarse root P storage
          deadcrootp_storage => veg_ps%deadcrootp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) dead coarse root P storage
+         frootc_xfer => veg_cs%frootc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) fine root C transfer
+         livecrootc_xfer => veg_cs%livecrootc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live coarse root C transfer
+         deadcrootc_xfer => veg_cs%deadcrootc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead coarse root C transfer
+         frootn_xfer => veg_ns%frootn_xfer, & ! Output:  [real(r8) (:)   ]  (gN/m2) fine root N transfer
+         livecrootn_xfer => veg_ns%livecrootn_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live coarse root C transfer
+         deadcrootn_xfer => veg_ns%deadcrootn_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead coarse root C transfer
+         frootp_xfer => veg_ps%frootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) fine root P transfer
+         livecrootp_xfer => veg_ps%livecrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live coarse root C transfer
+         deadcrootp_xfer => veg_ps%deadcrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead coarse root C transfer
+         !! fluxes
          cpool_to_frootc_storage => veg_cf%cpool_to_frootc_storage, & ! Output: [real(r8) (:)   ]
          cpool_to_frootc => veg_cf%cpool_to_frootc, & ! Output: [real(r8) (:)   ]
          npool_to_frootn_storage => veg_nf%npool_to_frootn_storage, & ! Output: [real(r8) (:)   ]
          npool_to_frootn => veg_nf%npool_to_frootn, & ! Output: [real(r8) (:)   ]
          ppool_to_frootp_storage => veg_pf%ppool_to_frootp_storage, & ! Output: [real(r8) (:)   ]
          ppool_to_frootp => veg_pf%ppool_to_frootp, & ! Output: [real(r8) (:)   ]
-         prev_frootc_storage => veg_cs%prev_frootc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root C storage
-         prev_frootn_storage => veg_ns%prev_frootn_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root N storage
-         prev_frootp_storage => veg_ps%prev_frootp_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root P storage
-         prev_livecrootc_storage => veg_cs%prev_livecrootc_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_livecrootn_storage => veg_ns%prev_livecrootn_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_livecrootp_storage => veg_ps%prev_livecrootp_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootc_storage => veg_cs%prev_deadcrootc_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootn_storage => veg_ns%prev_deadcrootn_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootp_storage => veg_ps%prev_deadcrootp_storage, & ! Input:  [real(r8)  (:)   ]
          frootc_storage_to_xfer => veg_cf%frootc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          livecrootc_storage_to_xfer => veg_cf%livecrootc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          deadcrootc_storage_to_xfer => veg_cf%deadcrootc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
@@ -932,15 +987,6 @@ contains
          frootp_storage_to_xfer => veg_pf%frootp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          livecrootp_storage_to_xfer => veg_pf%livecrootp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          deadcrootp_storage_to_xfer => veg_pf%deadcrootp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         frootc_xfer => veg_cs%frootc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) fine root C transfer
-         livecrootc_xfer => veg_cs%livecrootc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live coarse root C transfer
-         deadcrootc_xfer => veg_cs%deadcrootc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead coarse root C transfer
-         frootn_xfer => veg_ns%frootn_xfer, & ! Output:  [real(r8) (:)   ]  (gN/m2) fine root N transfer
-         livecrootn_xfer => veg_ns%livecrootn_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live coarse root C transfer
-         deadcrootn_xfer => veg_ns%deadcrootn_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead coarse root C transfer
-         frootp_xfer => veg_ps%frootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) fine root P transfer
-         livecrootp_xfer => veg_ps%livecrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live coarse root C transfer
-         deadcrootp_xfer => veg_ps%deadcrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead coarse root C transfer
          frootc_xfer_to_frootc => veg_cf%frootc_xfer_to_frootc, & ! Output:  [real(r8) (:) ]
          livecrootc_xfer_to_livecrootc => veg_cf%livecrootc_xfer_to_livecrootc, & ! Output:  [real(r8) (:) ]
          deadcrootc_xfer_to_deadcrootc => veg_cf%deadcrootc_xfer_to_deadcrootc, & ! Output:  [real(r8) (:) ]
@@ -950,6 +996,7 @@ contains
          frootp_xfer_to_frootp => veg_pf%frootp_xfer_to_frootp, & ! Output:  [real(r8) (:) ]
          deadcrootn_xfer_to_deadcrootn => veg_nf%deadcrootn_xfer_to_deadcrootn, & ! Output:  [real(r8) (:) ]
          deadcrootp_xfer_to_deadcrootp => veg_pf%deadcrootp_xfer_to_deadcrootp, & ! Output:  [real(r8) (:) ]
+         !! onset and litterfall rates
          onset_froot_fnmin => cnstate_vars%onset_froot_fnmin_patch, & ! Output:  [real(r8) (:) ] () nutrient limitation stimulation factor on the fine root transfer growth rate
          onset_froot_fw => cnstate_vars%onset_froot_fw_patch, & ! Output:  [real(r8) (:) ] () anoxia limitation on the fine root transfer growth rate
          bgtr => cnstate_vars%bgtr_patch, & ! Output: [real(r8)  (:)   ]  background transfer growth rate (1/s), applied only on roots
@@ -975,11 +1022,11 @@ contains
                ! -------------------------------------------------------------
                ! scaling factors on the onset & compensatory growth rate
                ! function of nutrient and water table depth
-               onset_froot_fnmin(p) = (1._r8 + downreg(p)**nmin_beta) ! downreg is the excess respiration fraction
+               onset_froot_fnmin(p) = (1._r8 + downreg(p)**nmin_scale) ! downreg is the excess respiration fraction
                if (h2osfc(c) .le. 0._r8) then
                   onset_froot_fw(p) = 1._r8
                else
-                  onset_froot_fw(p) = max(1._r8 - h2osfc(c)/sw_scale, 0.1_r8)
+                  onset_froot_fw(p) = max(1._r8 - h2osfc(c)/wt_scale, 0.1_r8)
                end if
 
                ! scaling factors on the background litterfall rate
@@ -993,19 +1040,20 @@ contains
                   psi_max = max(smp_l(c, j), psi_max)
                end do
                psi_max = max(smpmin(c), psi_max)
-               ! Use Clapp and Hornberger "b" to calculate the soil matrix potential at crit_h2osoi
+               ! Use Clapp and Hornberger "b" to calculate the soil matrix potential at mort_h2o
                ! using properties at 10 cm
-               psi_crit_h2osoi = -(sucsat(c, 3)*max(crit_h2osoi/watsat(c, 3), 0.01_r8)**(-bsw(c, 3)))
+               psi_crit_h2osoi = -(sucsat(c, 3) * max(mort_h2o / watsat(c, 3), 0.01_r8)**(-bsw(c, 3)))
                psi_crit_h2osoi = max(smpmin(c), psi_crit_h2osoi) ! limit the range
 
-               lfr_froot_td(p) = min((t_soi_avg - SHR_CONST_TKFRZ - crit_tsoi)**2/4._r8*0.00175_r8 + 0.75_r8, 1.25_r8)
+               lfr_froot_td(p) = min((t_soi_avg - SHR_CONST_TKFRZ - mort_tsoi)**2 &
+                                    / 4._r8 * mort_a + mort_b, 400._r8 * mort_a + mort_b)
 
-               if (h2osoi_liq_avg .le. crit_h2osoi) then
-                  lfr_froot_wd(p) = 1._r8 + atan(0.05_r8*SHR_CONST_PI*(abs(psi_max) - crit_psi))/SHR_CONST_PI
+               if (h2osoi_liq_avg .le. mort_h2o) then
+                  lfr_froot_wd(p) = 1._r8 + atan(mort_d * SHR_CONST_PI * (abs(psi_max) - mort_psi)) / SHR_CONST_PI
                else
-                  ! find soil matric potential when theta = 0.6 (=crit_h2osoi)
-                  w_d_crit = 1._r8 + atan(0.05_r8*SHR_CONST_PI*(abs(psi_crit_h2osoi) - crit_psi))/SHR_CONST_PI
-                  lfr_froot_wd(p) = (h2osoi_liq_avg - crit_h2osoi)/(1 - crit_h2osoi)*(1.5_r8 - w_d_crit) + w_d_crit
+                  ! find soil matric potential when theta = mort_h2o
+                  w_d_crit = 1._r8 + atan(mort_d * SHR_CONST_PI * (abs(psi_crit_h2osoi) - mort_psi)) / SHR_CONST_PI
+                  lfr_froot_wd(p) = (h2osoi_liq_avg - mort_h2o) / (1._r8 - mort_h2o) * (1.5_r8 - w_d_crit) + w_d_crit
                end if
 
                ! compensatory growth rate for freeze-death of fine roots
@@ -1029,7 +1077,7 @@ contains
                   offset_counter_root(p) = offset_counter_root(p) - dt
 
                   ! decrement fcur_dyn from 1 to 0
-                  fcur_dyn(p) = offset_counter_root(p)/secspday/140._r8
+                  fcur_dyn(p) = offset_counter_root(p) / secspday / ndays_off_fcur
 
                   ! if this is the end of the offset_period, reset phenology
                   ! flags and indices
@@ -1040,12 +1088,12 @@ contains
                      dormant_flag_root(p) = 1._r8
                   end if
                else
-                  ! test for turning on the offset period
+                  ! test for turning on the offset period on July 15th (day 196)
                   ! will later modify this control based on cambium observations
                   if (dormant_flag_root(p) == 0.0_r8) then
-                     if (ws_flag == 0._r8) then
+                     if ((offset_flag_root(p) == 0._r8) .and. (day_of_year .ge. 196._r8)) then
                         offset_flag_root(p) = 1._r8
-                        offset_counter_root(p) = 140._r8*secspday
+                        offset_counter_root(p) = ndays_off_fcur * secspday
                      end if
                      fcur_dyn(p) = 1._r8
                   else
@@ -1100,7 +1148,7 @@ contains
                   ! switch on the growing degree day sum on the winter solstice
                   if (onset_gddflag_root(p) == 0._r8 .and. ws_flag == 1._r8) then
                      onset_gddflag_root(p) = 1._r8
-                     onset_chil_root(p) = 0._r8
+                     onset_gdd_root(p) = 0._r8
                   end if
 
                   ! Test to turn off growing degree-day sum, if on.
@@ -1110,23 +1158,22 @@ contains
                   ! before the growing degree-day summation starts again.
                   if (onset_gddflag_root(p) == 1._r8 .and. ws_flag == 0._r8) then
                      onset_gddflag_root(p) = 0._r8
-                     onset_chil_root(p) = 0._r8
+                     onset_gdd_root(p) = 0._r8
                   end if
 
-                  ! if the gdd flag is set, and if the soil is below base temperature
-                  ! then accumulate chilling for onset trigger
-                  if (onset_gddflag_root(p) == 1.0_r8 .and. t_ref2m(p) < gdd_tbase(ivt(p)) .and. ws_flag == 1._r8) then
-                     onset_chil_root(p) = onset_chil_root(p) + fracday
+                  ! if the gdd flag is set, accumulate forcing term for onset trigger
+                  if (onset_gddflag_root(p) == 1.0_r8 .and. ws_flag == 1._r8) then
+                     onset_gdd_root(p) = onset_gdd_root(p) + 1._r8 / (1._r8 + exp(rf_scale * (t_ref2m(p) - rf_tbase)))
                   end if
 
-                  ! set onset_flag if critical chiling day sum is exceeded
+                  ! set onset_flag if critical growing degree-day sum is exceeded
                   ! or if leaf onset is started
-                  if ((onset_chil_root(p) > crit_onset_chil(ivt(p))) .or. (onset_flag(p) == 1._r8)) then
+                  if ((onset_gdd_root(p) > crit_onset_rf_root) .or. (onset_flag(p) == 1._r8)) then
                      onset_flag_root(p) = 1.0_r8
                      dormant_flag_root(p) = 0.0_r8
                      onset_gddflag_root(p) = 0.0_r8
-                     onset_chil_root(p) = 0.0_r8
-                     onset_counter_root(p) = ndays_on_root(ivt(p))*secspday
+                     onset_gdd_root(p) = 0.0_r8
+                     onset_counter_root(p) = ndays_on_root * secspday
 
                      ! move all the storage pools into transfer pools,
                      ! where they will be transfered to displayed growth over the onset period.
@@ -1163,14 +1210,15 @@ contains
                   else
 
                      ! freeze-death of fine root and compensatory growth
-                     ! ~ -5 degrees is in Figure 1 in Bigras, F. J. and D’aoust, A. L.: Hardening and dehardening of shoots and roots of containerized black spruce and white spruce seedlings under short and long days, Can. J. For. Res., 22, 388–396, https://doi.org/10.1139/x92-051, 1992.
-                     ! But those were seedlings.
-                     ! at least between -10 degrees and -5 degrees in Table 1 of Chapter 3 in Bigras, F. J. and Colombo, S. J. (Eds.)Rennenberg, H.: Conifer Cold Hardiness, Springer Netherlands, Dordrecht, https://doi.org/10.1007/978-94-015-9650-3, 2001.
-                     if (t_soisno(c, 3) .lt. (-5._r8 + SHR_CONST_TKFRZ)) then
+                     ! hardiness value between -10 degrees and -5 degrees in Table 1 of Chapter 3 of
+                     ! Bigras, F. J. and Colombo, S. J. (Eds.)Rennenberg, H.: Conifer Cold Hardiness, 
+                     ! Springer Netherlands, Dordrecht, https://doi.org/10.1007/978-94-015-9650-3, 2001.
+                     if (t_soi_avg .lt. hardiness_root(ivt(p))) then
                         ! assume the critial temperature of freezing death is -5 degrees
-                        m0 = min((-5._r8 - crit_tsoi)**2/4._r8*0.00175_r8 + 0.75_r8, 1.25_r8)
-                        bglfr_froot(p) = max(1._r8/(froot_long(ivt(p))*dayspyr*secspday)*(lfr_froot_td(p) - m0), 0._r8)
-                        bgtr(p) = bglfr_froot(p9)
+                        m0 = min((hardiness_root(ivt(p)) - mort_tsoi)**2 / &
+                                 4._r8 * mort_a + mort_b, 400._r8 * mort_a + mort_b)
+                        bglfr_froot(p) = max(1._r8/(froot_long(ivt(p))*dayspyr*secspday) * (lfr_froot_td(p) - m0), 0._r8)
+                        bgtr(p) = bglfr_froot(p)
 
                         ! set carbon fluxes for shifting storage pools to transfer pools
                         ! note the transferred amount should compensate for the dead amount,
@@ -1211,11 +1259,12 @@ contains
                   end if
 
                else
-                  ! the roots do not die while leaves or root are completing onset
-                  if ((onset_flag_root(p) == 1._r8) .or. (onset_flag(p) == 1._r8)) then
+                  ! outside dormancy, the roots do not die before or while leaves are completing onset to best support growth
+                  if (((onset_flag_root(p) == 1._r8) .and. (onset_flag(p) == 0._r8)) &
+                      .or. (onset_flag(p) == 1._r8)) then
                      bglfr_froot(p) = 0._r8
                   else
-                     bglfr_froot(p) = 3._r8/(froot_long(ivt(p))*dayspyr*secspday)*max(lfr_froot_td(p), lfr_froot_wd(p))
+                     bglfr_froot(p) = 1._r8/(froot_long(ivt(p))*dayspyr*secspday)*max(lfr_froot_td(p), lfr_froot_wd(p))
                   end if
                   bgtr(p) = 0._r8
                end if
@@ -1276,21 +1325,23 @@ contains
          prev_dayl => grc_pp%prev_dayl, & ! Input:  [real(r8)  (:)   ]  daylength from previous time step (s)
          season_decid => veg_vp%season_decid, & ! Input:  [real(r8)  (:)   ]  binary flag for seasonal-deciduous leaf habit (0 or 1)
          woody => veg_vp%woody, & ! Input:  [real(r8)  (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
-         crit_gdd1 => veg_vp%crit_gdd1, & ! Input:  [real(r8) (:) ] critical GDD intercept (at t = 0)
-         crit_gdd2 => veg_vp%crit_gdd2, & ! Input:  [real(r8) (:) ] critical GDD slope (funtion of MAT)
-         ndays_on => veg_vp%ndays_on, & ! Input:  [real(r8) (:) ] number of days to complete leaf onset
-         ndays_off => veg_vp%ndays_off, & ! Input:  [real(r8) (:) ] number of days to complete leaf offset
-         crit_dayl => veg_vp%crit_dayl, & ! Input:  [real(r8) (:) ] critical deylength for senescence
-         gdd_tbase => veg_vp%gdd_tbase, & ! Input:  [real(r8) (:) ] temperature parameter in gdd function
-         crit_chil1 => veg_vp%crit_chil1, & ! Input:  [real(r8) (:) ]
-         crit_chil2 => veg_vp%crit_chil2, & ! Input:  [real(r8) (:) ]
-         crit_chil3 => veg_vp%crit_chil3, & ! Input:  [real(r8) (:) ]
-         off_pstart => veg_vp%off_pstart, & ! Input:  [real(r8) (:) ]
-         off_pend => veg_vp%off_pend, & ! Input:  [real(r8) (:) ]
-         off_tbase => veg_vp%off_tbase, & ! Input:  [real(r8) (:) ]
          t_soisno => col_es%t_soisno, & ! Input:  [real(r8)  (:,:) ]  soil temperature (Kelvin)  (-nlevsno+1:nlevgrnd)
          t_ref2m => veg_es%t_ref2m, & ! Input:  [real(r8) (:) ]  2 m height surface air temperature (K)
          annavg_t2m => cnstate_vars%annavg_t2m_patch, & ! Input:  [real(r8)  (:)   ]  annual average 2m air temperature (K)
+         ! phenological parameters
+         ndays_on => veg_vp%ndays_on, & ! Input: [real(r8) (:) ] number of days to complete leaf onset
+         gdd_tbase => veg_vp%gdd_tbase, & ! Input: [real(r8) (:) ] base temperature for onset of the alternating model
+         crit_chil1 => veg_vp%crit_chil1, & ! Input: [real(r8) (:) ] intercept for the critical onset gdd of the alternating model 
+         crit_chil2 => veg_vp%crit_chil2, & ! Input: [real(r8) (:) ] scale for the critical onset gdd of the alternating model
+         crit_chil3 => veg_vp%crit_chil3, & ! Input: [real(r8) (:) ] exponent for the critical onset gdd of the alternating model
+         crit_gdd1 => veg_vp%crit_gdd1, & ! Input: [real(r8) (:) ] deciduous pheonlogy critical GDD intercept
+         crit_gdd2 => veg_vp%crit_gdd2, & ! Input: [real(r8) (:) ] other deciduous pheonlogy criticalGDD slope
+         ndays_off => veg_vp%ndays_off, & ! Input: [real(r8) (:) ] number of days to complete leaf offset (deciduous, stress) or the parameter controlling this (evergreen)
+         crit_dayl => veg_vp%crit_dayl, & ! Input: [real(r8) (:) ] critical daylength for leaf offset (seconds)
+         off_pstart => veg_vp%off_pstart, & ! Input: [real(r8) (:) ] critical temperature accumulation to start offset
+         off_pend => veg_vp%off_pend, & ! Input: [real(r8) (:) ] critical temperature accumulation to start offset
+         off_tbase => veg_vp%off_tbase, & ! offset model base temperature 
+         !! phenology phases
          dormant_flag => cnstate_vars%dormant_flag_patch, & ! Output: [real(r8)  (:)   ]  dormancy flag
          onset_flag => cnstate_vars%onset_flag_patch, & ! Output: [real(r8)  (:)   ]  onset flag
          onset_flag_root => cnstate_vars%onset_flag_root_patch, & ! Output: [real(r8)  (:)   ]  onset flag
@@ -1304,6 +1355,7 @@ contains
          bglfr_leaf => cnstate_vars%bglfr_leaf_patch, & ! Output: [real(r8)  (:)   ]  background leaf litterfall rate (1/s)
          bgtr => cnstate_vars%bgtr_patch, & ! Output: [real(r8)  (:)   ]  background transfer growth rate (1/s)
          lgsf => cnstate_vars%lgsf_patch, & ! Output: [real(r8)  (:)   ]  long growing season factor [0-1]
+         !! pools
          leafc_storage => veg_cs%leafc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) leaf C storage
          livestemc_storage => veg_cs%livestemc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) live stem C storage
          deadstemc_storage => veg_cs%deadstemc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) dead stem C storage
@@ -1311,39 +1363,18 @@ contains
          leafn_storage => veg_ns%leafn_storage, & ! Input:  [real(r8)  (:)   ]  (gN/m2) leaf N storage
          livestemn_storage => veg_ns%livestemn_storage, & ! Input:  [real(r8)  (:)   ]  (gN/m2) live stem N storage
          deadstemn_storage => veg_ns%deadstemn_storage, & ! Input:  [real(r8)  (:)   ]  (gN/m2) dead stem N storage
-         !! phosphorus
          leafp_storage => veg_ps%leafp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) leaf P storage
          livestemp_storage => veg_ps%livestemp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) live stem P storage
          deadstemp_storage => veg_ps%deadstemp_storage, & ! Input:  [real(r8)  (:)   ]  (gP/m2) dead stem P storage
-         prev_leafc_to_litter => veg_cf%prev_leafc_to_litter, & ! Output: [real(r8)  (:)   ]  previous timestep leaf C litterfall flux (gC/m2/s)
-         leafc_xfer_to_leafc => veg_cf%leafc_xfer_to_leafc, & ! Output:  [real(r8) (:)   ]
-         livestemc_xfer_to_livestemc => veg_cf%livestemc_xfer_to_livestemc, & ! Output:  [real(r8) (:)   ]
-         deadstemc_xfer_to_deadstemc => veg_cf%deadstemc_xfer_to_deadstemc, & ! Output:  [real(r8) (:)   ]
          leafc_xfer => veg_cs%leafc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) leaf C transfer
          livestemc_xfer => veg_cs%livestemc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) live stem C transfer
          deadstemc_xfer => veg_cs%deadstemc_xfer, & ! Output:  [real(r8) (:)   ]  (gC/m2) dead stem C transfer
-         leafc_storage_to_xfer => veg_cf%leafc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         livestemc_storage_to_xfer => veg_cf%livestemc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         deadstemc_storage_to_xfer => veg_cf%deadstemc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         gresp_storage_to_xfer => veg_cf%gresp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         leafn_xfer_to_leafn => veg_nf%leafn_xfer_to_leafn, & ! Output:  [real(r8) (:)   ]
-         livestemn_xfer_to_livestemn => veg_nf%livestemn_xfer_to_livestemn, & ! Output:  [real(r8) (:)   ]
-         deadstemn_xfer_to_deadstemn => veg_nf%deadstemn_xfer_to_deadstemn, & ! Output:  [real(r8) (:)   ]
          leafn_xfer => veg_ns%leafn_xfer, & ! Output:  [real(r8) (:)   ]  (gN/m2) leaf N transfer
          livestemn_xfer => veg_ns%livestemn_xfer, & ! Output:  [real(r8) (:)   ]  (gN/m2) live stem N transfer
          deadstemn_xfer => veg_ns%deadstemn_xfer, & ! Output:  [real(r8) (:)   ]  (gN/m2) dead stem N transfer
-         leafn_storage_to_xfer => veg_nf%leafn_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         livestemn_storage_to_xfer => veg_nf%livestemn_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         deadstemn_storage_to_xfer => veg_nf%deadstemn_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         leafp_xfer_to_leafp => veg_pf%leafp_xfer_to_leafp, & ! Output:  [real(r8) (:)   ]
-         livestemp_xfer_to_livestemp => veg_pf%livestemp_xfer_to_livestemp, & ! Output:  [real(r8) (:)   ]
-         deadstemp_xfer_to_deadstemp => veg_pf%deadstemp_xfer_to_deadstemp, & ! Output:  [real(r8) (:)   ]
          leafp_xfer => veg_ps%leafp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) leaf P transfer
          livestemp_xfer => veg_ps%livestemp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) live stem P transfer
          deadstemp_xfer => veg_ps%deadstemp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) dead stem P transfer
-         leafp_storage_to_xfer => veg_pf%leafp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         livestemp_storage_to_xfer => veg_pf%livestemp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
-         deadstemp_storage_to_xfer => veg_pf%deadstemp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          frootc => veg_cs%frootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) fine root C
          livecrootc => veg_cs%livecrootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) live coarse root C
          deadcrootc => veg_cs%deadcrootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) dead coarse root C
@@ -1371,16 +1402,28 @@ contains
          frootp_xfer => veg_ps%frootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) fine root P transfer
          livecrootp_xfer => veg_ps%livecrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) live coarse root P transfer
          deadcrootp_xfer => veg_ps%deadcrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) dead coarse root P transfer
+         !! fluxes
+         prev_leafc_to_litter => veg_cf%prev_leafc_to_litter, & ! Output: [real(r8)  (:)   ]  previous timestep leaf C litterfall flux (gC/m2/s)
+         leafc_xfer_to_leafc => veg_cf%leafc_xfer_to_leafc, & ! Output:  [real(r8) (:)   ]
+         livestemc_xfer_to_livestemc => veg_cf%livestemc_xfer_to_livestemc, & ! Output:  [real(r8) (:)   ]
+         deadstemc_xfer_to_deadstemc => veg_cf%deadstemc_xfer_to_deadstemc, & ! Output:  [real(r8) (:)   ]
+         leafc_storage_to_xfer => veg_cf%leafc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         livestemc_storage_to_xfer => veg_cf%livestemc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         deadstemc_storage_to_xfer => veg_cf%deadstemc_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         gresp_storage_to_xfer => veg_cf%gresp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         leafn_xfer_to_leafn => veg_nf%leafn_xfer_to_leafn, & ! Output:  [real(r8) (:)   ]
+         livestemn_xfer_to_livestemn => veg_nf%livestemn_xfer_to_livestemn, & ! Output:  [real(r8) (:)   ]
+         deadstemn_xfer_to_deadstemn => veg_nf%deadstemn_xfer_to_deadstemn, & ! Output:  [real(r8) (:)   ]
+         leafn_storage_to_xfer => veg_nf%leafn_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         livestemn_storage_to_xfer => veg_nf%livestemn_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         deadstemn_storage_to_xfer => veg_nf%deadstemn_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         leafp_xfer_to_leafp => veg_pf%leafp_xfer_to_leafp, & ! Output:  [real(r8) (:)   ]
+         livestemp_xfer_to_livestemp => veg_pf%livestemp_xfer_to_livestemp, & ! Output:  [real(r8) (:)   ]
+         deadstemp_xfer_to_deadstemp => veg_pf%deadstemp_xfer_to_deadstemp, & ! Output:  [real(r8) (:)   ]
+         leafp_storage_to_xfer => veg_pf%leafp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         livestemp_storage_to_xfer => veg_pf%livestemp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         deadstemp_storage_to_xfer => veg_pf%deadstemp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          prev_frootc_to_litter => veg_cf%prev_frootc_to_litter, & ! Output: [real(r8)  (:)   ]  previous timestep froot C litterfall flux (gC/m2/s)
-         prev_frootc_storage => veg_cs%prev_frootc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root C storage
-         prev_frootn_storage => veg_ns%prev_frootn_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root N storage
-         prev_frootp_storage => veg_ps%prev_frootp_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root P storage
-         prev_livecrootc_storage => veg_cs%prev_livecrootc_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_livecrootn_storage => veg_ns%prev_livecrootn_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_livecrootp_storage => veg_ps%prev_livecrootp_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootc_storage => veg_cs%prev_deadcrootc_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootn_storage => veg_ns%prev_deadcrootn_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootp_storage => veg_ps%prev_deadcrootp_storage, & ! Input:  [real(r8)  (:)   ]
          frootc_xfer_to_frootc => veg_cf%frootc_xfer_to_frootc, & ! Output:  [real(r8) (:)   ]
          livecrootc_xfer_to_livecrootc => veg_cf%livecrootc_xfer_to_livecrootc, & ! Output:  [real(r8) (:)   ]
          deadcrootc_xfer_to_deadcrootc => veg_cf%deadcrootc_xfer_to_deadcrootc, & ! Output:  [real(r8) (:)   ]
@@ -1530,7 +1573,6 @@ contains
                   ! the summer solstice without reaching the threshold value.
                   ! In that case, it will take until the next winter solstice
                   ! before the growing degree-day summation starts again.
-
                   if (onset_gddflag(p) == 1._r8 .and. ws_flag == 0._r8) then
                      onset_gddflag(p) = 0._r8
                      onset_gdd(p) = 0._r8
@@ -1668,9 +1710,9 @@ contains
    end subroutine CNSeasonDecidPhenologyLeaf
 
    !-----------------------------------------------------------------------
-   subroutine CNSeasonDecidPhenologyRoot (num_soilp, filter_soilp, temperature_vars, cnstate_vars, &
-                                          carbonstate_vars, nitrogenstate_vars, carbonflux_vars, nitrogenflux_vars, &
-                                          phosphorusstate_vars, phosphorusflux_vars, soilstate_vars)
+   subroutine CNSeasonDecidPhenologyRoot(num_soilp, filter_soilp, temperature_vars, cnstate_vars, &
+                                         carbonstate_vars, nitrogenstate_vars, carbonflux_vars, nitrogenflux_vars, &
+                                         phosphorusstate_vars, phosphorusflux_vars, soilstate_vars)
       !
       ! !DESCRIPTION:
       ! For coupled carbon-nitrogen code (CN).
@@ -1702,6 +1744,7 @@ contains
       integer :: fp                     ! lake filter pft index
       real(r8):: ws_flag                ! winter-summer solstice flag (0 or 1)
       real(r8):: soilt
+      real(r8):: crit_onset_gdd
       real(r8):: t_d, m0, w_d, t_soi_avg, h2osoi_liq_avg, psi_max, psi_crit_h2osoi, w_d_crit
       real(r8):: f_nmin, f_wt
       real(r8):: total_rate
@@ -1722,9 +1765,6 @@ contains
          season_decid => veg_vp%season_decid, & ! Input:  [real(r8)  (:)   ]  binary flag for seasonal-deciduous leaf habit (0 or 1)
          woody => veg_vp%woody, & ! Input:  [real(r8)  (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
          froot_long => veg_vp%froot_long, & ! Input:  [real(r8) (:) ]  fine root longevity (yrs)
-         ndays_on_root => veg_vp%ndays_on_root, & ! input:  [real(r8) (:) ]  number of days for fine root storage to transfer out
-         gdd_tbase => veg_vp%gdd_tbase, & ! Input:  [real(r8) (:) ] temperature parameter in gdd function
-         crit_onset_chil => veg_vp%crit_onset_chil, & ! Input:  [real(r8) (:) ] critial onset chiling accumulation for root onset growth
          t_soisno => col_es%t_soisno, & ! Input:  [real(r8)  (:,:) ]  soil temperature (Kelvin)  (-nlevsno+1:nlevgrnd)
          t_ref2m => veg_es%t_ref2m, & ! Input:  [real(r8) (:) ]  2 m height surface air temperature (K)
          h2osoi_liq => col_ws%h2osoi_liq, & ! Input:  [real(r8) (:,:) ] soil liquid water content kg/m2
@@ -1737,17 +1777,29 @@ contains
          downreg => cnstate_vars%downreg_patch, & ! Output: [real(r8) (:)   ]  fractional reduction in GPP due to N (and/or P) limitation (DIM)
          h2osfc => col_ws%h2osfc, & ! Input:  [real(r8) (:)   ]  surface water (mm)
          annavg_t2m => cnstate_vars%annavg_t2m_patch, & ! Output:  [real(r8) (:)   ]  annual average 2m air temperature (K)
+         ! phenological parameters
+         ! phenological parameters
+         ndays_on => veg_vp%ndays_on, & ! Input: [real(r8) (:) ] number of days to complete leaf onset
+         hardiness_root => veg_vp%hardiness_root, & ! Input: [real(r8) (:) ] base temperature for onset of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub) = fine root tolerance of cold
+         crit_chil1 => veg_vp%crit_chil1, & ! Input: [real(r8) (:) ] intercept for the critical onset gdd of the alternating model
+         crit_chil2_root => veg_vp%crit_chil2_root, & ! Input: [real(r8) (:) ] scale for the critical onset gdd of the alternating model
+         crit_chil3 => veg_vp%crit_chil3, & ! Input: [real(r8) (:) ] exponent for the critical onset gdd of the alternating model
+         crit_gdd1 => veg_vp%crit_gdd1, & ! Input: [real(r8) (:) ] deciduous pheonlogy critical GDD intercept
+         crit_gdd2 => veg_vp%crit_gdd2, & ! Input: [real(r8) (:) ] other deciduous pheonlogy criticalGDD slope
+         !! phenological phases
          onset_flag => cnstate_vars%onset_flag_patch, & ! Input:  [real(r8)  (:)   ]  onset flag of aboveground part
          onset_gddflag => cnstate_vars%onset_gddflag_patch, & ! Input:  [real(r8) (:)   ]  degree days flag
-         fcur2 => veg_vp%fcur, & ! Input:  [real(r8) (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage
+         fcur2 => veg_vp%fcur, & ! Input:  [real(r8)]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage
          fcur_dyn => cnstate_vars%fcur_dyn_patch, & ! Output: [real(r8)  (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage, dynamic
          onset_flag_root => cnstate_vars%onset_flag_root_patch, & ! Output: [real(r8)  (:)   ]  onset flag of belowground part
          onset_gddflag_root => cnstate_vars%onset_gddflag_root_patch, & ! Output: [real(r8)  (:)   ]  flag to start accumulating gdd/chilling
+         onset_gdd_root => cnstate_vars%onset_gdd_root_patch, & ! Output: [real(r8)  (:)   ]  accumulated gdd
          onset_chil_root => cnstate_vars%onset_chil_root_patch, & ! Output: [real(r8)  (:)   ]  accumulated chilling
          onset_counter_root => cnstate_vars%onset_counter_root_patch, & ! Output: [real(r8)  (:)   ]  onset counter (seconds)
          offset_flag_root => cnstate_vars%offset_flag_root_patch, & ! Output: [real(r8)  (:)   ]  flag to start shrinking allocation to displayed growth to zero
          offset_counter_root => cnstate_vars%offset_counter_root_patch, & ! Output: [real(r8)  (:)   ]  offset counter (seconds)
          dormant_flag_root => cnstate_vars%dormant_flag_root_patch, & ! Output: [real(r8)  (:)   ]  dormancy flag
+         !! pool sizes
          frootc => veg_cs%frootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) fine root C
          livecrootc => veg_cs%livecrootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) live coarse root C
          deadcrootc => veg_cs%deadcrootc, & ! Input:  [real(r8) (:)     ]  (gC/m2) dead coarse root C
@@ -1779,15 +1831,7 @@ contains
          frootp_xfer => veg_ps%frootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) fine root P transfer
          livecrootp_xfer => veg_ps%livecrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) live coarse root P transfer
          deadcrootp_xfer => veg_ps%deadcrootp_xfer, & ! Output:  [real(r8) (:)   ]  (gP/m2) dead coarse root P transfer
-         prev_frootc_storage => veg_cs%prev_frootc_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root C storage
-         prev_frootn_storage => veg_ns%prev_frootn_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root N storage
-         prev_frootp_storage => veg_ps%prev_frootp_storage, & ! Input:  [real(r8)  (:)   ]  (gC/m2) previous year's fine root P storage
-         prev_livecrootc_storage => veg_cs%prev_livecrootc_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_livecrootn_storage => veg_ns%prev_livecrootn_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_livecrootp_storage => veg_ps%prev_livecrootp_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootc_storage => veg_cs%prev_deadcrootc_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootn_storage => veg_ns%prev_deadcrootn_storage, & ! Input:  [real(r8)  (:)   ]
-         prev_deadcrootp_storage => veg_ps%prev_deadcrootp_storage, & ! Input:  [real(r8)  (:)   ]
+         !! fluxes
          frootc_xfer_to_frootc => veg_cf%frootc_xfer_to_frootc, & ! Output:  [real(r8) (:)   ]
          livecrootc_xfer_to_livecrootc => veg_cf%livecrootc_xfer_to_livecrootc, & ! Output:  [real(r8) (:)   ]
          deadcrootc_xfer_to_deadcrootc => veg_cf%deadcrootc_xfer_to_deadcrootc, & ! Output:  [real(r8) (:)   ]
@@ -1807,6 +1851,7 @@ contains
          frootp_storage_to_xfer => veg_pf%frootp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          livecrootp_storage_to_xfer => veg_pf%livecrootp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
          deadcrootp_storage_to_xfer => veg_pf%deadcrootp_storage_to_xfer, & ! Output:  [real(r8) (:)   ]
+         !! onset and litterfall rates
          onset_froot_fnmin => cnstate_vars%onset_froot_fnmin_patch, & ! Output:  [real(r8) (:) ] () nutrient limitation stimulation factor on the fine root transfer growth rate
          onset_froot_fw => cnstate_vars%onset_froot_fw_patch, & ! Output:  [real(r8) (:) ] () anoxia limitation on the fine root transfer growth rate
          bgtr => cnstate_vars%bgtr_patch, & ! Output: [real(r8)  (:)   ]  background transfer growth rate (1/s), applied only on roots
@@ -1834,11 +1879,11 @@ contains
                   ! -------------------------------------------------------------
                   ! scaling factors on the onset & compensatory growth rate
                   ! function of nutrient and water table depth
-                  onset_froot_fnmin(p) = (1._r8 + downreg(p)**nmin_beta) ! downreg is the excess respiration fraction
+                  onset_froot_fnmin(p) = (1._r8 + downreg(p)**nmin_scale) ! downreg is the excess respiration fraction
                   if (h2osfc(c) .le. 0._r8) then
                      onset_froot_fw(p) = 1._r8
                   else
-                     onset_froot_fw(p) = max(1._r8 - h2osfc(c)/sw_scale, 0.1_r8)
+                     onset_froot_fw(p) = max(1._r8 - h2osfc(c)/wt_scale, 0.1_r8)
                   end if
 
                   ! scaling factors on the background litterfall rate
@@ -1852,19 +1897,20 @@ contains
                      psi_max = max(smp_l(c, j), psi_max)
                   end do
                   psi_max = max(smpmin(c), psi_max)
-                  ! Use Clapp and Hornberger "b" to calculate the soil matrix potential at crit_h2osoi
+                  ! Use Clapp and Hornberger "b" to calculate the soil matrix potential at mort_h2o
                   ! using properties at 10 cm
-                  psi_crit_h2osoi = -(sucsat(c, 3)*max(crit_h2osoi/watsat(c, 3), 0.01_r8)**(-bsw(c, 3)))
+                  psi_crit_h2osoi = -(sucsat(c, 3) * max(mort_h2o / watsat(c, 3), 0.01_r8)**(-bsw(c, 3)))
                   psi_crit_h2osoi = max(smpmin(c), psi_crit_h2osoi) ! limit the range
 
-                  lfr_froot_td(p) = min((t_soi_avg - SHR_CONST_TKFRZ - crit_tsoi)**2/4._r8*0.00175_r8 + 0.75_r8, 1.25_r8)
+                  lfr_froot_td(p) = min((t_soi_avg - SHR_CONST_TKFRZ - mort_tsoi)**2 &
+                                       / 4._r8 * mort_a + mort_b, 400._r8 * mort_a + mort_b)
 
-                  if (h2osoi_liq_avg .le. crit_h2osoi) then
-                     lfr_froot_wd(p) = 1._r8 + atan(0.05_r8*SHR_CONST_PI*(abs(psi_max) - crit_psi))/SHR_CONST_PI
+                  if (h2osoi_liq_avg .le. mort_h2o) then
+                     lfr_froot_wd(p) = 1._r8 + atan(mort_d * SHR_CONST_PI * (abs(psi_max) - mort_psi)) / SHR_CONST_PI
                   else
                      ! find soil matric potential when theta = 0.6
-                     w_d_crit = 1._r8 + atan(0.05_r8*SHR_CONST_PI*(abs(psi_crit_h2osoi) - crit_psi))/SHR_CONST_PI
-                     lfr_froot_wd(p) = (h2osoi_liq_avg - crit_h2osoi)/(1 - crit_h2osoi)*(1.5_r8 - w_d_crit) + w_d_crit
+                     w_d_crit = 1._r8 + atan(mort_d * SHR_CONST_PI * (abs(psi_crit_h2osoi) - mort_psi)) / SHR_CONST_PI
+                     lfr_froot_wd(p) = (h2osoi_liq_avg - mort_h2o) / (1._r8 - mort_h2o) * (1.5_r8 - w_d_crit) + w_d_crit
                   end if
 
                   ! compensatory growth rate for freeze-death of fine roots
@@ -1888,7 +1934,7 @@ contains
                      offset_counter_root(p) = offset_counter_root(p) - dt
 
                      ! decrement fcur_dyn from 1 to 0
-                     fcur_dyn(p) = offset_counter_root(p)/secspday/140._r8
+                     fcur_dyn(p) = offset_counter_root(p) / secspday / ndays_off_fcur
 
                      ! if this is the end of the offset_period, reset phenology
                      ! flags and indices
@@ -1899,12 +1945,12 @@ contains
                         dormant_flag_root(p) = 1._r8
                      end if
                   else
-                     ! test for turning on the offset period
+                     ! test for turning on the offset period on July 15th (day 196)
                      ! will later modify this control based on cambium observations
                      if (dormant_flag_root(p) == 0.0_r8) then
-                        if (ws_flag == 0._r8) then
+                        if ((offset_flag_root(p) == 0._r8) .and. (day_of_year .ge. 196._r8)) then
                            offset_flag_root(p) = 1._r8
-                           offset_counter_root(p) = 140._r8*secspday
+                           offset_counter_root(p) = ndays_off_fcur * secspday
                         end if
                         fcur_dyn(p) = 1._r8
                      else
@@ -1959,6 +2005,7 @@ contains
                      ! switch on the growing degree day sum on the winter solstice
                      if (onset_gddflag_root(p) == 0._r8 .and. ws_flag == 1._r8) then
                         onset_gddflag_root(p) = 1._r8
+                        onset_gdd_root(p) = 0._r8
                         onset_chil_root(p) = 0._r8
                      end if
 
@@ -1969,23 +2016,29 @@ contains
                      ! before the growing degree-day summation starts again.
                      if (onset_gddflag_root(p) == 1._r8 .and. ws_flag == 0._r8) then
                         onset_gddflag_root(p) = 0._r8
+                        onset_gdd_root(p) = 0._r8
                         onset_chil_root(p) = 0._r8
                      end if
 
-                     ! if the gdd flag is set, and if the soil is below base temperature
-                     ! then accumulate chilling for onset trigger
-                     if (onset_gddflag_root(p) == 1.0_r8 .and. t_ref2m(p) < gdd_tbase(ivt(p)) .and. ws_flag == 1._r8) then
+                     !forcing
+                     if (onset_gddflag_root(p) == 1.0_r8 .and. t_ref2m(p) > hardiness_root(ivt(p)) .and. ws_flag == 1._r8) then
+                        onset_gdd_root(p) = onset_gdd_root(p) + (t_ref2m(p) - hardiness_root(ivt(p)))*fracday
+                     end if
+                     !then accumulate chilling days for onset trigger
+                     if (onset_gddflag_root(p) == 1.0_r8 .and. t_ref2m(p) < hardiness_root(ivt(p)) .and. ws_flag == 1._r8) then
                         onset_chil_root(p) = onset_chil_root(p) + fracday
                      end if
+                     crit_onset_gdd = crit_chil1(ivt(p)) + crit_chil2_root(ivt(p))*exp(crit_chil3(ivt(p))*onset_chil_root(p))
 
                      ! set onset_flag if critical chiling day sum is exceeded
                      ! or if leaf onset is started
-                     if ((onset_chil_root(p) > crit_onset_chil(ivt(p))) .or. (onset_flag(p) == 1._r8)) then
+                     if ((onset_gdd_root(p) > crit_onset_gdd) .or. (onset_flag(p) == 1._r8)) then
                         onset_flag_root(p) = 1.0_r8
                         dormant_flag_root(p) = 0.0_r8
                         onset_gddflag_root(p) = 0.0_r8
+                        onset_gdd_root(p) = 0.0_r8
                         onset_chil_root(p) = 0.0_r8
-                        onset_counter_root(p) = ndays_on_root(ivt(p))*secspday
+                        onset_counter_root(p) = ndays_on_root * secspday
 
                         ! move all the storage pools into transfer pools,
                         ! where they will be transfered to displayed growth over the onset period.
@@ -2022,13 +2075,14 @@ contains
                      else
 
                         ! freeze-death of fine root and compensatory growth
-                        ! ~ -5 degrees is in Figure 1 in Bigras, F. J. and D’aoust, A. L.: Hardening and dehardening of shoots and roots of containerized black spruce and white spruce seedlings under short and long days, Can. J. For. Res., 22, 388–396, https://doi.org/10.1139/x92-051, 1992.
-                        ! But those were seedlings.
-                        ! at least between -10 degrees and -5 degrees in Table 1 of Chapter 3 in Bigras, F. J. and Colombo, S. J. (Eds.)Rennenberg, H.: Conifer Cold Hardiness, Springer Netherlands, Dordrecht, https://doi.org/10.1007/978-94-015-9650-3, 2001.
-                        if (t_soisno(c, 3) .lt. (-5._r8 + SHR_CONST_TKFRZ)) then
+                        ! hardiness value between -10 degrees and -5 degrees in Table 1 of Chapter 3 of
+                        ! Bigras, F. J. and Colombo, S. J. (Eds.)Rennenberg, H.: Conifer Cold Hardiness, 
+                        ! Springer Netherlands, Dordrecht, https://doi.org/10.1007/978-94-015-9650-3, 2001.
+                        if (t_soi_avg .lt. hardiness_root(ivt(p))) then
                            ! assume the critial temperature of freezing death is -5 degrees
-                           m0 = min((-5._r8 - crit_tsoi)**2/4._r8*0.00175_r8 + 0.75_r8, 1.25_r8)
-                           bglfr_froot(p) = max(1._r8/(froot_long(ivt(p))*dayspyr*secspday)*(lfr_froot_td(p) - m0), 0._r8)
+                           m0 = min((hardiness_root(ivt(p)) - mort_tsoi)**2 / &
+                                    4._r8 * mort_a + mort_b, 400._r8 * mort_a + mort_b)
+                           bglfr_froot(p) = max(1._r8/(froot_long(ivt(p))*dayspyr*secspday) * (lfr_froot_td(p) - m0), 0._r8)
                            bgtr(p) = bglfr_froot(p)
 
                            ! set carbon fluxes for shifting storage pools to transfer pools
@@ -2071,11 +2125,12 @@ contains
                      end if
 
                   else
-                     ! the roots do not die while leaves or fine root are completing onset
-                     if ((onset_flag_root(p) == 1._r8) .or. (onset_flag(p) == 1._r8)) then
+                     ! outside dormancy, the roots do not die before or while leaves are completing onset to best support growth
+                     if (((onset_flag_root(p) == 1._r8) .and. (onset_flag(p) == 0._r8)) &
+                        .or. (onset_flag(p) == 1._r8)) then
                         bglfr_froot(p) = 0._r8
                      else
-                        bglfr_froot(p) = 3._r8/(froot_long(ivt(p))*dayspyr*secspday)*max(lfr_froot_td(p), lfr_froot_wd(p))
+                        bglfr_froot(p) = 1._r8/(froot_long(ivt(p))*dayspyr*secspday)*max(lfr_froot_td(p), lfr_froot_wd(p))
                      end if
                      bgtr(p) = 0._r8
                   end if

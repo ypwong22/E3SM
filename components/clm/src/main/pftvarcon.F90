@@ -263,21 +263,6 @@ module pftvarcon
   real(r8)              :: jmax_np2            !jmax~np relationship coefficient
   real(r8)              :: jmax_np3            !jmax~np relationship coefficient
   real(r8)              :: laimax
-  ! Pft dependent parameters for vegetation phenology
-  real(r8), allocatable :: crit_dayl(:)        !Critical daylength for leaf offset (seconds) (evergreen, deciduous, stress)
-  real(r8), allocatable :: ndays_on(:)         !Number of days to complete leaf onset
-  real(r8), allocatable :: ndays_on_root(:)    !Number of days to complete root onset
-  real(r8), allocatable :: ndays_off(:)        !Number of days to complete leaf offset (this is approximate for evergreen)
-  real(r8), allocatable :: crit_gdd1(:)        !Deciduous pheonlogy critical GDD intercept
-  real(r8), allocatable :: crit_gdd2(:)        !Deciduous pheonlogy criticalGDD slope
-  real(r8), allocatable :: gdd_tbase(:)        !Base temperature for onset of the alternating model (279.5 for ndllf_dcd_brl_tree, 279.05 for nbrdlf_dcd_brl_shrub)
-  real(r8), allocatable :: crit_onset_chil(:)  !Chilling accumulation required for root onset growth
-  real(r8), allocatable :: crit_chil1(:)       !Intercept for the critical onset gdd of the alternating model (9 for ndllf_dcd_brl_tree, 33 for nbrdlf_dcd_brl_shrub)
-  real(r8), allocatable :: crit_chil2(:)       !Scale for the critical onset gdd of the alternating model (2112 for ndllf_dcd_brl_tree, 1388 for nbrdlf_dcd_brl_shrub)
-  real(r8), allocatable :: crit_chil3(:)       !Exponent for the critical onset gdd of the alternating model (-0.04 for ndllf_dcd_brl_tree, -0.02 for nbrdlf_dcd_brl_shrub)
-  real(r8), allocatable :: off_pstart(:)       !Critical day length to start accumulating temperature for offset model (46800 for ndllf_dcd_brl_tree, 54600 for nbrdlf_dcd_brl_shrub)
-  real(r8), allocatable :: off_pend(:)         !Critical temperature accumulation to start offset (1750 for ndllf_dcd_brl_tree, 1600 for nbrdlf_dcd_brl_shrub)
-  real(r8), allocatable :: off_tbase(:)        !Offset model base temperature (294.5 for ndllf_dcd_brl_tree, 290.15_r8 for nbrdlf_dcd_brl_shrub)
   ! Hydrology
   real(r8)              :: rsub_top_globalmax
   ! Soil erosion ground cover
@@ -305,6 +290,21 @@ module pftvarcon
   real(r8)              :: phen_tbase
   real(r8)              :: phen_tc
   real(r8)              :: phen_crit_dayl
+  real(r8), allocatable :: ndays_on(:)    ! number of days to complete leaf onset
+  real(r8), allocatable :: gdd_tbase(:)   ! base temperature for onset of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: crit_chil1(:)  ! intercept for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: crit_chil2(:)  ! scale for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: crit_chil3(:)  ! exponent for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: crit_gdd1(:)   ! deciduous pheonlogy critical GDD intercept
+  real(r8), allocatable :: crit_gdd2(:)   ! other deciduous pheonlogy criticalGDD slope
+  real(r8), allocatable :: ndays_off(:)   ! number of days to complete leaf offset (deciduous, stress) or the parameter controlling this (evergreen)
+  real(r8), allocatable :: crit_dayl(:)   ! critical daylength for leaf offset (seconds) (deciduous, stress)
+  real(r8), allocatable :: off_pstart(:)  ! critical temperature accumulation to start offset (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: off_pend(:)    ! critical temperature accumulation to start offset (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: off_tbase(:)   ! offset model base temperature (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+  real(r8), allocatable :: hardiness_root(:)   ! base temperature for onset of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub) = fine root tolerance of cold
+  real(r8), allocatable :: crit_chil2_root(:)  ! scale for the critical onset gdd of the alternating model (ndllf_dcd_brl_tree, nbrdlf_dcd_brl_shrub)
+
 !#endif
 
   !
@@ -560,24 +560,24 @@ contains
     allocate( br_xr              (0:mxpft) )
     allocate( br_mr              (0:mxpft) )
     allocate( q10_mr              (0:mxpft) )
-    ! Phenology
-    allocate( crit_dayl          (0:mxpft) )
-    allocate( ndays_on           (0:mxpft) )
-    allocate( ndays_on_root      (0:mxpft) )
-    allocate( ndays_off          (0:mxpft) )
-    allocate( crit_gdd1          (0:mxpft) )
-    allocate( crit_gdd2          (0:mxpft) )
-    allocate( gdd_tbase          (0:mxpft) )
-    allocate( crit_onset_chil    (0:mxpft) )
-    allocate( crit_chil1         (0:mxpft) )
-    allocate( crit_chil2         (0:mxpft) )
-    allocate( crit_chil3         (0:mxpft) )
-    allocate( off_pstart         (0:mxpft) )
-    allocate( off_pend           (0:mxpft) )
-    allocate( off_tbase          (0:mxpft) )
     ! Ground cover for soil erosion
     allocate( gcpsi              (0:mxpft) )
     allocate( pftcc              (0:mxpft) )
+    ! Phenology
+    allocate( ndays_on           (0:mxpft) )
+    allocate( gdd_tbase          (0:mxpft) )
+    allocate( crit_chil1         (0:mxpft) )
+    allocate( crit_chil2         (0:mxpft) )
+    allocate( crit_chil3         (0:mxpft) )
+    allocate( crit_gdd1          (0:mxpft) )
+    allocate( crit_gdd2          (0:mxpft) )
+    allocate( ndays_off          (0:mxpft) )
+    allocate( crit_dayl          (0:mxpft) )
+    allocate( off_pstart         (0:mxpft) )
+    allocate( off_pend           (0:mxpft) )
+    allocate( off_tbase          (0:mxpft) )
+    allocate( hardiness_root     (0:mxpft) )
+    allocate( crit_chil2_root    (0:mxpft) )
 
     ! Set specific vegetation type values
 
@@ -964,7 +964,6 @@ contains
     !if ( .not. readv) call endrun(msg='ERROR:  error in reading in pft data'//errMsg(__FILE__,__LINE__))
     !call ncd_io('crit_dayl', phen_crit_dayl, 'read', ncid, readvar=readv,posNOTonfile=.true.)
     !if ( .not. readv) call endrun(msg='ERROR:  error in reading in pft data'//errMsg(__FILE__,__LINE__))
-
 #endif
     call ncd_io('fnr', fnr, 'read', ncid, readvar=readv, posNOTonfile=.true.)
     if ( .not. readv) call endrun(msg='ERROR:  error in reading in pft data'//errMsg(__FILE__,__LINE__))
@@ -1019,35 +1018,6 @@ contains
     call ncd_io('pftcc',pftcc, 'read', ncid, readvar=readv, posNOTonfile=.true.)
     if ( .not. readv ) pftcc(:) = 1._r8
 
-    call ncd_io('crit_dayl', crit_dayl, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_dayl(:) = 39300._r8
-    call ncd_io('ndays_on', ndays_on, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) ndays_on(:) = 30._r8
-    call ncd_io('ndays_on_root', ndays_on_root, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) ndays_on_root(:) = 30._r8
-    call ncd_io('ndays_off', ndays_off, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) ndays_off(:) = 30._r8
-    call ncd_io('crit_gdd1', crit_gdd1, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_gdd1(:) = 4.8_r8
-    call ncd_io('crit_gdd2', crit_gdd2, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_gdd2(:) = 0.13_r8
-    call ncd_io('gdd_tbase', gdd_tbase, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) gdd_tbase(:) = 279.5_r8
-    call ncd_io('crit_onset_chil', crit_onset_chil, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_onset_chil(:) = 60._r8
-    call ncd_io('crit_chil1', crit_chil1, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_chil1(:) = 9._r8
-    call ncd_io('crit_chil2', crit_chil2, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_chil2(:) = 2000._r8
-    call ncd_io('crit_chil3', crit_chil3, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) crit_chil3(:) = -0.04_r8
-    call ncd_io('off_pstart', off_pstart, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) off_pstart(:) = 46800._r8
-    call ncd_io('off_pend', off_pend, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) off_pend(:) = 1750._r8
-    call ncd_io('off_tbase', off_tbase, 'read', ncid, readvar=readv, posNOTonfile=.true.)
-    if (.not. readv) off_tbase(:) = 290.15_r8
-
     call ncd_io('mergetoclmpft', mergetoclmpft, 'read', ncid, readvar=readv)  
     if ( .not. readv ) then
        do i = 0, mxpft
@@ -1057,6 +1027,35 @@ contains
 
     call ncd_pio_closefile(ncid)
 
+    ! Phenology
+    call ncd_io('ndays_on', ndays_on, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) ndays_on(:) = 30._r8
+    call ncd_io('gdd_tbase', gdd_tbase, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) gdd_tbase(:) = 279.5_r8
+    call ncd_io('crit_chil1', crit_chil1, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_chil1(:) = 9._r8
+    call ncd_io('crit_chil2', crit_chil2, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_chil2(:) = 2000._r8
+    call ncd_io('crit_chil3', crit_chil3, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_chil3(:) = -0.04_r8
+    call ncd_io('crit_gdd1', crit_gdd1, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_gdd1(:) = 4.8_r8
+    call ncd_io('crit_gdd2', crit_gdd2, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_gdd2(:) = 0.13_r8
+    call ncd_io('ndays_off', ndays_off, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) ndays_off(:) = 30._r8
+    call ncd_io('crit_dayl', crit_dayl, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_dayl(:) = 39300._r8
+    call ncd_io('off_pstart', off_pstart, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) off_pstart(:) = 46800._r8
+    call ncd_io('off_pend', off_pend, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) off_pend(:) = 1750._r8
+    call ncd_io('off_tbase', off_tbase, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) off_tbase(:) = 290.15_r8
+    call ncd_io('hardiness_root', hardiness_root, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) hardiness_root(:) = -5._r8
+    call ncd_io('crit_chil2_root', crit_chil2_root, 'read', ncid, readvar=readv, posNOTonfile=.true.)
+    if (.not. readv) crit_chil2_root(:) = 60._r8
 
     do i = 0, mxpft
 
