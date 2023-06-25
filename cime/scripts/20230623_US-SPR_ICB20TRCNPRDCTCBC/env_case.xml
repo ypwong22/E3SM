@@ -30,7 +30,7 @@
       <type>char</type>
       <desc>Scripts root utils directory location (setup automatically to $CIMEROOT/scripts/Tools - DO NOT EDIT)</desc>
     </entry>
-    <entry id="MODEL_VERSION" value="b37beba">
+    <entry id="MODEL_VERSION" value="a4486b7">
       <type>char</type>
       <desc>Apparent version of the model used for this case</desc>
     </entry>
