@@ -1,5 +1,5 @@
 module AllocationMod
-
+  
   !-----------------------------------------------------------------------
   ! !DESCRIPTION:
   ! Module holding routines used in allocation model for coupled carbon
@@ -25,7 +25,7 @@ module AllocationMod
   use CNStateType         , only : cnstate_type
   use PhotosynthesisType  , only : photosyns_type
   use CropType            , only : crop_type
-  use VegetationPropertiesType , only : veg_vp
+  use VegetationPropertiesType      , only : veg_vp
   use LandunitType        , only : lun_pp                
   use ColumnType          , only : col_pp
   use ColumnDataType      , only : col_ws
@@ -421,7 +421,7 @@ contains
 
     associate(                                                                                   &
          ivt                          => veg_pp%itype                                             , & ! Input:  [integer  (:) ]  pft vegetation type                                
-
+         
          woody                        => veg_vp%woody                                      , & ! Input:  [real(r8) (:)   ]  binary flag for woody lifeform (1=woody, 0=not woody)
          froot_leaf                   => veg_vp%froot_leaf                                 , & ! Input:  [real(r8) (:)   ]  allocation parameter: new fine root C per new leaf C (gC/gC)
          croot_stem                   => veg_vp%croot_stem                                 , & ! Input:  [real(r8) (:)   ]  allocation parameter: new coarse root C per new stem C (gC/gC)
@@ -431,6 +431,7 @@ contains
          frootcn                      => veg_vp%frootcn                                    , & ! Input:  [real(r8) (:)   ]  fine root C:N (gC/gN)                   
          livewdcn                     => veg_vp%livewdcn                                   , & ! Input:  [real(r8) (:)   ]  live wood (phloem and ray parenchyma) C:N (gC/gN)
          deadwdcn                     => veg_vp%deadwdcn                                   , & ! Input:  [real(r8) (:)   ]  dead wood (xylem and heartwood) C:N (gC/gN)
+         fcur2                        => veg_vp%fcur                                       , & ! Input:  [real(r8) (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage
          graincn                      => veg_vp%graincn                                    , & ! Input:  [real(r8) (:)   ]  grain C:N (gC/gN)                       
          fleafcn                      => veg_vp%fleafcn                                    , & ! Input:  [real(r8) (:)   ]  leaf c:n during organ fill              
          ffrootcn                     => veg_vp%ffrootcn                                   , & ! Input:  [real(r8) (:)   ]  froot c:n during organ fill             
@@ -442,13 +443,13 @@ contains
          c13_psnsha                   => photosyns_vars%c13_psnsha_patch                       , & ! Input:  [real(r8) (:)   ]  shaded leaf-level photosynthesis (umol CO2 /m**2/ s)
          c14_psnsun                   => photosyns_vars%c14_psnsun_patch                       , & ! Input:  [real(r8) (:)   ]  sunlit leaf-level photosynthesis (umol CO2 /m**2/ s)
          c14_psnsha                   => photosyns_vars%c14_psnsha_patch                       , & ! Input:  [real(r8) (:)   ]  shaded leaf-level photosynthesis (umol CO2 /m**2/ s)
-
+         
          laisun                       => canopystate_vars%laisun_patch                         , & ! Input:  [real(r8) (:)   ]  sunlit projected leaf area index        
          laisha                       => canopystate_vars%laisha_patch                         , & ! Input:  [real(r8) (:)   ]  shaded projected leaf area index        
 
          hui                          => crop_vars%gddplant_patch                              , & ! Input:  [real(r8) (:)   ]  =gdd since planting (gddplant)          
          leafout                      => crop_vars%gddtsoi_patch                               , & ! Input:  [real(r8) (:)   ]  =gdd from top soil layer temperature    
-         cpool                        => veg_cs%cpool                         , & ! Input:  [real(r8) (:)   ]  =photosynthate pool
+         !cpool                        => carbonstate_vars%cpool_patch                         , & ! Input:  [real(r8) (:)   ]  =photosynthate pool
          xsmrpool                     => veg_cs%xsmrpool                       , & ! Input:  [real(r8) (:)   ]  (gC/m2) temporary photosynthate C pool  
          leafc                        => veg_cs%leafc                          , & ! Input:  [real(r8) (:)   ]                                          
          frootc                       => veg_cs%frootc                         , & ! Input:  [real(r8) (:)   ]                                          
@@ -579,7 +580,7 @@ contains
          sminn_to_plant_vr            => col_nf%sminn_to_plant_vr               , & ! Output: [real(r8) (:,:) ]                                        
          potential_immob_vr           => col_nf%potential_immob_vr              , & ! Output: [real(r8) (:,:) ]                                        
          actual_immob_vr              => col_nf%actual_immob_vr                 , & ! Output: [real(r8) (:,:) ]                                        
-
+         
          !!! add phosphorus variables  - X. YANG  
          sminp_vr                     => col_ps%sminp_vr                     , & ! Input:  [real(r8) (:,:) ]  (gP/m3) soil mineral P                
          solutionp_vr                 => col_ps%solutionp_vr                 , & ! Input:  [real(r8) (:,:) ]  (gP/m3) soil mineral P                
@@ -620,7 +621,7 @@ contains
 
          c13cf                        => c13_carbonflux_vars                                   , &
          c14cf                        => c14_carbonflux_vars                                   , &
-
+         
          froot_prof                   => cnstate_vars%froot_prof_patch                         , & ! fine root vertical profile Zeng, X. 2001. Global vegetation root distribution for land modeling. J. Hydrometeor. 2:525-530
          fpg_nh4_vr                   => cnstate_vars%fpg_nh4_vr_col                           , &
          fpg_no3_vr                   => cnstate_vars%fpg_no3_vr_col                           , &
@@ -771,26 +772,14 @@ contains
             ! Determine rate of recovery for xsmrpool deficit
 
             xsmrpool_recover(p) = -xsmrpool(p)/(dayscrecover*secspday)
-            !if (xsmrpool_recover(p) < availc(p)) then
-            !   ! available carbon reduced by amount for xsmrpool recovery
-            !   availc(p) = availc(p) - xsmrpool_recover(p)
-            !else
-            !   ! all of the available carbon goes to xsmrpool recovery
-            !   xsmrpool_recover(p) = availc(p)
-            !   availc(p) = 0.0_r8
-            if (cpool(p) < 10.0_r8 * xsmrpool_recover(p)*dt) then 
-              !Take xsmr recovery from existing cpool, if cpool too small then
-              !use availc
-              if (xsmrpool_recover(p) < availc(p)) then
-                ! available carbon reduced by amount for xsmrpool recovery
-                 availc(p) = availc(p) - xsmrpool_recover(p)
-              else
-                 ! all of the available carbon goes to xsmrpool recovery
-                 xsmrpool_recover(p) = availc(p)
-                 availc(p) = 0.0_r8
-              end if
-
-            end if 
+            if (xsmrpool_recover(p) < availc(p)) then
+               ! available carbon reduced by amount for xsmrpool recovery
+               availc(p) = availc(p) - xsmrpool_recover(p)
+            else
+               ! all of the available carbon goes to xsmrpool recovery
+               xsmrpool_recover(p) = availc(p)
+               availc(p) = 0.0_r8
+            end if
             cpool_to_xsmrpool(p) = xsmrpool_recover(p)
          end if
 
@@ -1308,15 +1297,15 @@ contains
          sminp_to_plant_vr            => col_pf%sminp_to_plant_vr           , & ! Output: [real(r8) (:,:) ]
          potential_immob_p_vr         => col_pf%potential_immob_p_vr        , & ! Output: [real(r8) (:,:) ]
          actual_immob_p_vr            => col_pf%actual_immob_p_vr           , & ! Output: [real(r8) (:,:) ]
-         bd                           => soilstate_vars%bd_col                               , &
-         h2osoi_vol                   => col_ws%h2osoi_vol                      , &
-         pmnf_decomp_cascade          => col_nf%pmnf_decomp_cascade               , &
-         pmpf_decomp_cascade          => col_pf%pmpf_decomp_cascade             , &
-         leafc_storage                => veg_cs%leafc_storage                , &
-         leafc_xfer                   => veg_cs%leafc_xfer                   , &
-         leafn_storage                => veg_ns%leafn_storage              , &
-         leafn_xfer                   => veg_ns%leafn_xfer                 , &
-         leafp_storage                => veg_ps%leafp_storage            , &
+         bd                           => soilstate_vars%bd_col              , & ! Input: [real(r8) (:,:) ] bulk density of dry soil material
+         h2osoi_vol                   => col_ws%h2osoi_vol                  , &
+         pmnf_decomp_cascade          => col_nf%pmnf_decomp_cascade         , &
+         pmpf_decomp_cascade          => col_pf%pmpf_decomp_cascade         , &
+         leafc_storage                => veg_cs%leafc_storage               , &
+         leafc_xfer                   => veg_cs%leafc_xfer                  , &
+         leafn_storage                => veg_ns%leafn_storage               , &
+         leafn_xfer                   => veg_ns%leafn_xfer                  , &
+         leafp_storage                => veg_ps%leafp_storage               , &
          leafp_xfer                   => veg_ps%leafp_xfer                 &
          )
 
@@ -2880,7 +2869,7 @@ contains
     type(phosphorusflux_type)  , intent(inout) :: phosphorusflux_vars
     type(crop_type)          , intent(inout) :: crop_vars
     !
-    ! !LOCAL VARIABLES:2
+    ! !LOCAL VARIABLES:
     !
     integer :: c,p,j                                                 !indices
     integer :: fp                                                    !lake filter pft index
@@ -2929,7 +2918,6 @@ contains
          livewdcn                     => veg_vp%livewdcn                                 , & ! Input:  [real(r8) (:)   ]  live wood (phloem and ray parenchyma) C:N (gC/gN)
          deadwdcn                     => veg_vp%deadwdcn                                 , & ! Input:  [real(r8) (:)   ]  dead wood (xylem and heartwood) C:N (gC/gN)
          fcur2                        => veg_vp%fcur                                     , & ! Input:  [real(r8) (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage
-         fcur_dyn                     => cnstate_vars%fcur_dyn_patch                     , & ! Input:  [real(r8) (:)   ]  allocation parameter: fraction of allocation that goes to currently displayed growth, remainder to storage, dynamic
          graincn                      => veg_vp%graincn                                  , & ! Input:  [real(r8) (:)   ]  grain C:N (gC/gN)
 
          croplive                     => crop_vars%croplive_patch                         , & ! Input:  [logical  (:)   ]  flag, true if planted, not harvested
@@ -3094,7 +3082,7 @@ contains
          )
 
 !
-!     !-------------------------------------------------------------------
+!    !-------------------------------------------------------------------
       ! set time steps
       dt = real( get_step_size(), r8 )
 
@@ -3127,7 +3115,7 @@ contains
             end do
          end do
       end if
-
+      
       ! start new pft loop to distribute the available N between the
       ! competing patches on the basis of relative demand, and allocate C and N to
       ! new growth and storage
@@ -3159,7 +3147,7 @@ contains
              else
                  f3 = stem_leaf(ivt(p))
              end if
-
+             
              f4 = flivewd(ivt(p))
              g1 = grperc(ivt(p))
              g2 = grpnow(ivt(p))
@@ -3194,7 +3182,7 @@ contains
              ! turning off this correction (PET, 12/11/03), instead using bgtr in
              ! phenology algorithm.
 
-             !nstor: nitrogen storage pool timescale
+
              if (veg_vp%nstor(veg_pp%itype(p)) > 1e-6_r8) then 
                !N pool modification
                sminn_to_npool(p) = plant_ndemand(p) * min(fpg(c), fpg_p(c))
@@ -3303,7 +3291,6 @@ contains
                      endif
                  endif
              end if
-
          else
              ! 'ECA' or 'MIC' mode
              ! dynamic allocation based on light limitation (more woody growth) vs nutrient limitations (more fine root growth)
@@ -3579,39 +3566,50 @@ contains
             ! calculate excess carbon
             ! put excess carbon into respiration storage pool (if nlc > nlc_adjust_high)
             nlc = max(nlc  - nlc_adjust_high,0.0_r8)
-            cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * (1 + g1)
-            cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f1 * (1 + g1)
+            cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * fcur * (1 + g1)
+            cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * (1._r8 - fcur) * (1 + g1)
+            cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f1 * fcur * (1 + g1)
+            cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f1 * (1._r8 - fcur) * (1 + g1)
             if (woody(ivt(p)) == 1._r8) then
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * f4 * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * (1._r8 - f4) * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * f4 * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * (1._r8 - f4) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * f4 * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * f4 * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * (1._r8 - f4) * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * (1._r8 - f4) * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * f4 * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * f4 * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * (1._r8 - f4) * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * (1._r8 - f4) * (1._r8 - fcur) * (1 + g1)
             end if
             if (ivt(p) >= npcropmin) then ! skip 2 generic crops
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * f4 * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * (1._r8 - f4) * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * f4 * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * (1._r8 - f4) * (1 + g1)
-               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f5 * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * f4 * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * f4 * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * (1._r8 - f4) * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f3 * (1._r8 - f4) * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * f4 * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * f4 * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * (1._r8 - f4) * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f2 * f3 * (1._r8 - f4) * (1._r8 - fcur) * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f5 * fcur * (1 + g1)
+               cpool_to_xsmrpool(p)  = cpool_to_xsmrpool(p) + nlc * f5 * (1._r8 -fcur) * (1 + g1)
             end if
-
+           
             ! updated allocation if necessary
             nlc = min(nlc_adjust_high ,plant_calloc(p) / c_allometry(p) )
          end if
 
          cpool_to_leafc(p)          = nlc * fcur
          cpool_to_leafc_storage(p)  = nlc * (1._r8 - fcur)
-         cpool_to_frootc(p)         = nlc * f1 * fcur_dyn(p)
-         cpool_to_frootc_storage(p) = nlc * f1 * (1._r8 - fcur_dyn(p))
+         cpool_to_frootc(p)         = nlc * f1 * fcur
+         cpool_to_frootc_storage(p) = nlc * f1 * (1._r8 - fcur)
          if (woody(ivt(p)) == 1._r8) then
-            cpool_to_livestemc(p)          = nlc * f3 * f4 * fcur_dyn(p)
-            cpool_to_livestemc_storage(p)  = nlc * f3 * f4 * (1._r8 - fcur_dyn(p))
-            cpool_to_deadstemc(p)          = nlc * f3 * (1._r8 - f4) * fcur_dyn(p)
-            cpool_to_deadstemc_storage(p)  = nlc * f3 * (1._r8 - f4) * (1._r8 - fcur_dyn(p))
-            cpool_to_livecrootc(p)         = nlc * f2 * f3 * f4 * fcur_dyn(p)
-            cpool_to_livecrootc_storage(p) = nlc * f2 * f3 * f4 * (1._r8 - fcur_dyn(p))
-            cpool_to_deadcrootc(p)         = nlc * f2 * f3 * (1._r8 - f4) * fcur_dyn(p)
-            cpool_to_deadcrootc_storage(p) = nlc * f2 * f3 * (1._r8 - f4) * (1._r8 - fcur_dyn(p))
+            cpool_to_livestemc(p)          = nlc * f3 * f4 * fcur
+            cpool_to_livestemc_storage(p)  = nlc * f3 * f4 * (1._r8 - fcur)
+            cpool_to_deadstemc(p)          = nlc * f3 * (1._r8 - f4) * fcur
+            cpool_to_deadstemc_storage(p)  = nlc * f3 * (1._r8 - f4) * (1._r8 - fcur)
+            cpool_to_livecrootc(p)         = nlc * f2 * f3 * f4 * fcur
+            cpool_to_livecrootc_storage(p) = nlc * f2 * f3 * f4 * (1._r8 - fcur)
+            cpool_to_deadcrootc(p)         = nlc * f2 * f3 * (1._r8 - f4) * fcur
+            cpool_to_deadcrootc_storage(p) = nlc * f2 * f3 * (1._r8 - f4) * (1._r8 - fcur)
          end if
          if (ivt(p) >= npcropmin) then ! skip 2 generic crops
             cpool_to_livestemc(p)          = nlc * f3 * f4 * fcur
@@ -3625,7 +3623,7 @@ contains
             cpool_to_grainc(p)             = nlc * f5 * fcur
             cpool_to_grainc_storage(p)     = nlc * f5 * (1._r8 -fcur)
          end if
-
+         
          ! corresponding N fluxes
          ! recover default coefficient for carbon allocation to leaf,  which is possibly changed due to previous time step allocation adjustment
          !nlc = plant_calloc(p) / c_allometry(p) 
@@ -3654,17 +3652,17 @@ contains
  
          npool_to_leafn(p)          = (nlc / cnl) * fcur
          npool_to_leafn_storage(p)  = (nlc / cnl) * (1._r8 - fcur)
-         npool_to_frootn(p)         = (nlc * f1 / cnfr) * fcur_dyn(p)
-         npool_to_frootn_storage(p) = (nlc * f1 / cnfr) * (1._r8 - fcur_dyn(p))
+         npool_to_frootn(p)         = (nlc * f1 / cnfr) * fcur
+         npool_to_frootn_storage(p) = (nlc * f1 / cnfr) * (1._r8 - fcur)
          if (woody(ivt(p)) == 1._r8) then
-            npool_to_livestemn(p)          = (nlc * f3 * f4 / cnlw) * fcur_dyn(p)
-            npool_to_livestemn_storage(p)  = (nlc * f3 * f4 / cnlw) * (1._r8 - fcur_dyn(p))
-            npool_to_deadstemn(p)          = (nlc * f3 * (1._r8 - f4) / cndw) * fcur_dyn(p)
-            npool_to_deadstemn_storage(p)  = (nlc * f3 * (1._r8 - f4) / cndw) * (1._r8 - fcur_dyn(p))
-            npool_to_livecrootn(p)         = (nlc * f2 * f3 * f4 / cnlw) * fcur_dyn(p)
-            npool_to_livecrootn_storage(p) = (nlc * f2 * f3 * f4 / cnlw) * (1._r8 - fcur_dyn(p))
-            npool_to_deadcrootn(p)         = (nlc * f2 * f3 * (1._r8 - f4) / cndw) * fcur_dyn(p)
-            npool_to_deadcrootn_storage(p) = (nlc * f2 * f3 * (1._r8 - f4) / cndw) * (1._r8 - fcur_dyn(p))
+            npool_to_livestemn(p)          = (nlc * f3 * f4 / cnlw) * fcur
+            npool_to_livestemn_storage(p)  = (nlc * f3 * f4 / cnlw) * (1._r8 - fcur)
+            npool_to_deadstemn(p)          = (nlc * f3 * (1._r8 - f4) / cndw) * fcur
+            npool_to_deadstemn_storage(p)  = (nlc * f3 * (1._r8 - f4) / cndw) * (1._r8 - fcur)
+            npool_to_livecrootn(p)         = (nlc * f2 * f3 * f4 / cnlw) * fcur
+            npool_to_livecrootn_storage(p) = (nlc * f2 * f3 * f4 / cnlw) * (1._r8 - fcur)
+            npool_to_deadcrootn(p)         = (nlc * f2 * f3 * (1._r8 - f4) / cndw) * fcur
+            npool_to_deadcrootn_storage(p) = (nlc * f2 * f3 * (1._r8 - f4) / cndw) * (1._r8 - fcur)
          end if
          if (ivt(p) >= npcropmin) then ! skip 2 generic crops
             cng = graincn(ivt(p))
@@ -3698,17 +3696,17 @@ contains
  
          ppool_to_leafp(p)          = (nlc / cpl) * fcur
          ppool_to_leafp_storage(p)  = (nlc / cpl) * (1._r8 - fcur)
-         ppool_to_frootp(p)         = (nlc * f1 / cpfr) * fcur_dyn(p)
-         ppool_to_frootp_storage(p) = (nlc * f1 / cpfr) * (1._r8 - fcur_dyn(p))
+         ppool_to_frootp(p)         = (nlc * f1 / cpfr) * fcur
+         ppool_to_frootp_storage(p) = (nlc * f1 / cpfr) * (1._r8 - fcur)
          if (woody(ivt(p)) == 1._r8) then
-            ppool_to_livestemp(p)          = (nlc * f3 * f4 / cplw) * fcur_dyn(p)
-            ppool_to_livestemp_storage(p)  = (nlc * f3 * f4 / cplw) * (1._r8 -fcur_dyn(p))
-            ppool_to_deadstemp(p)          = (nlc * f3 * (1._r8 - f4) / cpdw) *fcur_dyn(p)
-            ppool_to_deadstemp_storage(p)  = (nlc * f3 * (1._r8 - f4) / cpdw) *(1._r8 - fcur_dyn(p))
-            ppool_to_livecrootp(p)         = (nlc * f2 * f3 * f4 / cplw) * fcur_dyn(p)
-            ppool_to_livecrootp_storage(p) = (nlc * f2 * f3 * f4 / cplw) * (1._r8 -fcur_dyn(p))
-            ppool_to_deadcrootp(p)         = (nlc * f2 * f3 * (1._r8 - f4) / cpdw)* fcur_dyn(p)
-            ppool_to_deadcrootp_storage(p) = (nlc * f2 * f3 * (1._r8 - f4) / cpdw)* (1._r8 - fcur_dyn(p))
+            ppool_to_livestemp(p)          = (nlc * f3 * f4 / cplw) * fcur
+            ppool_to_livestemp_storage(p)  = (nlc * f3 * f4 / cplw) * (1._r8 -fcur)
+            ppool_to_deadstemp(p)          = (nlc * f3 * (1._r8 - f4) / cpdw) *fcur
+            ppool_to_deadstemp_storage(p)  = (nlc * f3 * (1._r8 - f4) / cpdw) *(1._r8 - fcur)
+            ppool_to_livecrootp(p)         = (nlc * f2 * f3 * f4 / cplw) * fcur
+            ppool_to_livecrootp_storage(p) = (nlc * f2 * f3 * f4 / cplw) * (1._r8 -fcur)
+            ppool_to_deadcrootp(p)         = (nlc * f2 * f3 * (1._r8 - f4) / cpdw)* fcur
+            ppool_to_deadcrootp_storage(p) = (nlc * f2 * f3 * (1._r8 - f4) / cpdw)* (1._r8 - fcur)
          end if
          if (ivt(p) >= npcropmin) then ! skip 2 generic crops
             cpg = graincp(ivt(p))
@@ -3723,7 +3721,7 @@ contains
             ppool_to_grainp(p)             = (nlc * f5 / cpg) * fcur
             ppool_to_grainp_storage(p)     = (nlc * f5 / cpg) * (1._r8 -fcur)
          end if
-
+   
          ! Calculate the amount of carbon that needs to go into growth
          ! respiration storage to satisfy all of the storage growth demands.
          ! Allows for the fraction of growth respiration that is released at the
@@ -3745,7 +3743,7 @@ contains
             gresp_storage = gresp_storage + cpool_to_grainc_storage(p)
          end if
          cpool_to_gresp_storage(p) = gresp_storage * g1 * (1._r8 - g2)
-
+       
          ! ECA root NP uptake is based on kinetics, plant CNP stoichiometry can vary even
          ! when certain element is set to not limiting (e.g., P not limiting under CN mode)
          ! additional supplement N/P come from first soil layer
@@ -3753,7 +3751,7 @@ contains
          ! (1) maintain plant PC stoichiometry at optimal ratio under CN mode
          ! (2) maintain plant NC stoichiometry at optimal ratio under CP mode
          ! (3) maintain plant PC/NC stoichiometry at optimal ratios under C mode
-
+         
          if (nu_com .eq. 'ECA' .or. nu_com .eq. 'MIC') then
 
              supplement_to_plantn(p)  = 0.0_r8
@@ -3839,7 +3837,7 @@ contains
                      ppool_to_frootp_storage(p) = cpool_to_frootc_storage(p) / cpfr
                  
                  if (woody(ivt(p)) == 1._r8) then
-                     
+
                      supplement_to_plantp(p) = supplement_to_plantp(p) + max(cpool_to_livestemc(p) / cplw &
                           - ppool_to_livestemp(p),0._r8)
                      supplement_to_plantp(p) = supplement_to_plantp(p) + max(cpool_to_livestemc_storage(p) / cplw &
@@ -4034,7 +4032,7 @@ contains
         end if   ! use_nitrif_denitrif
 
       end if ! nu_com .eq. RD
-
+         
 
       !----------------------------------------------------------------
 
@@ -4104,9 +4102,6 @@ contains
                         *(nfixation_prof(c,j)*dzsoi_decomp(j))         ! weighted by froot fractions in annual max. active layers
                   else
                      nuptake_prof(c,j) = sminn_vr_loc(c,j) / sminn_tot(c)   !original: if (use_nitrif_denitrif): nuptake_prof(c,j) = sminn_vr(c,j) / sminn_tot(c)
-                     ! test the model using uptake profile that follows fine
-                     ! root
-                     nuptake_prof(c,j) = nfixation_prof(c,j)     
                   end if
                else
                   nuptake_prof(c,j) = nfixation_prof(c,j)
@@ -4165,8 +4160,6 @@ contains
                !!! add P demand calculation
                if (solutionp_tot(c)  >  0.) then
                   puptake_prof(c,j) = solutionp_vr(c,j) / solutionp_tot(c)
-                  ! test the uptake profle that follows fine root
-                  puptake_prof(c,j) = nfixation_prof(c,j)      ! need modifications 
                else
                   puptake_prof(c,j) = nfixation_prof(c,j)      ! need modifications 
                endif

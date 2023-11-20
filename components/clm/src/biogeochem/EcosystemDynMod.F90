@@ -13,6 +13,7 @@ module EcosystemDynMod
   use spmdMod             , only : masterproc
   use clm_varctl          , only : use_century_decomp
   use clm_varctl          , only : use_erosion
+  use clm_varctl          , only : iulog 
   use CNStateType         , only : cnstate_type
   use CNCarbonFluxType    , only : carbonflux_type
   use CNCarbonStateType   , only : carbonstate_type
@@ -205,16 +206,19 @@ contains
        end if !(.not. (pf_cmode .and. pf_hmode))
        !-----------------------------------------------------------------------
 
+       write(iulog, *) 'PLeaching', col_ps%decomp_ppools_vr(:, 1, 8)
+
        call t_startf('CNUpdate3')
        call NitrogenStateUpdate3(num_soilc, filter_soilc, num_soilp, filter_soilp, &
             nitrogenflux_vars, nitrogenstate_vars)
        call t_stopf('CNUpdate3')
 
-
        call t_startf('PUpdate3')
        call PhosphorusStateUpdate3(bounds,num_soilc, filter_soilc, num_soilp, filter_soilp, &
             cnstate_vars,phosphorusflux_vars, phosphorusstate_vars)
        call t_stopf('PUpdate3')
+
+       write(iulog, *) 'PUpdate3', col_ps%decomp_ppools_vr(:, 1, 8)
 
        call t_startf('CNPsum')
        call PrecisionControl(num_soilc, filter_soilc, num_soilp, filter_soilp, &
@@ -477,12 +481,17 @@ contains
        ! Allocation1 is always called (w/ or w/o use_clm_interface)
        ! pflotran: call 'Allocation1' to obtain potential N demand for support initial GPP
        call t_startf('CNAllocation - phase-1')
+
+       write(iulog, *) 'PreAllocation1', col_ps%decomp_ppools_vr(:, 1, 8)
+
        call Allocation1_PlantNPDemand (bounds                             , &
                 num_soilc, filter_soilc, num_soilp, filter_soilp            , &
                 photosyns_vars, crop_vars, canopystate_vars, cnstate_vars   , &
                 carbonstate_vars, carbonflux_vars, c13_carbonflux_vars      , &
                 c14_carbonflux_vars, nitrogenstate_vars, nitrogenflux_vars  , &
                 phosphorusstate_vars, phosphorusflux_vars)
+
+       write(iulog, *) 'Allocation1_PlantNPDemand', col_ps%decomp_ppools_vr(:, 1, 8)
 
        call t_stopf('CNAllocation - phase-1')
 
@@ -518,7 +527,6 @@ contains
 !    use NitrogenDynamicsMod         , only: NitrogenDeposition,NitrogenFixation, NitrogenFert, CNSoyfix
 !    use MaintenanceRespMod             , only: MaintenanceResp
 !    use SoilLittDecompMod            , only: SoilLittDecompAlloc
-    use clm_varctl          , only : iulog 
     use PhenologyMod         , only: Phenology, CNLitterToColumn
     use GrowthRespMod             , only: GrowthResp
     use CarbonStateUpdate1Mod     , only: CarbonStateUpdate1,CarbonStateUpdate0
@@ -600,6 +608,9 @@ contains
                        nitrogenstate_vars, nitrogenflux_vars,       &
                        phosphorusstate_vars,phosphorusflux_vars)
        end if !if(.not.use_clm_interface)
+
+       write(iulog, *) 'SoilLittDecompAlloc', col_ps%decomp_ppools_vr(:, 1, 8)
+
        !----------------------------------------------------------------
        ! SoilLittDecompAlloc2 is called by both clm-bgc & pflotran
        ! pflotran: call 'SoilLittDecompAlloc2' to calculate some diagnostic variables and 'fpg' for plant N uptake
@@ -610,6 +621,8 @@ contains
                 carbonstate_vars, carbonflux_vars, c13_carbonflux_vars, c14_carbonflux_vars,    &
                 nitrogenstate_vars, nitrogenflux_vars, crop_vars, atm2lnd_vars,                 &
                 phosphorusstate_vars,phosphorusflux_vars)
+
+       write(iulog, *) 'SoilLittDecompAlloc', col_ps%decomp_ppools_vr(:, 1, 8)
 
        !----------------------------------------------------------------
        call t_stopf('SoilLittDecompAlloc')
@@ -730,6 +743,8 @@ contains
        call PhosphorusStateUpdate1(num_soilc, filter_soilc, num_soilp, filter_soilp, &
             cnstate_vars, phosphorusflux_vars, phosphorusstate_vars)
 
+       write(iulog, *) 'PhosphorusStateUpdate1', col_ps%decomp_ppools_vr(:, 1, 8)
+
        call t_stopf('CNUpdate1')
 
        call t_startf('SoilLittVertTransp')
@@ -741,6 +756,8 @@ contains
             nitrogenstate_vars, nitrogenflux_vars,&
             phosphorusstate_vars,phosphorusflux_vars)
        call t_stopf('SoilLittVertTransp')
+
+       write(iulog, *) 'SoilLittVertTransp', col_ps%decomp_ppools_vr(:, 1, 8)
 
        call t_startf('CNGapMortality')
        call GapMortality( num_soilc, filter_soilc, num_soilp, filter_soilp, &
@@ -784,6 +801,8 @@ contains
 
        call PhosphorusStateUpdate2(num_soilc, filter_soilc, num_soilp, filter_soilp, &
             phosphorusflux_vars, phosphorusstate_vars)
+
+       write(iulog, *) 'PhosphorusStateUpdate2', col_ps%decomp_ppools_vr(:, 1, 8)
 
        if (get_do_harvest()) then
           call CNHarvest(num_soilc, filter_soilc, num_soilp, filter_soilp, &

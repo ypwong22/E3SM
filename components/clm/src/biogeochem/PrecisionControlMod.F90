@@ -717,7 +717,7 @@ contains
                         if ( abs(col_ps%decomp_ppools_vr(c,j,l))  < ncrit/1e4_r8 ) then
                            cp_eca = cp_eca - ncrit/1e4_r8 + col_ps%decomp_ppools_vr(c,j,l)
                            col_ps%decomp_ppools_vr(c,j,l) = ncrit/1e4_r8
-                         else 
+                         else
                            write(iulog, "(A,2I8,E8.1)") 'error decomp_ppools is negative: ',j,l,col_ps%decomp_ppools_vr(c,j,l)
                            call endrun(msg=errMsg(__FILE__, __LINE__))
                          end if

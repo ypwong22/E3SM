@@ -204,8 +204,8 @@ contains
          decomp_k                         =>    col_cf%decomp_k                           , & ! Output: [real(r8) (:,:,:) ]  rate constant for decomposition (1./sec)      
          phr_vr                           =>    col_cf%phr_vr                             , & ! Output: [real(r8) (:,:)   ]  potential HR (gC/m3/s)                           
          fphr                             =>    col_cf%fphr                               , & ! Output: [real(r8) (:,:)   ]  fraction of potential SOM + LITTER heterotrophic
-         pmnf_decomp_cascade              =>    col_nf%pmnf_decomp_cascade                  , &
-         pmpf_decomp_cascade              =>    col_pf%pmpf_decomp_cascade                , & 
+         pmnf_decomp_cascade              =>    col_nf%pmnf_decomp_cascade                , & ! potential mineral N flux, from one pool to another
+         pmpf_decomp_cascade              =>    col_pf%pmpf_decomp_cascade                , &
          soil_n_immob_flux                =>    col_nf%soil_n_immob_flux                    , &
          soil_n_immob_flux_vr             =>    col_nf%soil_n_immob_flux_vr                 , &
          soil_n_grossmin_flux             =>    col_nf%soil_n_grossmin_flux                 , &
@@ -287,7 +287,7 @@ contains
                c = filter_soilc(fc)
 
                if (decomp_cpools_vr(c,j,cascade_donor_pool(k)) > 0._r8 .and. &
-                    decomp_k(c,j,cascade_donor_pool(k)) > 0._r8 ) then
+                   decomp_k(c,j,cascade_donor_pool(k)) > 0._r8) then
                   p_decomp_cpool_loss(c,j,k) = decomp_cpools_vr(c,j,cascade_donor_pool(k)) &
                        * decomp_k(c,j,cascade_donor_pool(k))  * pathfrac_decomp_cascade(c,j,k)
                   if ( .not. floating_cn_ratio_decomp_pools(cascade_receiver_pool(k)) ) then  !! not transition of cwd to litter
@@ -416,7 +416,7 @@ contains
                soilstate_vars,waterstate_vars)
       call t_stopf('CNAllocation - phase-2')
 
-      
+
       ! column loop to calculate actual immobilization and decomp rates, following
       ! resolution of plant/heterotroph  competition for mineral N
 
@@ -866,7 +866,7 @@ contains
       end do
     end associate
   end subroutine SoilLittDecompAlloc2
- 
+
   !-------------------------------------------------------------------------------------------------
   !
   subroutine CNvariables_nan4pf (bounds, num_soilc, filter_soilc, num_soilp, filter_soilp, &

@@ -572,7 +572,6 @@ contains
          end do
       end do
 
-      
       do j = 1,nlevdecomp
          do fc = 1,num_soilc
             c = filter_soilc(fc)
@@ -606,7 +605,7 @@ contains
     use clm_varpar             , only : ndecomp_pools
     use clm_time_manager       , only : get_step_size
     use CNDecompCascadeConType , only : decomp_cascade_con
- 
+
     !
     ! !ARGUMENTS:
     type(bounds_type)          , intent(in)    :: bounds
@@ -650,7 +649,7 @@ contains
     biochem_pmin_ppools_vr_col(bounds%begc : bounds%endc, :, :) = 0._r8
     biochem_pmin_to_plant_vr_patch(bounds%begp:bounds%endp,1:nlevdecomp) = 0._r8
     biochem_pmin_to_plant_patch(bounds%begp:bounds%endp) = 0._r8
-      
+
     do j = 1,nlevdecomp
         do fc = 1,num_soilc
             c = filter_soilc(fc)
@@ -664,7 +663,7 @@ contains
                     ptase_tmp = vmax_ptase(veg_pp%itype(p)) * froot_prof(p,j) * max(lamda_up - lamda_ptase, 0.0_r8) / &
                         (km_ptase + max(lamda_up - lamda_ptase, 0.0_r8)) 
                     if (NFIX_PTASE_plant) then
-                       biochem_pmin_to_plant_vr_patch(p,j) = ptase_tmp * alpha_ptase(veg_pp%itype(p)) 
+                       biochem_pmin_to_plant_vr_patch(p,j) = ptase_tmp * alpha_ptase(veg_pp%itype(p))
                        biochem_pmin_vr(c,j) = biochem_pmin_vr(c,j) + ptase_tmp * veg_pp%wtcol(p) * &
                             (1._r8 - alpha_ptase(veg_pp%itype(p)))
                        biochem_pmin_to_ecosysp_vr_col_pot(c,j) = biochem_pmin_to_ecosysp_vr_col_pot(c,j) + ptase_tmp  * veg_pp%wtcol(p)
@@ -677,8 +676,8 @@ contains
                 end if
             enddo
         enddo
-    enddo 
-    
+    enddo
+
     do j = 1,nlevdecomp
         do fc = 1,num_soilc
             c = filter_soilc(fc)

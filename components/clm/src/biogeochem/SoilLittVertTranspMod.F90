@@ -19,6 +19,7 @@ module SoilLittVertTranspMod
   use PhosphorusFluxType     , only : phosphorusflux_type
   use PhosphorusStateType    , only : phosphorusstate_type
   use clm_varctl             , only : nu_com
+  use clm_varctl          , only : iulog 
   use ColumnDataType         , only : col_cs, c13_col_cs, c14_col_cs
   use ColumnDataType         , only : col_cf, c13_col_cf, c14_col_cf
   use ColumnDataType         , only : col_ns, col_nf, col_ps, col_pf
@@ -302,21 +303,21 @@ contains
                         if ( abs(som_adv_coef(c,j)) * spinup_term < epsilon ) then
                            adv_flux(c,j) = epsilon
                         else
-			   if (spinup_term > 1 .and. year >= 40 .and. spinup_state .eq. 1) then 
-                             adv_flux(c,j) = som_adv_coef(c,j) * spinup_term / cnstate_vars%scalaravg_col(c,j)
- 			   else
-                             adv_flux(c,j) = som_adv_coef(c,j) * spinup_term
-			   end if			     
+                           if (spinup_term > 1 .and. year >= 40 .and. spinup_state .eq. 1) then 
+                              adv_flux(c,j) = som_adv_coef(c,j) * spinup_term / cnstate_vars%scalaravg_col(c,j)
+                           else
+                              adv_flux(c,j) = som_adv_coef(c,j) * spinup_term
+                           end if
                         endif
                         !
                         if ( abs(som_diffus_coef(c,j)) * spinup_term < epsilon ) then
                            diffus(c,j) = epsilon
                         else
-			   if (spinup_term > 1 .and. year >= 40 .and. spinup_state .eq. 1) then 
-                             diffus(c,j) = som_diffus_coef(c,j) * spinup_term / cnstate_vars%scalaravg_col(c,j)
+                           if (spinup_term > 1 .and. year >= 40 .and. spinup_state .eq. 1) then 
+                              diffus(c,j) = som_diffus_coef(c,j) * spinup_term / cnstate_vars%scalaravg_col(c,j)
                            else
-                             diffus(c,j) = som_diffus_coef(c,j) * spinup_term
-			   end if
+                              diffus(c,j) = som_diffus_coef(c,j) * spinup_term
+                           end if
                         endif
                         !
                      end do
@@ -371,7 +372,7 @@ contains
                         else
                            ! Use distance from j-1 node to interface with j divided by distance between nodes
                            w_m1 = (zisoi(j-1) - zsoi(j-1)) / dz_node(j)
-                           if ( diffus(c,j-1) > 0._r8 .and. diffus(c,j) > 0._r8) then
+                           if ( diffus(c,j-1) > 0._r8 .and. diffus(c,j) > 0._r8 ) then
                               d_m1 = 1._r8 / ((1._r8 - w_m1) / diffus(c,j) + w_m1 / diffus(c,j-1)) ! Harmonic mean of diffus
                            else
                               d_m1 = 0._r8
@@ -440,6 +441,10 @@ contains
                      end do
                   end do
 
+                  !if (i_type .eq. 3) then
+                  !   write (iulog, *) 'Pre Tridiagonal', conc_trcr(c,j)
+                  !end if
+
                   ! Solve for the concentration profile for this time step
                   call Tridiagonal(bounds, 0, nlevdecomp+1, &
                        jtop(bounds%begc:bounds%endc), &
@@ -450,6 +455,9 @@ contains
                        r_tri(bounds%begc:bounds%endc, :), &
                        conc_trcr(bounds%begc:bounds%endc,0:nlevdecomp+1))
 
+                  !if (i_type .eq. 3) then
+                  !   write (iulog, *) 'Post Tridiagonal', conc_trcr(c,j)
+                  !end if
 
                   ! add post-transport concentration to calculate tendency term
                   do fc = 1, num_soilc

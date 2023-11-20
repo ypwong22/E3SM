@@ -124,7 +124,7 @@ contains
              end do
            endif
         end do
-   
+
 
         do j = 1, nlevdecomp
               ! column loop

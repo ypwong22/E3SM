@@ -1,93 +1,110 @@
-2023-06-24 22:49:20: xmlchange success <command> ./xmlchange SAVE_TIMING=FALSE  </command>
+2023-06-27 20:43:44: xmlchange success <command> ./xmlchange SAVE_TIMING=FALSE  </command>
  ---------------------------------------------------
-2023-06-24 22:49:21: xmlchange success <command> ./xmlchange EXEROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230623_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld  </command>
+2023-06-27 20:43:45: xmlchange success <command> ./xmlchange EXEROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230623_US-SPR_ICB1850CNRDCTCBC_ad_spinup/bld  </command>
  ---------------------------------------------------
-2023-06-24 22:49:21: xmlchange success <command> ./xmlchange PIO_VERSION=2  </command>
+2023-06-27 20:43:45: xmlchange success <command> ./xmlchange PIO_VERSION=2  </command>
  ---------------------------------------------------
-2023-06-24 22:49:22: xmlchange success <command> ./xmlchange MOSART_MODE=NULL  </command>
+2023-06-27 20:43:46: xmlchange success <command> ./xmlchange MOSART_MODE=NULL  </command>
  ---------------------------------------------------
-2023-06-24 22:49:22: xmlchange success <command> ./xmlchange RUNDIR=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230623_US-SPR_ICB20TRCNPRDCTCBC/run  </command>
+2023-06-27 20:43:46: xmlchange success <command> ./xmlchange RUNDIR=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/20230623_US-SPR_ICB20TRCNPRDCTCBC/run  </command>
  ---------------------------------------------------
-2023-06-24 22:49:23: xmlchange success <command> ./xmlchange DOUT_S=TRUE  </command>
+2023-06-27 20:43:47: xmlchange success <command> ./xmlchange DOUT_S=TRUE  </command>
  ---------------------------------------------------
-2023-06-24 22:49:23: xmlchange success <command> ./xmlchange DOUT_S_ROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/archive/20230623_US-SPR_ICB20TRCNPRDCTCBC  </command>
+2023-06-27 20:43:47: xmlchange success <command> ./xmlchange DOUT_S_ROOT=/lustre/or-scratch/cades-ccsi/scratch/ywo/E3SM/output/archive/20230623_US-SPR_ICB20TRCNPRDCTCBC  </command>
  ---------------------------------------------------
-2023-06-24 22:49:24: xmlchange success <command> ./xmlchange DIN_LOC_ROOT=/nfs/data/ccsi/proj-shared/E3SM/inputdata  </command>
+2023-06-27 20:43:48: xmlchange success <command> ./xmlchange DIN_LOC_ROOT=/nfs/data/ccsi/proj-shared/E3SM/inputdata  </command>
  ---------------------------------------------------
-2023-06-24 22:49:24: xmlchange success <command> ./xmlchange DIN_LOC_ROOT_CLMFORC=/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/  </command>
+2023-06-27 20:43:48: xmlchange success <command> ./xmlchange DIN_LOC_ROOT_CLMFORC=/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/  </command>
  ---------------------------------------------------
-2023-06-24 22:49:25: xmlchange success <command> ./xmlchange CLM_USRDAT_NAME=2x1pt_US-SPR  </command>
+2023-06-27 20:43:49: xmlchange success <command> ./xmlchange CLM_USRDAT_NAME=2x1pt_US-SPR  </command>
  ---------------------------------------------------
-2023-06-24 22:49:25: xmlchange success <command> ./xmlchange ATM_DOMAIN_PATH=${RUNDIR}  </command>
+2023-06-27 20:43:49: xmlchange success <command> ./xmlchange ATM_DOMAIN_PATH=${RUNDIR}  </command>
  ---------------------------------------------------
-2023-06-24 22:49:26: xmlchange success <command> ./xmlchange LND_DOMAIN_PATH=${RUNDIR}  </command>
+2023-06-27 20:43:50: xmlchange success <command> ./xmlchange LND_DOMAIN_PATH=${RUNDIR}  </command>
  ---------------------------------------------------
-2023-06-24 22:49:27: xmlchange success <command> ./xmlchange ATM_DOMAIN_FILE=domain.nc  </command>
+2023-06-27 20:43:50: xmlchange success <command> ./xmlchange ATM_DOMAIN_FILE=domain.nc  </command>
  ---------------------------------------------------
-2023-06-24 22:49:27: xmlchange success <command> ./xmlchange LND_DOMAIN_FILE=domain.nc  </command>
+2023-06-27 20:43:51: xmlchange success <command> ./xmlchange LND_DOMAIN_FILE=domain.nc  </command>
  ---------------------------------------------------
-2023-06-24 22:49:28: xmlchange success <command> ./xmlchange DOUT_S=FALSE  </command>
+2023-06-27 20:43:51: xmlchange success <command> ./xmlchange DOUT_S=FALSE  </command>
  ---------------------------------------------------
-2023-06-24 22:49:28: xmlchange success <command> ./xmlchange ATM_NCPL=24  </command>
+2023-06-27 20:43:52: xmlchange success <command> ./xmlchange ATM_NCPL=24  </command>
  ---------------------------------------------------
-2023-06-24 22:49:29: xmlchange success <command> ./xmlchange RUN_REFDATE=0407-01-01  </command>
+2023-06-27 20:43:52: xmlchange success <command> ./xmlchange RUN_REFDATE=0407-01-01  </command>
  ---------------------------------------------------
-2023-06-24 22:49:29: xmlchange success <command> ./xmlchange CCSM_BGC=CO2A  </command>
+2023-06-27 20:43:53: xmlchange success <command> ./xmlchange CCSM_BGC=CO2A  </command>
  ---------------------------------------------------
-2023-06-24 22:49:30: xmlchange success <command> ./xmlchange CLM_CO2_TYPE=diagnostic  </command>
+2023-06-27 20:43:53: xmlchange success <command> ./xmlchange CLM_CO2_TYPE=diagnostic  </command>
  ---------------------------------------------------
-2023-06-24 22:49:30: xmlchange success <command> ./xmlchange RUN_STARTDATE=1850-01-01  </command>
+2023-06-27 20:43:54: xmlchange success <command> ./xmlchange RUN_STARTDATE=1850-01-01  </command>
  ---------------------------------------------------
-2023-06-24 22:49:31: xmlchange success <command> ./xmlchange NTASKS_ATM=1  </command>
+2023-06-27 20:43:54: xmlchange success <command> ./xmlchange NTASKS_ATM=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:31: xmlchange success <command> ./xmlchange NTHRDS_ATM=1  </command>
+2023-06-27 20:43:55: xmlchange success <command> ./xmlchange NTHRDS_ATM=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:32: xmlchange success <command> ./xmlchange NTASKS_LND=1  </command>
+2023-06-27 20:43:56: xmlchange success <command> ./xmlchange NTASKS_LND=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:32: xmlchange success <command> ./xmlchange NTHRDS_LND=1  </command>
+2023-06-27 20:43:56: xmlchange success <command> ./xmlchange NTHRDS_LND=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:33: xmlchange success <command> ./xmlchange NTASKS_ICE=1  </command>
+2023-06-27 20:43:57: xmlchange success <command> ./xmlchange NTASKS_ICE=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:33: xmlchange success <command> ./xmlchange NTHRDS_ICE=1  </command>
+2023-06-27 20:43:57: xmlchange success <command> ./xmlchange NTHRDS_ICE=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:34: xmlchange success <command> ./xmlchange NTASKS_OCN=1  </command>
+2023-06-27 20:43:58: xmlchange success <command> ./xmlchange NTASKS_OCN=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:34: xmlchange success <command> ./xmlchange NTHRDS_OCN=1  </command>
+2023-06-27 20:43:58: xmlchange success <command> ./xmlchange NTHRDS_OCN=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:35: xmlchange success <command> ./xmlchange NTASKS_CPL=1  </command>
+2023-06-27 20:43:59: xmlchange success <command> ./xmlchange NTASKS_CPL=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:35: xmlchange success <command> ./xmlchange NTHRDS_CPL=1  </command>
+2023-06-27 20:43:59: xmlchange success <command> ./xmlchange NTHRDS_CPL=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:36: xmlchange success <command> ./xmlchange NTASKS_GLC=1  </command>
+2023-06-27 20:44:00: xmlchange success <command> ./xmlchange NTASKS_GLC=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:36: xmlchange success <command> ./xmlchange NTHRDS_GLC=1  </command>
+2023-06-27 20:44:00: xmlchange success <command> ./xmlchange NTHRDS_GLC=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:37: xmlchange success <command> ./xmlchange NTASKS_ROF=1  </command>
+2023-06-27 20:44:01: xmlchange success <command> ./xmlchange NTASKS_ROF=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:38: xmlchange success <command> ./xmlchange NTHRDS_ROF=1  </command>
+2023-06-27 20:44:01: xmlchange success <command> ./xmlchange NTHRDS_ROF=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:38: xmlchange success <command> ./xmlchange NTASKS_WAV=1  </command>
+2023-06-27 20:44:02: xmlchange success <command> ./xmlchange NTASKS_WAV=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:39: xmlchange success <command> ./xmlchange NTHRDS_WAV=1  </command>
+2023-06-27 20:44:02: xmlchange success <command> ./xmlchange NTHRDS_WAV=1  </command>
  ---------------------------------------------------
-2023-06-24 22:49:39: xmlchange success <command> ./xmlchange STOP_OPTION=nyears  </command>
+2023-06-27 20:44:03: xmlchange success <command> ./xmlchange STOP_OPTION=nyears  </command>
  ---------------------------------------------------
-2023-06-24 22:49:40: xmlchange success <command> ./xmlchange STOP_N=165  </command>
+2023-06-27 20:44:03: xmlchange success <command> ./xmlchange STOP_N=165  </command>
  ---------------------------------------------------
-2023-06-24 22:49:40: xmlchange success <command> ./xmlchange --id PIO_TYPENAME --val netcdf  </command>
+2023-06-27 20:44:04: xmlchange success <command> ./xmlchange --id PIO_TYPENAME --val netcdf  </command>
  ---------------------------------------------------
-2023-06-24 22:49:41: xmlchange success <command> ./xmlchange -id BATCH_SYSTEM --val none  </command>
+2023-06-27 20:44:04: xmlchange success <command> ./xmlchange -id BATCH_SYSTEM --val none  </command>
  ---------------------------------------------------
-2023-06-24 22:49:41: case.setup starting 
+2023-06-27 20:44:05: case.setup starting 
  ---------------------------------------------------
-2023-06-24 22:49:44: case.setup success 
+2023-06-27 20:44:07: case.setup success 
  ---------------------------------------------------
-2023-06-24 22:49:44: xmlchange success <command> ./xmlchange -id CLM_CONFIG_OPTS --append --val -cppdefs -DHUM_HOL  </command>
+2023-06-27 20:44:07: xmlchange success <command> ./xmlchange -id CLM_CONFIG_OPTS --append --val -cppdefs -DHUM_HOL  </command>
  ---------------------------------------------------
-2023-06-24 22:49:45: xmlchange success <command> ./xmlchange BUILD_COMPLETE=TRUE  </command>
+2023-06-27 20:44:08: xmlchange success <command> ./xmlchange BUILD_COMPLETE=TRUE  </command>
  ---------------------------------------------------
-2023-06-24 22:50:13: case.submit starting 
+2023-06-27 20:44:25: case.submit starting 
  ---------------------------------------------------
-2023-06-24 22:50:20: case.submit error 
+2023-06-27 20:44:29: case.submit error 
 ERROR: Could not find all inputdata on any server
+ ---------------------------------------------------
+2023-06-27 21:48:57: case.submit starting 
+ ---------------------------------------------------
+2023-06-27 21:49:01: case.submit error 
+ERROR: Could not find all inputdata on any server
+ ---------------------------------------------------
+2023-06-28 10:58:12: case.submit starting 
+ ---------------------------------------------------
+2023-06-28 10:58:17: case.run starting 
+ ---------------------------------------------------
+2023-06-28 10:58:22: model execution starting 
+ ---------------------------------------------------
+2023-06-28 11:51:13: model execution success 
+ ---------------------------------------------------
+2023-06-28 11:51:13: case.run success 
+ ---------------------------------------------------
+2023-06-28 11:51:15: case.submit success 
  ---------------------------------------------------

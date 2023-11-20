@@ -424,9 +424,7 @@ contains
                ! inclusion of aq. NH4 transport by PFLOTRAN-bgc
                col_noutputs(c) = col_noutputs(c) + sminn_leached(c)
             else
-
                col_noutputs(c) = col_noutputs(c) + smin_no3_leached(c) + smin_no3_runoff(c)
-
             endif
 
            end if
@@ -457,6 +455,7 @@ contains
             err_found = .true.
             err_index = c
          end if
+
       end do ! end of columns loop
 
       if (err_found) then
@@ -491,7 +490,6 @@ contains
          end if
 
          call endrun(msg=errMsg(__FILE__, __LINE__))
-
       end if
 
     end associate
@@ -674,7 +672,6 @@ contains
             err_index = c
          end if
       end do ! end of columns loop
-
 
       if (err_found) then
          c = err_index

@@ -1,0 +1,13 @@
+&modelio
+  diri = "/home/ywo/20231107_US-SPR_ICB1850CNPECACTCBC_ad_spinup/bld/wav"
+  diro = "/home/ywo/20231107_US-SPR_ICB1850CNPECACTCBC_ad_spinup/run"
+  logfile = "wav.log.4710573.231112-192235"
+/
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 0
+  pio_stride = 32
+  pio_typename = "netcdf"
+/

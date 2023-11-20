@@ -2500,7 +2500,6 @@ module VegetationDataType
                 this%leafc(p) = 0._r8
                 this%leafc_storage(p) = 20._r8 * ratio 
              end if 
-                 
 
              this%leafc_xfer(p) = 0._r8
 

@@ -1,50 +1,50 @@
-2023-05-25 09:43:23: ./create_newcase --case /home/ywo/models/E3SM/cime/scripts/UQ_default2_optimized_US-SPR_ICB1850CNPRDCTCBC --mach cades --compset ICB1850CNPRDCTCBC --res CLM_USRDAT --mpilib mpi-serial --walltime 48:00:00 --handle-preexisting-dirs u --project e3sm
+2023-07-11 21:14:42: ./create_newcase --case /home/ywo/models/E3SM/cime/scripts/UQ_default2_optimized_US-SPR_ICB1850CNPRDCTCBC --mach cades --compset ICB1850CNPRDCTCBC --res CLM_USRDAT --mpilib mpi-serial --walltime 48:00:00 --handle-preexisting-dirs u --project e3sm
  ---------------------------------------------------
-2023-05-25 09:43:23: Compset longname is 1850_SATM_CLM45%CNPRDCTCBC_SICE_SOCN_MOSART_SGLC_SWAV_SIAC_SESP
+2023-07-11 21:14:42: Compset longname is 1850_SATM_CLM45%CNPRDCTCBC_SICE_SOCN_MOSART_SGLC_SWAV_SIAC_SESP
  ---------------------------------------------------
-2023-05-25 09:43:23: Compset specification file is /home/ywo/models/E3SM/components/clm/cime_config/config_compsets.xml
+2023-07-11 21:14:42: Compset specification file is /home/ywo/models/E3SM/components/clm/cime_config/config_compsets.xml
  ---------------------------------------------------
-2023-05-25 09:43:23: Pes     specification file is /home/ywo/models/E3SM/cime/config/e3sm/allactive/config_pesall.xml
+2023-07-11 21:14:42: Pes     specification file is /home/ywo/models/E3SM/cime/config/e3sm/allactive/config_pesall.xml
  ---------------------------------------------------
-2023-05-25 09:43:23: Forcing is 
+2023-07-11 21:14:42: Forcing is 
  ---------------------------------------------------
-2023-05-25 09:43:23: Component CPL is pre-industrial:
+2023-07-11 21:14:42: Component CPL is pre-industrial:
  ---------------------------------------------------
-2023-05-25 09:43:23: Using None coupler instances
+2023-07-11 21:14:42: Using None coupler instances
  ---------------------------------------------------
-2023-05-25 09:43:23: Component ATM is Stub atm component
+2023-07-11 21:14:42: Component ATM is Stub atm component
  ---------------------------------------------------
-2023-05-25 09:43:23: ATM_GRID is null
+2023-07-11 21:14:42: ATM_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component LND is clm4.5 physics:clm4.5 cn:alm1.0 C-N-P, nutirent competition via relative demand, ctc soil cascade with black carbon deposition:
+2023-07-11 21:14:42: Component LND is clm4.5 physics:clm4.5 cn:alm1.0 C-N-P, nutirent competition via relative demand, ctc soil cascade with black carbon deposition:
  ---------------------------------------------------
-2023-05-25 09:43:23: LND_GRID is CLM_USRDAT
+2023-07-11 21:14:42: LND_GRID is CLM_USRDAT
  ---------------------------------------------------
-2023-05-25 09:43:23: Component ICE is Stub ice component
+2023-07-11 21:14:42: Component ICE is Stub ice component
  ---------------------------------------------------
-2023-05-25 09:43:23: ICE_GRID is null
+2023-07-11 21:14:42: ICE_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component OCN is Stub ocn component
+2023-07-11 21:14:42: Component OCN is Stub ocn component
  ---------------------------------------------------
-2023-05-25 09:43:23: OCN_GRID is null
+2023-07-11 21:14:42: OCN_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component ROF is MOSART:
+2023-07-11 21:14:42: Component ROF is MOSART:
  ---------------------------------------------------
-2023-05-25 09:43:23: ROF_GRID is null
+2023-07-11 21:14:42: ROF_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component GLC is Stub glacier (land ice) component
+2023-07-11 21:14:42: Component GLC is Stub glacier (land ice) component
  ---------------------------------------------------
-2023-05-25 09:43:23: GLC_GRID is null
+2023-07-11 21:14:42: GLC_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component WAV is Stub wave component
+2023-07-11 21:14:42: Component WAV is Stub wave component
  ---------------------------------------------------
-2023-05-25 09:43:23: WAV_GRID is null
+2023-07-11 21:14:42: WAV_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component IAC is Stub iac component
+2023-07-11 21:14:42: Component IAC is Stub iac component
  ---------------------------------------------------
-2023-05-25 09:43:23: IAC_GRID is null
+2023-07-11 21:14:42: IAC_GRID is null
  ---------------------------------------------------
-2023-05-25 09:43:23: Component ESP is Stub external system processing (ESP) component
+2023-07-11 21:14:42: Component ESP is Stub external system processing (ESP) component
  ---------------------------------------------------
-2023-05-25 09:43:23: ESP_GRID is None
+2023-07-11 21:14:42: ESP_GRID is None
  ---------------------------------------------------

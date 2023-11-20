@@ -194,11 +194,11 @@ contains
     ! ------------------------------------------------------------------------
     ! Get grid and land fraction (set ldomain)
     ! ------------------------------------------------------------------------
-
     if (masterproc) then
        write(iulog,*) 'Attempting to read ldomain from ',trim(fatmlndfrc)
        call shr_sys_flush(iulog)
     endif
+
     if (create_glacier_mec_landunit) then
        call surfrd_get_grid(begg, endg, ldomain, fatmlndfrc, fglcmask)
     else
@@ -741,7 +741,7 @@ contains
             alm_fates, glc2lnd_vars, crop_vars)
 
     end if
-       
+
     ! ------------------------------------------------------------------------
     ! If appropriate, create interpolated initial conditions
     ! ------------------------------------------------------------------------

@@ -2668,6 +2668,5 @@ end subroutine CSummary_interface
 
     end associate
   end subroutine summary_cflux_for_ch4
-  
-  
+
 end module CNCarbonFluxType
